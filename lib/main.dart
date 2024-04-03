@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'api_key.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -13,7 +14,7 @@ void main() async {
 Future<void> _initialize() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NaverMapSdk.instance.initialize(
-    clientId: 'jd8tdhgukk',     // 클라이언트 ID 설정
+    clientId: naverApiKey,     // 클라이언트 ID 설정
     onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed")
   );
 }
