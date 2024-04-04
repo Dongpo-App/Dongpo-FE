@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
-import 'api_key.dart';
+import '/api_key.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -66,7 +66,7 @@ class NaverMapApp extends StatelessWidget {
                   ),
                 ],
                 currentIndex: 0,
-                selectedItemColor: Colors.blue,
+                selectedItemColor: Colors.red,
                 onTap: (int index) {
                   // 하단 메뉴바 클릭 시 동작
                   // 여기에 클릭 시 수행할 동작을 작성합니다.
