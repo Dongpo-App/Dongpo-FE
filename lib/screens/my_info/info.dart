@@ -16,7 +16,7 @@ class _MyPageState extends State<MyPage>{
           'my_page.dart is selected!',
           style: TextStyle(
             fontSize: 24.0,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w400,
           ),
         ),
       ),

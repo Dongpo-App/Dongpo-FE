@@ -16,7 +16,7 @@ class _CommunityPageState extends State<CommunityPage>{
           'community.dart is selected!',
           style: TextStyle(
             fontSize: 24.0,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
