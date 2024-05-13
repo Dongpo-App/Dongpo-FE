@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CommunityPage extends StatefulWidget {
@@ -19,8 +20,8 @@ class _CommunityPageState extends State<CommunityPage>{
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 상단 Text
-          Padding(
-            padding: EdgeInsets.only(top: 24.0, left: 24.0),
+          Container(
+            margin: EdgeInsets.only(top: 24.0, left: 24.0, bottom: 48),
             child: Text(
               "별별 사람들",
               style: TextStyle(
@@ -30,7 +31,6 @@ class _CommunityPageState extends State<CommunityPage>{
             )
           ),
 
-          SizedBox(height: 48.0),
           // 조건 Top 10 카드 슬라이드
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -43,22 +43,36 @@ class _CommunityPageState extends State<CommunityPage>{
                   memberTitle: '난 한 가게만 패',
                   memberProfile: 'assets/images/profile_img1.jpg',
                 ),
-                SizedBox(width: 34.0), // 카드 사이의 거리
+                SizedBox(width: 24.0), // 카드 사이의 거리
                 _buildCard(
                   top10Title: '가게 등록 횟수 top 10',
                   member: '친절한 강아지',
                   memberTitle: '포장마차 러버',
                   memberProfile: 'assets/images/profile_img2.png',
                 ),
-                SizedBox(width: 34.0),
+                SizedBox(width: 24.0),
                 _buildCard(
                   top10Title: '가게 리뷰 횟수 top 10',
                   member: '행복한 참새',
                   memberTitle: '애미야 국이 짜다',
                   memberProfile: 'assets/images/profile_img3.png',
                 ),
-                SizedBox(width: 34.0),
+                SizedBox(width: 24.0),
               ],
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            height: 64.0,
+            margin: EdgeInsets.only(top: 64, left: 24.0, right: 24),
+
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12.0),
+              image: DecorationImage(
+                image: AssetImage('assets/images/banner.png'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ],
@@ -75,40 +89,47 @@ class _CommunityPageState extends State<CommunityPage>{
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.0),
       ),
-      child: Padding(
-        padding: EdgeInsets.only(top: 18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(top: 18),
+            child: Text(
               top10Title,
               style: TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 8.0),
-            SizedBox(
-              height: 48,
-              child: Image.asset(memberProfile),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 29),
+            child: CircleAvatar(
+              radius: 24,
+              backgroundImage: AssetImage(memberProfile),
             ),
-            Text(
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 19),
+            child: Text(
               memberTitle,
               style: TextStyle(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w400,
               ),
             ),
-            SizedBox(height: 8.0),
-            Text(
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Text(
               member,
               style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w600,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
