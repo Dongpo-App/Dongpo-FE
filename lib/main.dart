@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false, // 우측 상단 debug 표시 제거
       theme: ThemeData(
+        fontFamily: 'Pretendard',
         splashColor: Colors.transparent, // splash 효과 없애기
         highlightColor: Colors.transparent, // splash 효과 없애기
       ),
