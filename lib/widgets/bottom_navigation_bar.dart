@@ -33,7 +33,10 @@ class MyAppPageState extends State<MyAppPage> {
     // final screenHeight = MediaQuery.of(context).size.height; // 현재 화면 높이
     // final bottomNavHeight = screenHeight * 0.08; // 화면 높이의 8%
     return Scaffold(
-      body: screens[selectedIndex],
+      body: IndexedStack(
+        index: selectedIndex,
+        children: screens,
+      ),
       bottomNavigationBar: SizedBox(
         // height: bottomNavHeight,
         child: BottomNavigationBar(
