@@ -15,13 +15,14 @@ class MyAppPageState extends State<MyAppPage> {
   int selectedIndex = 0;
 
   final List<Widget> screens = [
-    const NaverMapApp(),
+    const MainPage(),
     const AddPage(),
     const CommunityPage(),
     const MyPage(),
   ];
 
-  void onItemTapped(int index) { // 콜백 함수
+  void onItemTapped(int index) {
+    // 콜백 함수
     setState(() {
       selectedIndex = index;
     });
@@ -32,11 +33,10 @@ class MyAppPageState extends State<MyAppPage> {
     // final screenHeight = MediaQuery.of(context).size.height; // 현재 화면 높이
     // final bottomNavHeight = screenHeight * 0.08; // 화면 높이의 8%
     return Scaffold(
-
       body: screens[selectedIndex],
       bottomNavigationBar: SizedBox(
         // height: bottomNavHeight,
-        child : BottomNavigationBar(
+        child: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),

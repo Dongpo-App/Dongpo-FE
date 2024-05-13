@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'dart:developer';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'api_key.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
-
+import 'package:dongpo_test/screens/main/main_01.dart';
 
 void main() async {
-  await _initialize();
-
+  await reset_map();
   runApp(const MyApp());
 }
 
@@ -26,12 +21,4 @@ class MyApp extends StatelessWidget {
       home: const MyAppPage(), // main_01.dart
     );
   }
-}
-
-// 지도 초기화하기
-Future<void> _initialize() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await NaverMapSdk.instance.initialize(
-      clientId: naverApiKey, // 클라이언트 ID 설정
-      onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
 }

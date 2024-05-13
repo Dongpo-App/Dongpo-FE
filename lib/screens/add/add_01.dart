@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:geolocator/geolocator.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -7,17 +9,18 @@ class AddPage extends StatefulWidget {
   State<AddPage> createState() => _AddPageState();
 }
 
-class _AddPageState extends State<AddPage>{
+class _AddPageState extends State<AddPage> {
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text(
-          'main_01.dart is selected!',
-          style: TextStyle(
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold,
-          ),
+      body: NaverMap(
+        options: NaverMapViewOptions(
+          locationButtonEnable: false,
+          //초기 지도값
+          initialCameraPosition: NCameraPosition(
+              target: NLatLng(37.49993604717163, 126.86768245932946), zoom: 18),
+          minZoom: 18,
+          maxZoom: 18,
         ),
       ),
     );
