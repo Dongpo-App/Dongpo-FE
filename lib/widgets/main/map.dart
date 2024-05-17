@@ -42,8 +42,18 @@ class NaverMapAppState extends State<NaverMapApp> {
               log("onMapReady", name: "onMapReady");
               final NLatLng test =
                   NLatLng(37.49993604717163, 126.86768245932946); //테스트 위도 경도
-              final NMarker marker =
-                  NMarker(id: "test_Maker", position: test); //테스트 마커
+              final NMarker marker = NMarker(
+                id: "test_Maker",
+                position: test,
+              ); //테스트 마커
+              //커스텀 마커 생성
+              var customMarker =
+                  NOverlayImage.fromAssetImage("assets/images/rakoon.png");
+              //마커 아이콘 변경
+              marker.setIcon(customMarker);
+              //마커 크기 조절
+              var defaultMarkerSize = Size(50, 50);
+              marker.setSize(defaultMarkerSize);
               //마커 표시
               controller.addOverlay(marker);
               final onMarkerInfoWindow =

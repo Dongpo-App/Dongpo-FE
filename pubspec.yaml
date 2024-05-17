@@ -60,11 +60,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
+  # assets 밑에 모든 파일들 사용
   assets:
-    - assets/images/profile_img1.jpg
-    - assets/images/profile_img2.png
-    - assets/images/profile_img3.png
-    - assets/images/banner.png
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
