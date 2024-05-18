@@ -13,6 +13,9 @@ class _AddPageState extends State<AddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('위치 제보'),
+      ),
       body: NaverMap(
         options: NaverMapViewOptions(
           locationButtonEnable: false,

@@ -1,7 +1,10 @@
-import 'dart:developer';
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:dongpo_test/screens/main/main_02.dart';
+import 'package:dongpo_test/api_key.dart';
+import 'dart:developer';
 
 class NaverMapApp extends StatefulWidget {
   const NaverMapApp({super.key});
@@ -10,9 +13,20 @@ class NaverMapApp extends StatefulWidget {
 }
 
 class NaverMapAppState extends State<NaverMapApp> {
+  late NaverMapController _mapController;
+  String _currentAddress = "";
+
   @override
   Widget build(BuildContext context) {
-    final Completer<NaverMapController> mapControllerCompleter = Completer();
+    List<NLatLng> NList = [
+      NLatLng(37.49993604717163, 126.86768245932946),
+      NLatLng(37.49993604717164, 126.86768245932941),
+      NLatLng(37.49993604717165, 126.86768245932942),
+      NLatLng(37.49993604717166, 126.86768245932943),
+      NLatLng(37.49993604717167, 126.86768245932944),
+      NLatLng(37.49993604717168, 126.86768245932945),
+      NLatLng(37.49993604717169, 126.86768245932946),
+    ];
 
     return Scaffold(
       body: Stack(
@@ -20,7 +34,7 @@ class NaverMapAppState extends State<NaverMapApp> {
           NaverMap(
             options: const NaverMapViewOptions(
               indoorEnable: true, // 실내 맵 사용 가능 여부 설정
-              locationButtonEnable: true, // 위치 버튼 표시 여부 설정
+              locationButtonEnable: false, // 위치 버튼 표시 여부 설정
               minZoom: 16, //쵀대 줄일 수 있는 크기?
               maxZoom: 18, //최대 당길 수 있는 크기
               initialCameraPosition: NCameraPosition(
@@ -36,12 +50,10 @@ class NaverMapAppState extends State<NaverMapApp> {
               ),
             ),
             onMapReady: (controller) async {
-              // 지도 준비 완료 시 호출되는 콜백 함수
-              mapControllerCompleter
-                  .complete(controller); // Completer에 지도 컨트롤러 완료 신호 전송
               log("onMapReady", name: "onMapReady");
               final NLatLng test =
                   NLatLng(37.49993604717163, 126.86768245932946); //테스트 위도 경도
+
               final NMarker marker = NMarker(
                 id: "test_Maker",
                 position: test,
@@ -52,13 +64,12 @@ class NaverMapAppState extends State<NaverMapApp> {
               //마커 아이콘 변경
               marker.setIcon(customMarker);
               //마커 크기 조절
-              var defaultMarkerSize = Size(50, 50);
+              var defaultMarkerSize = Size(40, 50);
               marker.setSize(defaultMarkerSize);
+
+              marker.setOnTapListener((overlay) => print("마커눌렸다"));
               //마커 표시
               controller.addOverlay(marker);
-              final onMarkerInfoWindow =
-                  NInfoWindow.onMarker(id: marker.info.id, text: "동미대");
-              marker.openInfoWindow(onMarkerInfoWindow);
             },
           ),
         ],

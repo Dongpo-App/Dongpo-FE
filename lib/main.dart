@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 
 void main() async {
   await reset_map();
-  await Geolocator.requestPermission();
   runApp(const MyApp());
 }
 
