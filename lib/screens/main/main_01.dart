@@ -7,7 +7,7 @@ import 'main_02.dart';
 import 'package:dongpo_test/api_key.dart';
 import 'dart:developer';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:open_settings_plus/open_settings_plus.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 // 지도 초기화하기
 Future<void> reset_map() async {
