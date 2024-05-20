@@ -69,7 +69,7 @@ class _MyAppState extends State<MyApp> {
         );
         controller.updateCamera(update);
         controller.getCameraPosition();
-        NaverMapController
+        NaverMapController;
       },
     );
   }

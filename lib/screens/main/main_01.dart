@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -8,6 +9,9 @@ import 'dart:developer';
 
 // 지도 초기화하기
 Future<void> reset_map() async {
+  // splash 화면 종료
+  FlutterNativeSplash.remove();
+  
   WidgetsFlutterBinding.ensureInitialized();
   await NaverMapSdk.instance.initialize(
       clientId: naverApiKey, // 클라이언트 ID 설정
