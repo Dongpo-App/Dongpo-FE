@@ -18,7 +18,6 @@ class _AddPageState extends State<AddPage> {
       ),
       body: NaverMap(
         options: NaverMapViewOptions(
-          locationButtonEnable: false,
           //초기 지도값
           initialCameraPosition: NCameraPosition(
               target: NLatLng(37.49993604717163, 126.86768245932946), zoom: 18),

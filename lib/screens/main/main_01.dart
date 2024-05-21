@@ -47,6 +47,7 @@ class _MainPageState extends State<MainPage> {
           if (snapshot.data == "위치 권한이 허가 되었습니다.") {
             return Stack(
               children: [
+                //네이버 지도 시작
                 NaverMap(
                   onMapReady: _onMapReady,
                   onCameraChange: (reason, animated) {
@@ -54,11 +55,24 @@ class _MainPageState extends State<MainPage> {
                       _showReSearchButton = true;
                     });
                   },
+                  options: NaverMapViewOptions(
+                    indoorEnable: true, // 실내 맵 사용 가능 여부 설정
+                    locationButtonEnable: false, // 위치 버튼 표시 여부 설정
+                    minZoom: 16, //쵀대 줄일 수 있는 크기?
+                    maxZoom: 18, //최대 당길 수 있는 크기
+                    initialCameraPosition: NCameraPosition(
+                      //첫 로딩시 카메라 포지션 지정
+                      target: NLatLng(37.49993604717163, 126.86768245932946),
+                      zoom: 16, bearing: 0,
+                      tilt: 0,
+                    ),
+                  ),
                 ),
                 Positioned(
                   top: 65.0,
                   left: 16.0,
                   right: 16.0,
+                  //상단 검색바
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(context,
@@ -79,6 +93,7 @@ class _MainPageState extends State<MainPage> {
                           ),
                         ],
                       ),
+                      //검색바 안에 주소
                       child: Row(
                         children: <Widget>[
                           SizedBox(width: 8.0),
@@ -94,9 +109,10 @@ class _MainPageState extends State<MainPage> {
                     ),
                   ),
                 ),
+                //위치 재검색 버튼
                 AnimatedPositioned(
                   duration: Duration(milliseconds: 300),
-                  top: _showReSearchButton ? 110.0 : -50.0,
+                  top: _showReSearchButton ? 110.0 : -40.0,
                   left: MediaQuery.of(context).size.width / 4,
                   right: MediaQuery.of(context).size.width / 4,
                   child: GestureDetector(
