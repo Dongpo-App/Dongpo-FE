@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'main_02.dart';
 import 'package:dongpo_test/api_key.dart';
 import 'dart:developer';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 // 지도 초기화하기
 Future<void> reset_map() async {
   // splash 화면 종료
   FlutterNativeSplash.remove();
-  
+
   WidgetsFlutterBinding.ensureInitialized();
   await NaverMapSdk.instance.initialize(
       clientId: naverApiKey, // 클라이언트 ID 설정
@@ -28,6 +30,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   late NaverMapController _mapController;
   String _currentAddress = "";
+  bool _showReSearchButton = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,34 +44,17 @@ class _MainPageState extends State<MainPage> {
               child: CircularProgressIndicator(),
             );
           }
-
           if (snapshot.data == "위치 권한이 허가 되었습니다.") {
-            // 위치 권한이 허가되었을 때 지도를 표시합니다.
             return Stack(
               children: [
-                //지도 시작
                 NaverMap(
                   onMapReady: _onMapReady,
-                  //지도 관련 옵션
-                  options: const NaverMapViewOptions(
-                    indoorEnable: true, // 실내 맵 사용 가능 여부 설정
-                    locationButtonEnable: false, // 위치 버튼 표시 여부 설정
-                    minZoom: 16, //쵀대 줄일 수 있는 크기?
-                    maxZoom: 18, //최대 당길 수 있는 크기
-                    initialCameraPosition: NCameraPosition(
-                      //첫 로딩시 카메라 포지션 지정
-                      target: NLatLng(37.49993604717163, 126.86768245932946),
-                      zoom: 16, bearing: 0,
-                      tilt: 0,
-                    ),
-                    extent: NLatLngBounds(
-                      //지도 영역을 한반도 인근으로 제한
-                      southWest: NLatLng(31.43, 122.37),
-                      northEast: NLatLng(44.35, 132.0),
-                    ),
-                  ), //지도 관련 옵션 끝
+                  onCameraChange: (reason, animated) {
+                    setState(() {
+                      _showReSearchButton = true;
+                    });
+                  },
                 ),
-                //지도 끝
                 Positioned(
                   top: 65.0,
                   left: 16.0,
@@ -108,6 +94,47 @@ class _MainPageState extends State<MainPage> {
                     ),
                   ),
                 ),
+                AnimatedPositioned(
+                  duration: Duration(milliseconds: 300),
+                  top: _showReSearchButton ? 110.0 : -50.0,
+                  left: MediaQuery.of(context).size.width / 4,
+                  right: MediaQuery.of(context).size.width / 4,
+                  child: GestureDetector(
+                    onTap: () async {
+                      await _reSearchCurrentLocation();
+                      setState(() {
+                        _showReSearchButton = false;
+                      });
+                    },
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      decoration: BoxDecoration(
+                        color: Color(0xffF15A2B),
+                        borderRadius: BorderRadius.circular(16.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 5.0,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            "해당 위치로 재검색",
+                            style: TextStyle(fontSize: 14, color: Colors.white),
+                          ),
+                          SizedBox(width: 8.0),
+                          Icon(Icons.refresh, color: Colors.white, size: 16.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // 내 위치 버튼
                 Positioned(
                   bottom: 90.0,
                   right: 16.0,
@@ -119,27 +146,22 @@ class _MainPageState extends State<MainPage> {
               ],
             );
           }
-
-          // 위치 권한이 안될 시 뜨는 오류
-          // 인증 실패하면 앱 강제 종료? 로직 구현필요 or 세션만료
-          // 동의 안함 했을 때 넘어가짐
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text("인증을 실패했습니다")],
-            ),
-          );
+          // 권한이 거절되었을 시 알림 표시 후 앱 종료
+          else {
+            _showPermissionDenied();
+            return Container();
+          }
         },
       ),
     );
   }
 
-  // 지도가 준비되었을 때 호출되는 함수
+  // 함수 정의
+
   void _onMapReady(NaverMapController controller) {
     _mapController = controller;
   }
 
-  // 현재 위치로 카메라를 이동시키는 함수
   Future<void> _moveToCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -147,21 +169,20 @@ class _MainPageState extends State<MainPage> {
       NCameraUpdate.fromCameraPosition(
         NCameraPosition(
           target: NLatLng(position.latitude, position.longitude),
-          zoom: 17,
+          zoom: 15,
         ),
       ),
     );
     _updateAddress(position.latitude, position.longitude);
   }
 
-  // 현재 위치의 주소를 업데이트하는 함수
   Future<void> _updateAddress(double latitude, double longitude) async {
     try {
       List<Placemark> placemarks =
           await placemarkFromCoordinates(latitude, longitude);
       Placemark place = placemarks[0];
       setState(() {
-        _currentAddress = '${place.locality}' ' ' '${place.street}';
+        _currentAddress = '${place.locality} ' '${place.street} ';
       });
     } catch (e) {
       setState(() {
@@ -170,7 +191,13 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  // 위치 권한을 확인하는 함수
+  Future<void> _reSearchCurrentLocation() async {
+    final cameraPosition = await _mapController.getCameraPosition();
+    final latitude = cameraPosition.target.latitude;
+    final longitude = cameraPosition.target.longitude;
+    print('현재 지도의 중앙 좌표: 위도 $latitude, 경도 $longitude');
+  }
+
   Future<String> checkPermission() async {
     final isLocationEnabled = await Geolocator.isLocationServiceEnabled();
 
@@ -194,6 +221,35 @@ class _MainPageState extends State<MainPage> {
 
     return '위치 권한이 허가 되었습니다.';
   }
-}
 
-// 위치 권한을 확인 중일 때 로딩 인디케이터를 보여줍니다.
+  // 위치 권한 거절 시 알림 표시 후 앱 종료
+  void _showPermissionDenied() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('위치 권한 필요!'),
+            content: Text('이 앱은 위치 권한이 필요합니다. 권한을 허용해주세요.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('앱 종료'),
+                onPressed: () {
+                  SystemNavigator.pop(); // 앱 종료
+                  print('앱 종료');
+                },
+              ),
+              TextButton(
+                  onPressed: () {
+                    print('설정으로 이동');
+                    openAppSettings();
+                  },
+                  child: Text("설정으로 이동"))
+            ],
+          );
+        },
+      );
+    });
+  }
+}
