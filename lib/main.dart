@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:geolocator/geolocator.dart';
 
 void main() async {
   // splash widgetBinding

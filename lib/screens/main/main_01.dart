@@ -268,4 +268,14 @@ class _MainPageState extends State<MainPage> {
       );
     });
   }
+
+  //마커를 지도에 띄우는 함수
+  // Future<void> showMarker() async {
+  //   for (int i in phoChaList) {
+  //     NMarker marker = NMarker(
+  //         id: "marker_$i",
+  //         position: NLatLng(phoChaList[i].latitude, phoChaList[i].longitude));
+  //     _mapController.addOverlay(marker);
+  //   }
+  // }
 }
