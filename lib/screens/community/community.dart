@@ -1,14 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'community_top10.dart';
+
 class CommunityPage extends StatefulWidget {
   const CommunityPage({super.key});
 
   @override
-  State<CommunityPage> createState() => _CommunityPageState();
+  State<CommunityPage> createState() => CommunityPageState();
 }
 
-class _CommunityPageState extends State<CommunityPage>{
+class CommunityPageState extends State<CommunityPage>{
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -82,55 +84,77 @@ class _CommunityPageState extends State<CommunityPage>{
 
   // 조건 Top 10 카드 슬라이드 3개
   Widget _buildCard({required String top10Title, required String member, required String memberTitle, required String memberProfile}) {
-    return Container( //
-      width: 260.0,
-      height: 213.0,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(top: 18),
-            child: Text(
-              top10Title,
-              style: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.w600,
+    final top10TitleData = Top10TitleData(
+      top10Title: top10Title,
+    );
+
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(
+            context, MaterialPageRoute(builder: (BuildContext context) {
+              return CommunityTop10Page(top10TitleData: top10TitleData);
+            }
+          )
+        );
+      },
+      child:Container( //
+        width: 260.0,
+        height: 213.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: 18),
+              child: Text(
+                top10Title,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 29),
-            child: CircleAvatar(
-              radius: 24,
-              backgroundImage: AssetImage(memberProfile),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 19),
-            child: Text(
-              memberTitle,
-              style: TextStyle(
-                fontSize: 12.0,
-                fontWeight: FontWeight.w400,
+            Padding(
+              padding: EdgeInsets.only(top: 29),
+              child: CircleAvatar(
+                radius: 24,
+                backgroundImage: AssetImage(memberProfile),
               ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 4),
-            child: Text(
-              member,
-              style: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.w600,
+            Padding(
+              padding: EdgeInsets.only(top: 19),
+              child: Text(
+                memberTitle,
+                style: TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+            Padding(
+              padding: EdgeInsets.only(top: 4),
+              child: Text(
+                member,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      )
     );
   }
+}
+
+// 카드 데이터 DTO
+class Top10TitleData {
+  final String top10Title;
+  Top10TitleData({
+    required this.top10Title,
+  });
 }
