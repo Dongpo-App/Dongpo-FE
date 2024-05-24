@@ -51,5 +51,11 @@
 		<string>We need your location to show it on the map.</string>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string></string>
+		<key>NSCameraUsageDescription</key>
+		<string></string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string></string>
 	</dict>
 </plist>

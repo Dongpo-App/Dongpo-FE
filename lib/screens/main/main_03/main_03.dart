@@ -1,5 +1,6 @@
 //가게정보 자세히
 import 'package:dongpo_test/screens/main/main_03/03_bangmoon.dart';
+import 'package:dongpo_test/screens/main/main_03/03_gagejungbo.dart';
 import 'package:dongpo_test/screens/main/main_03/03_photo_List.dart';
 import 'package:dongpo_test/screens/main/main_03/03_review.dart';
 import 'package:dongpo_test/screens/main/main_03/03_title.dart';
@@ -99,18 +100,26 @@ class StoreInfo extends StatelessWidget {
           MainTitle(),
           //사진
           MainPhoto(),
-          //방문인증
-          BangMoon(),
           //리뷰 갯수, 버튼
           UserAction(),
+          SizedBox(
+            height: 40,
+          ),
+          //방문인증
+          BangMoon(),
+          SizedBox(
+            height: 40,
+          ),
           //리뷰 관련
           ShowReview(),
           SizedBox(
-            height: 30,
-          )
+            height: 150,
+          ),
           //가게정보
-          //여기부터 다시 시작해야함.
+          GageJungbo(),
           //이 가게 단골 손님
+
+          //DangolGeast(),
         ],
       ),
     );
