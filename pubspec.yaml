@@ -43,6 +43,10 @@ dependencies:
 
   http: ^1.2.1
   provider: ^6.1.2
+  image_picker: ^1.1.1
+  flutter_rating_bar: ^4.0.1
+  dotted_border: ^2.1.0
+  logger: ^2.3.0
 
 
 dev_dependencies:

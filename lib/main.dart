@@ -2,7 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:logger/logger.dart';
 
+//로거 사용법 하단 참조
+var logger = Logger(
+  printer: PrettyPrinter(),
+);
+
+var loggerNoStack = Logger(
+  printer: PrettyPrinter(methodCount: 0),
+);
+
+//메인 함수
 void main() async {
   // splash widgetBinding
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -30,3 +41,20 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+/* 
+로거 사용법 
+
+  logger.d('Log message with 2 methods');
+
+  loggerNoStack.i('Info message');
+
+  loggerNoStack.w('Just a warning!');
+
+  logger.e('Error! Something bad happened', 'Test Error');
+
+  loggerNoStack.v({'key': 5, 'value': 'something'});
+
+  Logger(printer: SimplePrinter(colors: true)).v('boom');
+
+*/
