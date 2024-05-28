@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -11,76 +12,14 @@ class ShowReview extends StatefulWidget {
   State<ShowReview> createState() => _ShowReviewState();
 }
 
+//사진 관련
 class _ShowReviewState extends State<ShowReview> {
   final ImagePicker _picker = ImagePicker();
   List<XFile> _pickedImgs = [];
   double _rating = 0;
   final TextEditingController _reviewController = TextEditingController();
 
-  Widget _addPhotoButton() {
-    return IconButton(
-      onPressed: () {
-        _pickImg();
-      },
-      icon: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.6),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.orange, width: 1),
-        ),
-        child: Icon(
-          CupertinoIcons.camera,
-          color: Colors.orange,
-          size: 30,
-        ),
-      ),
-    );
-  }
-
-  void _resetReview() {
-    setState(() {
-      _pickedImgs = [];
-      _rating = 0;
-      _reviewController.clear();
-    });
-  }
-
-  Future<void> _showConfirmationDialog(BuildContext context) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('리뷰 작성을 종료하시겠습니까?'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('저장된 정보가 전부 사라집니다!'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('아니오'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('네'),
-              onPressed: () {
-                _resetReview();
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
+//여기서 부터 화면
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -99,136 +38,152 @@ class _ShowReviewState extends State<ShowReview> {
                 isScrollControlled: true,
                 context: context,
                 builder: (context) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.75,
-                    child: Container(
-                      margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                "방문 후기를 알려주세요",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 30),
-                              ),
-                              Spacer(),
-                              IconButton(
-                                onPressed: () {
-                                  _showConfirmationDialog(context);
-                                },
-                                icon: Icon(CupertinoIcons.xmark,
-                                    color: Colors.black, size: 30),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          //별점 RatingBar
-                          Row(
-                            children: [
-                              RatingBar.builder(
-                                minRating: 0.5,
-                                direction: Axis.horizontal,
-                                allowHalfRating: true,
-                                glowRadius: 1,
-                                glow: false,
-                                itemPadding: EdgeInsets.zero,
-                                itemSize: 60,
-                                itemBuilder: (context, _) => Icon(
-                                  Icons.star,
-                                  color: Color(0xffF15A2B),
+                  return StatefulBuilder(
+                      builder: (BuildContext context, StateSetter _setState) {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.65,
+                      child: Container(
+                        margin: EdgeInsets.only(top: 20, left: 20, right: 20),
+                        child: Column(
+                          children: [
+                            //상단 1
+                            Row(
+                              children: [
+                                Text(
+                                  "방문 후기를 알려주세요",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 30),
                                 ),
-                                onRatingUpdate: (rating) {
-                                  setState(() {
-                                    _rating = rating;
-                                    print(rating);
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          //사진 첨부 텍스트
-                          Row(
-                            children: [
-                              Text(
-                                "사진 첨부",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                              Text(" 최대 3개까지 선택 가능해요"),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          // 사진 첨부 버튼과 이미지 미리보기
-                          Row(
-                            children: List.generate(
-                              3,
-                              (index) => Container(
-                                margin: EdgeInsets.all(5),
-                                width: 80,
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                      color: index < _pickedImgs.length
-                                          ? Colors.transparent
-                                          : Colors.white70,
-                                      width: 1),
-                                  image: index < _pickedImgs.length
-                                      ? DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: FileImage(
-                                            File(_pickedImgs[index].path),
-                                          ),
-                                        )
+                                Spacer(),
+                                IconButton(
+                                  onPressed: () {
+                                    _showConfirmationDialog(context);
+                                  },
+                                  icon: Icon(CupertinoIcons.xmark,
+                                      color: Colors.black, size: 30),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            //별점 RatingBar //상단 2
+                            Row(
+                              children: [
+                                RatingBar.builder(
+                                  minRating: 0.5,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: true,
+                                  glowRadius: 1,
+                                  glow: false,
+                                  itemPadding: EdgeInsets.zero,
+                                  itemSize: 60,
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star,
+                                    color: Color(0xffF15A2B),
+                                  ),
+                                  onRatingUpdate: (rating) {
+                                    setState(() {
+                                      _rating = rating;
+                                      print(rating);
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            //사진 첨부 텍스트 //상단 3
+                            Row(
+                              children: [
+                                Text(
+                                  "사진 첨부",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(" 최대 3개까지 선택 가능해요"),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            // 사진 첨부 버튼과 이미지 미리보기 //상단 4
+                            Row(
+                              children: List.generate(
+                                3,
+                                (index) => Container(
+                                  margin: EdgeInsets.all(5),
+                                  width: 80,
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                        color: index < _pickedImgs.length
+                                            ? Colors.transparent
+                                            : Colors.white70,
+                                        width: 1),
+                                    image: index < _pickedImgs.length
+                                        ? DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: FileImage(
+                                              File(_pickedImgs[index].path),
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                  child: index == _pickedImgs.length
+                                      ? _addPhotoButton(_setState)
                                       : null,
                                 ),
-                                child: index == _pickedImgs.length
-                                    ? _addPhotoButton()
-                                    : null,
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          //텍스트 필드 (200글자 이내로 작성해주세요!)
-                          SizedBox(
-                            height: 200,
-                            child: TextField(
-                              controller: _reviewController,
-                              maxLength: 200,
-                              maxLines: 4,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: '200 글자 이내로 적어주세요!',
+                            SizedBox(
+                              height: 20,
+                            ),
+                            //텍스트 필드 (200글자 이내로 작성해주세요!) //상단 5
+                            SizedBox(
+                              height: 200,
+                              child: TextField(
+                                controller: _reviewController,
+                                maxLength: 200,
+                                maxLines: 4,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: '200 글자 이내로 적어주세요!',
+                                ),
                               ),
                             ),
-                          ),
 
-                          //바닥에 리뷰 등록 버튼 (form전송)
-                          ElevatedButton(
-                            onPressed: () {
-                              // 리뷰 등록 버튼 로직
-                            },
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(double.infinity, 50),
+                            //바닥에 리뷰 등록 버튼 (form전송)
+                            ElevatedButton(
+                              onPressed: () {
+                                // 리뷰 등록 버튼 로직
+                              },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(double.infinity, 50),
+                              ),
+                              child: Text("리뷰 등록"),
                             ),
-                            child: Text("리뷰 등록"),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  });
                 },
               );
             },
-            child: Center(child: Text("리뷰 쓰러가기")),
+            child: Text(
+              '방문인증',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              minimumSize: Size(double.infinity, 40),
+              backgroundColor: Color(0xffF15A2B),
+            ),
           ),
           SizedBox(height: 15),
           SizedBox(height: 40),
@@ -296,8 +251,54 @@ class _ShowReviewState extends State<ShowReview> {
                       context: context,
                       builder: (context) {
                         return Container(
-                          height: 200,
-                          child: Center(child: Text('신고하기')),
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: Container(
+                            margin: EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text("리뷰 신고하기"),
+                                    Spacer(),
+                                    IconButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        icon: Icon(CupertinoIcons.xmark))
+                                  ],
+                                ),
+                                //버튼 모음
+                                Container(
+                                  child: Column(
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text("a"),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text("a"),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text("a"),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {},
+                                        child: Text("a"),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          //기타 누르면 텍스트 필드 나와야함
+                                        },
+                                        child: Text("기타"),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
                       },
                     );
@@ -315,15 +316,80 @@ class _ShowReviewState extends State<ShowReview> {
     );
   }
 
+  Widget _addPhotoButton(_setState) {
+    return IconButton(
+      onPressed: () {
+        _pickImg(_setState);
+      },
+      icon: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.6),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.orange, width: 1),
+        ),
+        child: Icon(
+          CupertinoIcons.camera,
+          color: Colors.orange,
+          size: 30,
+        ),
+      ),
+    );
+  }
+
+  void _resetReview() {
+    setState(() {
+      _pickedImgs = [];
+      _rating = 0;
+      _reviewController.clear();
+    });
+  }
+
+  //리뷰 컨펌
+  Future<void> _showConfirmationDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('리뷰 작성을 종료하시겠습니까?'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('저장된 정보가 전부 사라집니다!'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('아니오'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('네'),
+              onPressed: () {
+                _resetReview();
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   //이미지 가져오기
-  Future<void> _pickImg() async {
+  Future<void> _pickImg(_setState) async {
     final List<XFile>? images = await _picker.pickMultiImage(
       maxWidth: 500,
       maxHeight: 500,
       imageQuality: 85,
     );
     if (images != null) {
-      setState(() {
+      _setState(() {
         _pickedImgs = images.take(3).toList(); // 최대 3장까지 추가 가능
       });
     }
