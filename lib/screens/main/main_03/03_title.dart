@@ -11,7 +11,10 @@ class MainTitle extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text("제목"),
+            Text(
+              "A(가게이름 출력)",
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            ),
             Spacer(),
             IconButton(
                 onPressed: () {},
@@ -19,14 +22,14 @@ class MainTitle extends StatelessWidget {
                     color: Color(0xffF15A2B)))
           ],
         ),
-        Text("103M"),
+        Text("{A} M"),
         Row(
           children: [
             Icon(
               Icons.location_on_outlined,
               color: Color(0xffF15A2B),
             ),
-            Text("영업 가능성 높아요!")
+            Text("A(영업 가능성이 높아요!)")
           ],
         )
       ],

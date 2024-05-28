@@ -15,19 +15,24 @@ class MainPhoto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      color: Colors.amber,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: imageList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            margin: EdgeInsets.all(10), // 이미지 사이의 간격을 조정
-            color: Colors.black,
-            child: imageList[index], // 이미지 리스트에서 이미지를 가져옴
-          );
-        },
+    return GestureDetector(
+      //사진 페이지로 이동해야함
+      onTap: () => //Navigator.push,
+          print('hi'),
+      child: Container(
+        height: 120,
+        color: Colors.white,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: imageList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              width: 200,
+              margin: EdgeInsets.fromLTRB(20, 0, 10, 10), // 이미지 사이의 간격을 조정
+              child: imageList[index], // 이미지 리스트에서 이미지를 가져옴
+            );
+          },
+        ),
       ),
     );
   }
