@@ -1,6 +1,14 @@
+import 'package:dongpo_test/screens/login/kakao_login.dart';
 import 'package:flutter/material.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+
+import 'login_view_model.dart';
 
 void main() {
+  // runApp() 호출 전 Flutter SDK 초기화
+  KakaoSdk.init(
+    nativeAppKey: '24cd6ed6d20dc17c90517c9efde8254b',
+  );
   runApp(MyLoginApp());
 }
 
@@ -21,12 +29,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  Future<void> naverLogin() async { // naverLogin onTap
-
-  }
-  Future<void> kakaoLogin() async { // kakaoLogin onTap
-
-  }
+  final loginViewModel = LoginViewModel(KakaoLogin());
 
   @override
   Widget build(BuildContext context) {
@@ -51,12 +54,12 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.1,
             ),
+            // 소셜 로그인 - 네이버
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () {
-                  // 클릭 시 소셜로그인 url로 이동
-                  naverLogin();
+                  // naverLogin();
                 },
                 child: Container(
                   height: 44,
@@ -72,12 +75,15 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             SizedBox(height: 24),
+            // 소셜 로그인 - 카카오
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
-                onTap: () {
-                  // 클릭 시 소셜로그인 url로 이동
-                  kakaoLogin();
+                onTap: () async {
+                  await loginViewModel.kakaoLogin();
+                  setState(() {
+                    // 로그인 후 단순 화면 갱신
+                  });
                 },
                 child: Container(
                   height: 44,
@@ -90,6 +96,46 @@ class _LoginPageState extends State<LoginPage> {
                     'assets/images/login_kakao.png',
                   ),
                 ),
+              ),
+            ),
+            SizedBox(height: 24),
+            // 로그아웃
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: InkWell(
+                onTap: () async {
+                  await loginViewModel.logout();
+                  setState(() {
+                    // 로그아웃 후 단순 화면 갱신
+                  });
+                },
+                child: Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF15A2B),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Logout',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 24),
+            Text(
+              'login test : ${loginViewModel.isLogined}',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white
               ),
             ),
           ],

@@ -26,9 +26,9 @@ class _MyPageState extends State<MyPage> {
         child: Column(
           children: [
             Container(
-              height: 400, // 예시: 높이 설정 (필요에 따라 조정)
+              height: MediaQuery.of(context).size.height * 0.5, // 예시: 높이 설정 (필요에 따라 조정)
               color: Color(0xFFF4F4F4),
-              padding: EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+              padding: EdgeInsets.only(top: 24, left: 24, right: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
                 children: [
@@ -37,9 +37,9 @@ class _MyPageState extends State<MyPage> {
                       // 프로필 사진
                       CircleAvatar(
                         radius: 64,
-                        backgroundImage: AssetImage('assets/images/profile_img3.png'),
+                        backgroundImage: AssetImage('assets/images/profile_img1.jpg'),
                       ),
-                      SizedBox(height: 16), // 간격 조정
+                      SizedBox(width: 24), // 간격 조정
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
@@ -78,23 +78,28 @@ class _MyPageState extends State<MyPage> {
                     ],
                   ),
 
-                  SizedBox(height: 16), // 간격 조정
+                  SizedBox(height: 40), // 간격 조정
 
-                  // 프로필 편집 버튼
-                  OutlinedButton(
-                    onPressed: () {
-                      // 프로필 편집 페이지 이동
-                    },
-                    child: Text(
-                      '프로필 편집',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF767676),
+                  Container(
+                    height: 44,
+                    width: double.infinity,
+                    // 프로필 편집 버튼
+                    child:  OutlinedButton(
+                      onPressed: () {
+                        // 프로필 편집 페이지 이동
+                      },
+                      child: Text(
+                        '프로필 편집',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF767676),
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(height: 16), // 간격 조정
+
+                  SizedBox(height: 64), // 간격 조정
 
                   // 등록한 가게, 칭호, 선물함
                   Row(
@@ -133,7 +138,34 @@ class _MyPageState extends State<MyPage> {
                 ],
               ),
             ),
-
+            // 내 칭호, 내가 쓴 리뷰, 북마크한 가게, 선물함?
+            // 내 칭호 버튼
+            SizedBox(
+              height: 44, // 버튼의 높이를 44로 설정
+              child: TextButton(
+                onPressed: () {
+                  // 내 칭호 페이지로 이동하는 코드
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start, // 아이콘과 텍스트를 중앙에 배치
+                  children: [
+                    Text(
+                      '내 칭호',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    Icon(
+                      Icons.keyboard_arrow_right, // 예시 아이콘, 필요에 따라 변경
+                      color: Theme.of(context).primaryColor, // 아이콘 색상을 앱의 주 색상으로 설정
+                    ),
+                    SizedBox(width: 8), // 아이콘과 텍스트 사이의 간격
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:logger/logger.dart';
+
 
 //로거 사용법 하단 참조
 var logger = Logger(
@@ -15,6 +17,11 @@ var loggerNoStack = Logger(
 
 //메인 함수
 void main() async {
+  // runApp() 호출 전 Flutter SDK 초기화
+  KakaoSdk.init(
+    nativeAppKey: '24cd6ed6d20dc17c90517c9efde8254b',
+  );
+
   // splash widgetBinding
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   // splash 화면 시작
