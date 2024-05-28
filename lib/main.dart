@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         splashColor: Colors.transparent, // splash 효과 없애기
         highlightColor: Colors.transparent, // splash 효과 없애기
       ),
-      home: const MyAppPage(), // main_01.dart
+      home: const MyAppPage(), // bottom_navigation_bar.dart
     );
   }
 }

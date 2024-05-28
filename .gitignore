@@ -44,3 +44,6 @@ app.*.map.json
 
 # Hide API key
 api_key.dart
+
+# Hide login url
+login_url.dart

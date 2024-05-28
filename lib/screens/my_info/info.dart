@@ -22,10 +22,9 @@ class _MyPageState extends State<MyPage> {
           ),
         ),
       ),
-      body: SingleChildScrollView( // 스크롤 기능 추가
+      body: SingleChildScrollView( // 스크롤
         child: Column(
           children: [
-            // 1번째 영역
             Container(
               height: 400, // 예시: 높이 설정 (필요에 따라 조정)
               color: Color(0xFFF4F4F4),
@@ -134,6 +133,7 @@ class _MyPageState extends State<MyPage> {
                 ],
               ),
             ),
+
           ],
         ),
       ),
