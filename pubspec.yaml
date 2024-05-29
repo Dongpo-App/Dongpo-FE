@@ -48,6 +48,7 @@ dependencies:
   dotted_border: ^2.1.0
   logger: ^2.3.0
   dio: ^5.4.3+1
+  url_launcher: ^6.2.6
 
 
 dev_dependencies:

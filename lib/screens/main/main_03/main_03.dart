@@ -6,15 +6,18 @@ import 'package:dongpo_test/screens/main/main_03/03_photo_List.dart';
 import 'package:dongpo_test/screens/main/main_03/03_review.dart';
 import 'package:dongpo_test/screens/main/main_03/03_title.dart';
 import 'package:dongpo_test/screens/main/main_03/03_user_action.dart';
-import 'package:dongpo_test/screens/main/main_03/main.dangol.dart';
+import 'package:dongpo_test/screens/main/main_03/03_dangol.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:logger/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 final dio = Dio();
-//메인 함수
+final logger = Logger();
+
 void main() async {
   // splash widgetBinding
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +25,7 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await reset_map();
+
   runApp(const MyApp());
 }
 

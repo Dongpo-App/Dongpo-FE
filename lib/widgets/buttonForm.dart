@@ -6,6 +6,24 @@ import 'package:flutter/material.dart';
 화면을 구성하는 큰 Container 에 Padding을 주어서 사이즈를 줄임 
 */
 
+ElevatedButton _standardBtn() {
+  return ElevatedButton(
+    onPressed: () {
+      //버튼 등록 로직
+    },
+    style: ElevatedButton.styleFrom(
+      minimumSize: Size(double.infinity, 50),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      backgroundColor: Color(0xffF15A2B),
+    ),
+    child: Text(
+      "버튼 텍스트",
+      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+    ),
+  );
+}
+
 ButtonStyle _btnStyle() {
   return ButtonStyle(
     // 버튼의 가로 크기를 최대로 설정
