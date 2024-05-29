@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
         children: <Widget>[
           ElevatedButton(
             onPressed: login, // 버튼을 누르면 로그인을 시도하여 JWT 토큰을 받아옴
-            child: Text('Login'),
+            child: Text('login'),
           ),
           ElevatedButton(
             onPressed: fetchJumphos, // 버튼을 누르면 데이터를 가져옴

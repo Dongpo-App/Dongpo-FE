@@ -135,8 +135,12 @@ class _MainPageState extends State<MainPage>
                     marker.setIcon(customMarker);
 
                     marker.setOnTapListener((overlay) {
+                      //마커 아이콘 바뀌기
                       marker.setIcon(clickedMaker);
                       controller.addOverlay(marker);
+
+                      //마커 있는 위치로 화면 전환
+                      //하단에 Container 올라와서 가게상세 페이지 연동
                       logger.d('마커 동작');
                     });
 

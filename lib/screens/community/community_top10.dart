@@ -83,8 +83,12 @@ class CommunityTop10PageState extends State<CommunityTop10Page> {
           onPressed: () {
             Navigator.pop(context); //뒤로가기
           },
-          color: Color(0xFF767676),
-          icon: Icon(Icons.arrow_back)),
+          icon: Icon(
+            Icons.chevron_left,
+            size: 24,
+            color: Color(0xFF767676),
+          )
+        ),
       ),
 
       body: ListView.builder(
@@ -130,13 +134,9 @@ class Top10CardWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              ClipOval(
-                child: Image.asset(
-                  top10Data.memberProfile,
-                  width: 48,
-                  height: 48,
-                  fit: BoxFit.cover,
-                ),
+              CircleAvatar(
+                radius: 24,
+                backgroundImage: AssetImage(top10Data.memberProfile),
               ),
               SizedBox(width: 16.0),
               Expanded(
