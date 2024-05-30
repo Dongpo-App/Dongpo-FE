@@ -1,8 +1,11 @@
 import 'package:dongpo_test/screens/login/kakao_login.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
+import '../../main.dart';
 import 'login_view_model.dart';
+
 
 void main() {
   // runApp() 호출 전 Flutter SDK 초기화
@@ -106,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                 onTap: () async {
                   await loginViewModel.logout();
                   setState(() {
-                    // 로그아웃 후 단순 화면 갱신
+                     // 로그아웃 후 단순 화면 갱신
                   });
                 },
                 child: Container(

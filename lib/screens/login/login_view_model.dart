@@ -9,7 +9,7 @@ class LoginViewModel {
   LoginViewModel(this._socialLogin);
 
   Future kakaoLogin() async {
-    isLogined = await _socialLogin.kakaoLogin();
+    isLogined = await _socialLogin.isKakaoLogin();
     if (isLogined) {
       // 카카오 로그인이 성공함
       logger.d("Login Success");
@@ -19,7 +19,7 @@ class LoginViewModel {
   }
 
   Future logout() async {
-    await _socialLogin.logout();
+    await _socialLogin.isLogout();
     isLogined = false;
   }
 }

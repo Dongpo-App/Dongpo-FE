@@ -5,7 +5,7 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 class KakaoLogin implements SocialLogin{
   @override
-  Future<bool> kakaoLogin() async {
+  Future<bool> isKakaoLogin() async {
     try {
       // 카카오톡 실행 가능 여부 확인
       bool isInstalled = await isKakaoTalkInstalled();
@@ -41,7 +41,7 @@ class KakaoLogin implements SocialLogin{
   }
 
   @override
-  Future<bool> logout() async{
+  Future<bool> isLogout() async{
     try {
       // logout 실행 코드. SDK에서 토큰 삭제
       await UserApi.instance.unlink();
