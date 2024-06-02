@@ -1,14 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:dongpo_test/login_url.dart';
+//import 'package:dongpo_test/login_url.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert'; // JSON 변환을 위해 import
 import 'package:http/http.dart' as http; // HTTP 요청을 위해 import
 
 import '../../main.dart';
 import 'package:dongpo_test/models/login_data.dart';
-
 
 void main() {
   runApp(MyLoginApp());
@@ -93,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
               child: InkWell(
                 onTap: () {
                   // 클릭 시 소셜로그인 url로 이동
-                  naverLogin(naverLoginUrl);
+                  //  naverLogin(naverLoginUrl);
                 },
                 child: Container(
                   height: 44,
@@ -127,4 +126,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-

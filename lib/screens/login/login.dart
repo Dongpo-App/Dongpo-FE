@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dongpo_test/login_url.dart';
+//import 'package:dongpo_test/login_url.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 void main() {
   runApp(MyLoginApp());
@@ -24,11 +23,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  Future<void> naverLogin(String url) async { // naverLogin onTap
-
+  Future<void> naverLogin(String url) async {
+    // naverLogin onTap
   }
-  Future<void> kakaoLogin(String url) async { // kakaoLogin onTap
-
+  Future<void> kakaoLogin(String url) async {
+    // kakaoLogin onTap
   }
 
   @override
@@ -59,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
               child: InkWell(
                 onTap: () {
                   // 클릭 시 소셜로그인 url로 이동
-                  naverLogin(naverLoginUrl);
+                  //          naverLogin(naverLoginUrl);
                 },
                 child: Container(
                   height: 44,
@@ -80,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
               child: InkWell(
                 onTap: () {
                   // 클릭 시 소셜로그인 url로 이동
-                  kakaoLogin(naverLoginUrl);
+                  //     kakaoLogin(naverLoginUrl);
                 },
                 child: Container(
                   height: 44,

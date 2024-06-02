@@ -1,141 +1,69 @@
-// main.dart
 import 'package:flutter/material.dart';
-import 'package:dongpo_test/models/pocha.dart';
-import 'dart:convert'; // JSON 변환을 위해 import
-import 'package:http/http.dart' as http; // HTTP 요청을 위해 import
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter JWT Example',
-      home: HomePage(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Simple Time Picker Example'),
+        ),
+        body: const Center(
+          child: SimpleTimePickerWidget(),
+        ),
+      ),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
+class SimpleTimePickerWidget extends StatefulWidget {
+  const SimpleTimePickerWidget({super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  _SimpleTimePickerWidgetState createState() => _SimpleTimePickerWidgetState();
 }
 
-class _HomePageState extends State<HomePage> {
-  String? _jwtToken; // JWT 토큰을 저장할 변수
-  List<Jumpho> _jumphos = []; // Jumpho 객체들을 저장할 리스트
+class _SimpleTimePickerWidgetState extends State<SimpleTimePickerWidget> {
+  String _selectedTime = '시간을 선택하세요';
 
-  // 로그인 요청을 보내 JWT 토큰을 받아오는 함수
-  Future<void> login() async {
-    final response = await http.post(
-      Uri.parse('https://example.com/api/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: json
-          .encode({'username': 'your_username', 'password': 'your_password'}),
-    );
-
-    // 응답이 성공적이면 (200 OK)
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      setState(() {
-        _jwtToken = responseData['token']; // 응답에서 JWT 토큰을 저장
-      });
-    } else {
-      throw Exception('Failed to login');
-    }
-  }
-
-  // JWT 토큰을 사용하여 REST API로부터 데이터를 받아오는 함수
-  Future<void> fetchJumphos() async {
-    final response = await http.get(
-      Uri.parse('https://example.com/api/jumphos'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_jwtToken', // JWT 토큰을 Authorization 헤더에 포함
+  void _showTimePicker() {
+    DatePicker.showTime12hPicker(
+      context,
+      showTitleActions: true,
+      onConfirm: (time) {
+        setState(() {
+          final hour = time.hour == 0 ? 12 : time.hour;
+          final period = time == DayPeriod.am ? '오전' : '오후';
+          _selectedTime = '$period $hour시';
+        });
       },
+      currentTime: DateTime.now(),
+      locale: LocaleType.ko,
     );
-
-    // 응답이 성공적이면 (200 OK)
-    if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.body); // JSON 데이터를 디코드
-      setState(() {
-        // 디코드된 JSON 데이터를 Jumpho 객체로 변환하여 리스트에 저장
-        _jumphos = jsonResponse.map((data) => Jumpho.fromJson(data)).toList();
-      });
-    } else {
-      throw Exception('Failed to load Jumphos');
-    }
-  }
-
-  // 데이터를 JSON으로 변환하여 POST 요청 보내는 함수
-  Future<void> sendJumpho(Jumpho jumpho) async {
-    final response = await http.post(
-      Uri.parse('https://example.com/api/jumphos'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $_jwtToken', // JWT 토큰을 Authorization 헤더에 포함
-      },
-      body: json.encode(jumpho.toJson()), // Jumpho 객체를 JSON으로 변환하여 body에 포함
-    );
-
-    if (response.statusCode == 201) {
-      print('Jumpho created successfully');
-    } else {
-      throw Exception('Failed to create Jumpho');
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter JWT Example'),
-      ),
-      body: Column(
-        children: <Widget>[
-          ElevatedButton(
-            onPressed: login, // 버튼을 누르면 로그인을 시도하여 JWT 토큰을 받아옴
-            child: Text('login'),
-          ),
-          ElevatedButton(
-            onPressed: fetchJumphos, // 버튼을 누르면 데이터를 가져옴
-            child: Text('Load Jumphos'),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _jumphos.length, // 리스트의 아이템 개수
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title:
-                      Text(_jumphos[index].name ?? 'Unknown'), // Jumpho의 이름 출력
-                  subtitle: Text(_jumphos[index].location ??
-                      'No location'), // Jumpho의 위치 출력
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // 예시 Jumpho 객체 생성
-          Jumpho newJumpho = Jumpho(
-            name: 'New Jumpho',
-            location: 'Seoul',
-            openTime: '09:00',
-            closeTime: '18:00',
-            memberId: 1,
-            status: 'Open',
-            operatingDays: ['Monday', 'Tuesday'],
-            payMethods: ['Cash', 'Card'],
-            toiletValid: true,
-          );
-          sendJumpho(newJumpho); // 새 Jumpho 데이터를 서버에 전송
-        },
-        child: Icon(Icons.add),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          _selectedTime,
+          style: const TextStyle(fontSize: 24),
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton(
+          onPressed: _showTimePicker,
+          child: const Text('시간 선택하기'),
+        ),
+      ],
     );
   }
 }

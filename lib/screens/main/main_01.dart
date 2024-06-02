@@ -183,7 +183,7 @@ class _MainPageState extends State<MainPage>
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
-                        return SearchPage();
+                        return AddressSearchPage();
                       }));
                     },
                     child: Container(
@@ -433,7 +433,7 @@ class _MainPageState extends State<MainPage>
       NCameraUpdate.fromCameraPosition(
         NCameraPosition(
           target: NLatLng(position.latitude, position.longitude),
-          zoom: 14,
+          zoom: 16,
         ),
       ),
     );
