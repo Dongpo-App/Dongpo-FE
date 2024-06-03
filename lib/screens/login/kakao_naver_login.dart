@@ -4,6 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 
+import 'login_platform.dart';
+
+
 class KakaoNaverLogin implements SocialLogin{
   @override
   Future<bool> isKakaoLogin() async {
@@ -44,17 +47,6 @@ class KakaoNaverLogin implements SocialLogin{
   }
 
   @override
-  Future<bool> isKakaoLogout() async{
-    try {
-      // logout 실행 코드. SDK에서 토큰 삭제
-      await UserApi.instance.unlink();
-      return true;
-    } catch (error){
-      return false;
-    }
-  }
-
-  @override
   Future<bool> isNaverLogin() async {
     NaverLoginResult result;
     try {
@@ -70,14 +62,32 @@ class KakaoNaverLogin implements SocialLogin{
   }
 
   @override
-  Future<bool> isNaverLogout() async {
-    try {
-      await FlutterNaverLogin.logOut();
-      return true;
-    } catch (e) {
-      logger.d("naver logout error : ${e}");
-      return false;
+  Future<bool> isLogout(LoginPlatform loginPlatform) async {
+    switch(loginPlatform) {
+      case LoginPlatform.kakao:
+        try {
+          // logout 실행 코드. SDK에서 토큰 삭제
+          await UserApi.instance.unlink();
+          logger.d("${loginPlatform} : logout");
+          return true;
+        } catch (e){
+          logger.d("kakao logout error : ${e}");
+          return false;
+        }
+      case LoginPlatform.naver:
+        try {
+          await FlutterNaverLogin.logOut();
+          logger.d("${loginPlatform} : logout");
+          return true;
+        } catch (e) {
+          logger.d("naver logout error : ${e}");
+          return false;
+        }
+
+      case LoginPlatform.none:
+        logger.d("login Platform none!");
+        return true;
+
     }
   }
-
 }
