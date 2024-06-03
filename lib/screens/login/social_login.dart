@@ -1,5 +1,9 @@
 abstract class SocialLogin{
   Future<bool> isKakaoLogin();
 
-  Future<bool> isLogout();
+  Future<bool> isNaverLogin();
+
+  Future<bool> isKakaoLogout();
+
+  Future<bool> isNaverLogout();
 }

@@ -1,4 +1,4 @@
-import 'package:dongpo_test/screens/login/kakao_login.dart';
+import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -32,7 +32,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final loginViewModel = LoginViewModel(KakaoLogin());
+  final loginViewModel = LoginViewModel(KakaoNaverLogin());
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +61,11 @@ class _LoginPageState extends State<LoginPage> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
-                onTap: () {
-                  // naverLogin();
+                onTap: () async {
+                  await loginViewModel.naverLogin();
+                  setState(() {
+                    // 로그인 후 단순 화면 갱신
+                  });
                 },
                 child: Container(
                   height: 44,
@@ -102,12 +105,12 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             SizedBox(height: 24),
-            // 로그아웃
+            // 로그아웃 - 카카오
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  await loginViewModel.logout();
+                  await loginViewModel.kakakLogout();
                   setState(() {
                      // 로그아웃 후 단순 화면 갱신
                   });
@@ -122,7 +125,39 @@ class _LoginPageState extends State<LoginPage> {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      'Logout',
+                      'Logout - kakao',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 24),
+            // 로그아웃 - 네이버
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: InkWell(
+                onTap: () async {
+                  await loginViewModel.naverLogout();
+                  setState(() {
+                    // 로그아웃 후 단순 화면 갱신
+                  });
+                },
+                child: Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF15A2B),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Logout - naver',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
