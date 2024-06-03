@@ -21,35 +21,81 @@ class GageJungbo extends StatelessWidget {
             height: 20,
           ),
           Container(
+            height: 160,
             padding: EdgeInsets.all(15),
             decoration: BoxDecoration(
-                color: Colors.orange, borderRadius: BorderRadius.circular(8.0)),
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8.0)),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Row(
                   children: [
-                    Text('오픈 요일 '),
+                    Text(
+                      '오픈 요일 ',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
                     Spacer(),
                     Text('data'),
                   ],
                 ),
                 Row(
                   children: [
-                    Text('오픈 시간 '),
+                    Text(
+                      '오픈 시간 ',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
                     Spacer(),
                     Text('data'),
                   ],
                 ),
                 Row(
-                  children: [Text('결제 방식 '), Spacer(), Text('data')],
+                  children: [
+                    Text(
+                      '결제 방식 ',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    Spacer(),
+                    Text('data')
+                  ],
                 ),
                 Row(
-                  children: [Text('화장실 '), Spacer(), Text("data")],
+                  children: [
+                    Text(
+                      '화장실 ',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                    Spacer(),
+                    Text("data")
+                  ],
                 ),
               ],
             ),
           ),
-          ElevatedButton(onPressed: () {}, child: Text('가게 정보 수정하기'))
+          Container(
+            margin: EdgeInsets.only(top: 30),
+            child: ElevatedButton(
+              onPressed: () {
+                //가게 정보 수정하기
+                //등록할 때 꺼 들거오면 될듯
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 45),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                backgroundColor: Color(0xffF15A2B),
+              ),
+              child: Text(
+                "가게정보 수정하기",
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+          )
         ],
       ),
     );

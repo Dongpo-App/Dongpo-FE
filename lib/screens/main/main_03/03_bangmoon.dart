@@ -135,7 +135,7 @@ class SecondPage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      //방문 성공 컨테이너
+                      //방문 성공 버튼
                       Container(
                         padding: EdgeInsets.all(10.0),
                         margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
@@ -160,7 +160,7 @@ class SecondPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                      //방문 실패 컨테이너
+                      // 방문 실패 버튼
                       Container(
                         padding: EdgeInsets.all(10.0),
                         margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
