@@ -1,7 +1,6 @@
 import 'package:dongpo_test/screens/login/social_login.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-import '../../main.dart';
+import 'package:dongpo_test/main.dart';
 import 'login_platform.dart';
 
 class LoginViewModel {

@@ -1,17 +1,16 @@
 import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
-import 'package:dongpo_test/screens/login/login_platform.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-import '../../main.dart';
+import 'package:dongpo_test/api_key.dart';
 import 'login_view_model.dart';
 
 
 void main() {
   // runApp() 호출 전 Flutter SDK 초기화
   KakaoSdk.init(
-    nativeAppKey: '24cd6ed6d20dc17c90517c9efde8254b',
+    nativeAppKey: nativeAppKey,
   );
   runApp(MyLoginApp());
 }
