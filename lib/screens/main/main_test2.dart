@@ -1,53 +1,48 @@
-import 'dart:math';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
-    as picker;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
 
-void main() => runApp(new MyApp());
+// 데이터 모델 클래스
+class Post {
+  final int id;
+  final String title;
+  final String body;
+  final int userId;
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Flutter Demo',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: new HomePage(),
+  Post({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.userId,
+  });
+
+  factory Post.fromJson(Map<String, dynamic> json) {
+    return Post(
+      id: json['id'],
+      title: json['title'],
+      body: json['body'],
+      userId: json['userId'],
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Datetime Picker'),
-      ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            TextButton(
-                onPressed: () {
-                  picker.DatePicker.showTimePicker(context,
-                      showTitleActions: true, onChanged: (date) {
-                    print('change $date in time zone ' +
-                        date.timeZoneOffset.inHours.toString());
-                  }, onConfirm: (date) {
-                    print("${date.hour}:${date.minute}");
-                  }, currentTime: DateTime.now());
-                },
-                child: Text(
-                  'show time picker',
-                  style: TextStyle(color: Colors.blue),
-                )),
-          ],
-        ),
-      ),
-    );
+void main() async {
+  final posts = await fetchPostData();
+  posts.sort((a, b) => a.id.compareTo(b.id));
+
+  for (final post in posts) {
+    print('ID: ${post.id}, Title: ${post.title}');
+  }
+}
+
+Future<List<Post>> fetchPostData() async {
+  final response =
+      await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonData = jsonDecode(response.body);
+
+    return jsonData.map((json) => Post.fromJson(json)).toList();
+  } else {
+    throw Exception('Failed to fetch post data');
   }
 }

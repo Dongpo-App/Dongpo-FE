@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
     as picker;
+import 'package:http/http.dart' as http;
+import 'package:dongpo_test/screens/add/add_01.dart';
+import 'package:dongpo_test/main.dart';
 
 class GageAddSangsea extends StatefulWidget {
   const GageAddSangsea({super.key});
@@ -16,7 +19,11 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
   String openTime = '00:00';
   String closeTime = '00:00';
   int bathSelected = 0; //화장실 라디오 버튼
+  List<bool> _selectedDays = [false, false, false, false, false, false, false];
+  List<bool> _selectedPaymentMethods = [false, false, false];
 
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +81,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                   children: <Widget>[
                     SizedBox(width: 8.0),
                     Text(
-                      'A (주소 띄우기)',
+                      '${dataForm.sendAddress}',
                       style: TextStyle(fontSize: 20, color: Colors.grey[600]),
                     ),
                     Spacer(),
@@ -110,6 +117,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                   color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(10)),
               child: TextField(
+                controller: _nameController,
                 decoration: InputDecoration(
                   hintText: '가게 이름을 입력해주세요.',
                   border: InputBorder.none, // 밑줄 제거
@@ -135,6 +143,36 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                   style: TextStyle(color: Colors.grey[500]),
                 ),
               ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(7, (index) {
+                return GestureDetector(
+                  onTap: () => _onDayTapped(index),
+                  child: Container(
+                    margin: EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _selectedDays[index]
+                          ? Color(0xffF15A2B)
+                          : Colors.grey[300],
+                    ),
+                    width: 40.0,
+                    height: 50.0,
+                    child: Center(
+                      child: Text(
+                        ['일', '월', '화', '수', '목', '금', '토'][index],
+                        style: TextStyle(
+                          color: _selectedDays[index]
+                              ? Colors.white
+                              : Colors.black,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
             ),
             SizedBox(
               height: 30,
@@ -234,6 +272,36 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                 ),
               ],
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(3, (index) {
+                return GestureDetector(
+                  onTap: () => _onPaymentMethodTapped(index),
+                  child: Container(
+                    margin: EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: _selectedPaymentMethods[index]
+                          ? Color(0xffF15A2B)
+                          : Colors.grey[300],
+                    ),
+                    width: 110.0,
+                    height: 50.0,
+                    child: Center(
+                      child: Text(
+                        ['현금', '계좌이체', '카드'][index],
+                        style: TextStyle(
+                          color: _selectedPaymentMethods[index]
+                              ? Colors.white
+                              : Colors.black,
+                          fontSize: 18.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
 
             SizedBox(
               height: 30,
@@ -270,6 +338,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                       borderRadius: BorderRadius.all(Radius.circular(10)))),
               onPressed: () {
                 //가게 등록 로직 구현
+                sendData();
               },
               child: Text(
                 '가게등록',
@@ -280,6 +349,99 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
           ],
         ),
       ),
+    );
+  }
+
+  //오픈 요일
+  void _onDayTapped(int index) {
+    setState(() {
+      _selectedDays[index] = !_selectedDays[index];
+    });
+  }
+
+  List<String> _getSelectedDays() {
+    final List<String> days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    List<String> selectedDays = [];
+    for (int i = 0; i < _selectedDays.length; i++) {
+      if (_selectedDays[i]) {
+        selectedDays.add(days[i]);
+      }
+    }
+    return selectedDays;
+  }
+
+  //결제 방식
+  void _onPaymentMethodTapped(int index) {
+    setState(() {
+      _selectedPaymentMethods[index] = !_selectedPaymentMethods[index];
+    });
+  }
+
+  List<String> _getSelectedPaymentMethods() {
+    final List<String> paymentMethods = ['CASH', 'CARD', 'TRANSFER'];
+    List<String> selectedMethods = [];
+    for (int i = 0; i < _selectedPaymentMethods.length; i++) {
+      if (_selectedPaymentMethods[i]) {
+        selectedMethods.add(paymentMethods[i]);
+      }
+    }
+    return selectedMethods;
+  }
+
+  Future<void> sendData() async {
+    final data = {
+      'name': _nameController.text,
+      'address': dataForm.sendAddress,
+      'latitude': dataForm.sendLatitude, //latitude
+      'longitude': dataForm.sendLongitude, //longitude
+      'openTime': openTime,
+      'closeTime': closeTime,
+      'isToiletValid': bathSelected == 1,
+      'operatingDays': _getSelectedDays(),
+      'payMethods': _getSelectedPaymentMethods(),
+    };
+
+    final url = Uri.parse('https://dongpo-api-server.xyz');
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode(data);
+
+    final response = await http.post(url, headers: headers, body: body);
+    if (response.statusCode == 200) {
+      print('Data sent successfully');
+    } else {
+      print('Failed to send data');
+      logger.d(data);
+      //실패했을 떄
+      showAlertDialog(context);
+    }
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("확인"),
+      onPressed: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => MyAppPage()));
+      },
+    );
+
+    // set up the AlertDialog
+    // 완료되었을 때 Alert
+    AlertDialog alert = AlertDialog(
+      title: Text("등록 성공!"),
+      content: Text("가게가 성공적으로 등록 완료되었어요!"),
+      actions: [
+        Center(child: okButton),
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 

@@ -5,16 +5,6 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:logger/logger.dart';
 
-
-//로거 사용법 하단 참조
-var logger = Logger(
-  printer: PrettyPrinter(),
-);
-
-var loggerNoStack = Logger(
-  printer: PrettyPrinter(methodCount: 0),
-);
-
 //메인 함수
 void main() async {
   // runApp() 호출 전 Flutter SDK 초기화
@@ -49,6 +39,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
+var logger = Logger(
+  printer: PrettyPrinter(),
+);
+
+var loggerNoStack = Logger(
+  printer: PrettyPrinter(methodCount: 0),
+);
 /* 
 로거 사용법 
 
