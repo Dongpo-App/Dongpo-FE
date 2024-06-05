@@ -25,7 +25,8 @@ class KakaoNaverLogin implements SocialLogin{
           }
           try {
             kakaoToken = await UserApi.instance.loginWithKakaoAccount();
-            logger.d("kakao accessToken : ${kakaoToken.accessToken}");
+            logger.d("kakao login access Token : ${kakaoToken.accessToken}");
+            logger.d("kakao login refresh Token : ${kakaoToken.refreshToken}");
             return true;
           } catch (e) {
             return false;
@@ -35,7 +36,8 @@ class KakaoNaverLogin implements SocialLogin{
         try {
           // 카카오톡 어플이 없는 경우 -> 카카오 계정으로 로그인 유도
           kakaoToken = await UserApi.instance.loginWithKakaoAccount();
-          logger.d("kakao accessToken : ${kakaoToken.accessToken}");
+          logger.d("kakao login access Token : ${kakaoToken.accessToken}");
+          logger.d("kakao login refresh Token : ${kakaoToken.refreshToken}");
           return true;
         } catch (e) {
           return false;
@@ -53,7 +55,8 @@ class KakaoNaverLogin implements SocialLogin{
       // 네이버 로그인 시도
       result = await FlutterNaverLogin.logIn();
       NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
-      logger.d("naver login token : ${token.accessToken}");
+      logger.d("naver login access token : ${token.accessToken}");
+      logger.d("naver login refresh token : ${token.refreshToken}");
       return true;
     } catch (e) {
       logger.d("naver login error : ${e}");

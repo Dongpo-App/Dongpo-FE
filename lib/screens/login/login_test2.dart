@@ -1,6 +1,7 @@
 import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 import 'package:dongpo_test/api_key.dart';
@@ -33,6 +34,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final loginViewModel = LoginViewModel(KakaoNaverLogin());
+
+  static final storage = new FlutterSecureStorage(); //flutter_secure_storage 초기화 작업
 
   @override
   Widget build(BuildContext context) {

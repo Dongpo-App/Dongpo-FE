@@ -16,7 +16,6 @@ class LoginViewModel {
     if (isLogined) {
       // 카카오 로그인이 성공함
       loginPlatform = LoginPlatform.kakao;
-      logger.d("kakao login success");
     } else {
       logger.d("kakao login fail");
     }
@@ -27,14 +26,12 @@ class LoginViewModel {
     loginPlatform = LoginPlatform.naver;
     if(isLogined) {
       // 네이버 로그인 성공함
-      logger.d("naver login success");
     } else {
       logger.d("naver login fail");
     }
   }
 
   Future logout() async {
-    logger.d("${loginPlatform} is logout");
     isLogouted = await _socialLogin.isLogout(loginPlatform);
     if(isLogouted){
       // 로그아웃 성공
