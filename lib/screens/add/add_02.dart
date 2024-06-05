@@ -21,9 +21,39 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
   int bathSelected = 0; //화장실 라디오 버튼
   List<bool> _selectedDays = [false, false, false, false, false, false, false];
   List<bool> _selectedPaymentMethods = [false, false, false];
+  //버튼 활성화 비활성화를 위한 value값
+  int value = 0;
 
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(() {
+      _onTextFieldChanged();
+    });
+  }
+
+  void _onTextFieldChanged() {
+    if (_nameController.text.isNotEmpty) {
+      setState(() {
+        value = 1;
+      });
+    } else if (_nameController.text.isEmpty) {
+      setState(() {
+        value = 0;
+      });
+    } else
+      return null;
+  }
+
+  @override
+  void dispose() {
+    _nameController.removeListener(_onTextFieldChanged);
+    _nameController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -330,20 +360,23 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
 
             ElevatedButton(
               style: ElevatedButton.styleFrom(
+                  splashFactory: (value == 0)
+                      ? NoSplash.splashFactory
+                      : InkSplash.splashFactory,
                   //모두 동의했을 경우 버튼 활성화
                   backgroundColor:
-                      1 == 1 ? Color(0xffF15A2B) : Colors.grey[300],
+                      (value == 1) ? Color(0xffF15A2B) : Colors.grey[300],
                   minimumSize: Size(double.infinity, 40),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)))),
               onPressed: () {
                 //가게 등록 로직 구현
-                sendData();
+                (value == 0) ? null : sendData();
               },
               child: Text(
                 '가게등록',
-                style:
-                    TextStyle(color: 1 == 1 ? Colors.white : Colors.grey[700]),
+                style: TextStyle(
+                    color: (value == 1) ? Colors.white : Colors.grey[700]),
               ),
             ),
           ],
@@ -418,8 +451,12 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
 
   showAlertDialog(BuildContext context) {
     // set up the button
-    Widget okButton = TextButton(
-      child: Text("확인"),
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(backgroundColor: Color(0xffF15A2B)),
+      child: Text(
+        "확인",
+        style: TextStyle(color: Colors.white),
+      ),
       onPressed: () {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => MyAppPage()));
@@ -429,6 +466,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
     // set up the AlertDialog
     // 완료되었을 때 Alert
     AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
       title: Text("등록 성공!"),
       content: Text("가게가 성공적으로 등록 완료되었어요!"),
       actions: [
@@ -438,6 +476,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
 
     // show the dialog
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return alert;

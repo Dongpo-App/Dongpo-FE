@@ -1,3 +1,4 @@
+import 'package:dongpo_test/api_key.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
@@ -9,7 +10,7 @@ import 'package:logger/logger.dart';
 void main() async {
   // runApp() 호출 전 Flutter SDK 초기화
   KakaoSdk.init(
-    nativeAppKey: '24cd6ed6d20dc17c90517c9efde8254b',
+    nativeAppKey: nativeAppKey,
   );
 
   // splash widgetBinding
