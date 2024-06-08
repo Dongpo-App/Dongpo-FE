@@ -149,7 +149,7 @@ class _StoreInfoState extends State<StoreInfo> {
                   });
             },
             icon: Icon(
-              Icons.warning_amber_sharp,
+              Icons.warning_rounded,
               color: Colors.redAccent,
             ),
           )

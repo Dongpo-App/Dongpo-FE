@@ -6,6 +6,22 @@ import 'package:geolocator/geolocator.dart'; // 위치 정보를 얻기 위해 �
 import 'package:http/http.dart' as http; // HTTP 요청을 보내기 위해 사용
 import 'package:dongpo_test/api_key.dart'; // API 키를 저장한 파일을 가져오기 위해 사용
 import 'dart:developer'; // 디버깅을 위해 로그를 남기기 위해 사용
+import 'package:dongpo_test/main.dart';
+
+//등록페이지로 주소하고 위도 경도 넘기기위한 클래스
+class DataForm {
+  String sendAddress;
+  double sendLatitude;
+  double sendLongitude;
+
+  DataForm({
+    required this.sendAddress,
+    required this.sendLatitude,
+    required this.sendLongitude,
+  });
+}
+
+late DataForm dataForm;
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -17,6 +33,7 @@ class AddPage extends StatefulWidget {
 // NaverMapController와 ValueNotifier를 전역으로 선언
 late NaverMapController _mapController;
 late ValueNotifier<String> _addressNotifier;
+String _address = '';
 
 class _AddPageState extends State<AddPage> {
   bool _isCameraMoving = false; // 카메라 이동 상태를 추적하기 위한 변수
@@ -24,6 +41,7 @@ class _AddPageState extends State<AddPage> {
   @override
   void initState() {
     super.initState();
+
     // 주소를 저장할 ValueNotifier 초기화
     _addressNotifier = ValueNotifier<String>('주소를 불러오는 중...');
   }
@@ -167,10 +185,11 @@ class _AddPageState extends State<AddPage> {
                                     fontSize: 20, color: Colors.white),
                               ),
                               onPressed: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return GageAddSangsea();
-                                }));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            GageAddSangsea()));
                               },
                             ),
                           ),
@@ -195,6 +214,7 @@ class _AddPageState extends State<AddPage> {
       final latLng = position.target;
       final address = await _reverseGeocode(latLng);
       _addressNotifier.value = address; // 주소 업데이트
+      _address = address;
     }
   }
 
@@ -211,10 +231,19 @@ class _AddPageState extends State<AddPage> {
       if (data['documents'].isNotEmpty) {
         // 도로명 주소가 있는 경우 반환
         if (data['documents'][0]['road_address'] != null) {
+          dataForm = DataForm(
+              sendAddress: data['documents'][0]['road_address']['address_name'],
+              sendLatitude: latLng.latitude,
+              sendLongitude: latLng.longitude);
+
           return data['documents'][0]['road_address']['address_name'];
         }
         // 도로명 주소가 없는 경우 지번 주소 반환
         else if (data['documents'][0]['address'] != null) {
+          dataForm = DataForm(
+              sendAddress: data['documents'][0]['address']['address_name'],
+              sendLatitude: latLng.latitude,
+              sendLongitude: latLng.longitude);
           return data['documents'][0]['address']['address_name'];
         }
       }
@@ -236,23 +265,6 @@ Future<void> reset_map() async {
   await NaverMapSdk.instance.initialize(
       clientId: naverApiKey,
       onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
-}
-
-void main() async {
-  // 앱 시작 전 맵 초기화
-  await reset_map();
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: AddPage(),
-    );
-  }
 }
 
 void _onMapReady(NaverMapController controller) {

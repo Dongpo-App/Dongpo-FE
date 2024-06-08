@@ -62,5 +62,18 @@
 			<string>https</string>
 			<string>http</string>
 		</array>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<!-- common -->
+			<string>kakao${native_app_key_here}</string>
+
+			<!-- KakaoTalk login -->
+			<string>kakaokompassauth</string>
+			<string>storykompassauth</string>
+
+			<!-- KakaoLink -->
+			<string>kakaolink</string>         
+			<string>kakaotalk-5.9.7</string>
+		</array>
 	</dict>
 </plist>
