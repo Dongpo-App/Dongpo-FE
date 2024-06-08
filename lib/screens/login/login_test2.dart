@@ -51,6 +51,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final loginViewModel = LoginViewModel(KakaoNaverLogin());
+  bool isLogined = false;
+  bool isLogouted = false;
 
   // FlutterSecureStorage
   static final storage = new FlutterSecureStorage(); //flutter_secure_storage 초기화 작업
@@ -106,12 +108,19 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  await loginViewModel.naverLogin();
-                  // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
-                  await storage.write(key: 'accessToken', value: loginViewModel.accessToken);
-                  await storage.write(key: 'refreshToken', value: loginViewModel.refreshToken);
-                  Map<String, String> allData = await storage.readAll();
-                  logger.d("secure storage naver read : ${allData}");
+                  isLogined = await loginViewModel.naverLogin();
+                  if (isLogined){
+                    // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
+                    await storage.write(key: 'accessToken', value: loginViewModel.accessToken);
+                    await storage.write(key: 'refreshToken', value: loginViewModel.refreshToken);
+                    Map<String, String> allData = await storage.readAll();
+                    logger.d("secure storage naver read : ${allData}");
+                    // 메인페이지로 이동
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) =>
+                            MyAppPage()
+                    ));
+                  }
                   setState(() {
                     // 로그인 후 단순 화면 갱신
                   });
@@ -135,12 +144,19 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  await loginViewModel.kakaoLogin();
-                  // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
-                  await storage.write(key: 'accessToken', value: loginViewModel.accessToken);
-                  await storage.write(key: 'refreshToken', value: loginViewModel.refreshToken);
-                  Map<String, String> allData = await storage.readAll();
-                  logger.d("secure storage kakao read : ${allData}");
+                  isLogined = await loginViewModel.kakaoLogin();
+                  if (isLogined){
+                    // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
+                    await storage.write(key: 'accessToken', value: loginViewModel.accessToken);
+                    await storage.write(key: 'refreshToken', value: loginViewModel.refreshToken);
+                    Map<String, String> allData = await storage.readAll();
+                    logger.d("secure storage kakao read : ${allData}");
+                    // 메인페이지로 이동
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (context) =>
+                            MyAppPage()
+                    ));
+                  }
                   setState(() {
                     // 로그인 후 단순 화면 갱신
                   });
@@ -164,14 +180,16 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  await loginViewModel.logout();
-                  // FlutterSecureStorage에 있는 token 삭제
-                  await storage.delete(key: 'accessToken');
-                  await storage.delete(key: 'refreshToken');
-                  Map<String, String> allData = await storage.readAll();
-                  logger.d("secure storage delete read : ${allData}");
+                  isLogouted = await loginViewModel.logout();
+                  if (isLogouted) {
+                    // FlutterSecureStorage에 있는 token 삭제
+                    await storage.delete(key: 'accessToken');
+                    await storage.delete(key: 'refreshToken');
+                    Map<String, String> allData = await storage.readAll();
+                    logger.d("secure storage delete read : ${allData}");
+                  }
                   setState(() {
-                     // 로그아웃 후 단순 화면 갱신
+                    // 로그아웃 후 단순 화면 갱신
                   });
                 },
                 child: Container(

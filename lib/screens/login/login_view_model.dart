@@ -17,40 +17,46 @@ class LoginViewModel with ChangeNotifier{
 
   LoginViewModel(this._socialLogin);
 
-  Future kakaoLogin() async {
+  Future<bool> kakaoLogin() async {
     socialToken = await _socialLogin.isKakaoLogin();
     if (socialToken != null) {
       // 카카오 로그인이 성공함
       loginPlatform = LoginPlatform.kakao;
-      tokenAPI();
-      isLogined = true;
+      isLogined = await tokenAPI();
+      return isLogined;
     } else {
       logger.d("kakao login fail");
+      isLogined = false;
+      return isLogined;
     }
   }
 
-  Future naverLogin() async {
+  Future<bool> naverLogin() async {
     socialToken = await _socialLogin.isNaverLogin();
     if(socialToken != null) {
       // 네이버 로그인 성공함
       loginPlatform = LoginPlatform.naver;
-      tokenAPI();
-      isLogined = true;
+      isLogined = await tokenAPI();
+      return isLogined;
     } else {
       logger.d("naver login fail");
+      isLogined = false;
+      return isLogined;
     }
   }
 
-  Future logout() async {
+  Future<bool> logout() async {
     isLogouted = await _socialLogin.isLogout(loginPlatform);
     if(isLogouted){
       // 로그아웃 성공
       loginPlatform = LoginPlatform.none;
       isLogined = false;
+      return isLogouted;
     }
+    return false;
   }
 
-  Future<void> tokenAPI() async {
+  Future<bool> tokenAPI() async {
     final data = {
       "token": socialToken,
     };
@@ -67,12 +73,15 @@ class LoginViewModel with ChangeNotifier{
         accessToken = token['accessToken'];
         refreshToken = token['refreshToken'];
 
+        return true;
       } else {
         // 실패
         logger.d("Fail to load ${data}. status code : ${response.statusCode}");
+        return false;
       }
     } catch (e) {
       logger.d("error : ${e}");
+      return false;
     }
   }
 }
