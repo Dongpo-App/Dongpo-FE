@@ -3,7 +3,6 @@ import 'package:dongpo_test/screens/login/social_login.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
-
 import 'login_platform.dart';
 
 

@@ -1,6 +1,6 @@
 import 'package:dongpo_test/api_key.dart';
+import 'package:dongpo_test/screens/login/login.dart';
 import 'package:flutter/material.dart';
-import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -19,6 +19,7 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await reset_map();
+
   runApp(const MyApp());
 }
 
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         splashColor: Colors.transparent, // splash 효과 없애기
         highlightColor: Colors.transparent, // splash 효과 없애기
       ),
-      home: const MyAppPage(), // bottom_navigation_bar.dart
+      home: const LoginPage(), // 로그인 페이지 이동
     );
   }
 }

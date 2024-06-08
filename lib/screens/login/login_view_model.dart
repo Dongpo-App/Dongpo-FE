@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'package:dongpo_test/screens/login/social_login.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
 import 'login_platform.dart';
 
-class LoginViewModel with ChangeNotifier{
+class LoginViewModel{
   final SocialLogin _socialLogin;
   bool isLogined = false;
   bool isLogouted = false;
@@ -45,7 +44,8 @@ class LoginViewModel with ChangeNotifier{
     }
   }
 
-  Future<bool> logout() async {
+  Future<bool> logout(String? loginPlatformString) async {
+    LoginPlatform loginPlatform = LoginPlatformExtension.fromString(loginPlatformString); // String -> enum
     isLogouted = await _socialLogin.isLogout(loginPlatform);
     if(isLogouted){
       // 로그아웃 성공
@@ -57,6 +57,8 @@ class LoginViewModel with ChangeNotifier{
   }
 
   Future<bool> tokenAPI() async {
+    logger.d("loginPlatform : ${loginPlatform}");
+
     final data = {
       "token": socialToken,
     };

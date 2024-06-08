@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:dongpo_test/main.dart';
+import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
+import 'package:dongpo_test/screens/login/login.dart';
+import 'package:dongpo_test/screens/login/login_view_model.dart';
 
-import '../login/login_test2.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -12,12 +16,16 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
+  final loginViewModel = LoginViewModel(KakaoNaverLogin());
+  static final storage = FlutterSecureStorage();
+  bool isLogouted = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
+        automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
         centerTitle: true,
         title: Text(
           "마이 페이지",
@@ -225,10 +233,29 @@ class _MyPageState extends State<MyPage> {
             ),
             GestureDetector(
               onTap: () async {
-                Navigator.push(context, MaterialPageRoute(
-                    builder: (context) =>
-                        LoginPage()
-                ));
+                String? loginPlatform = await storage.read(key: 'loginPlatform');
+                // 로그인 X - 테스트 용(단순 로그인 화면 이동)
+                if (loginPlatform == null){
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()), // bottom_navigation_bar.dart
+                        (route) => false,  // 모든 이전 페이지 제거
+                  );
+                }
+                isLogouted = await loginViewModel.logout(loginPlatform);
+                if (isLogouted) {
+                  // FlutterSecureStorage에 있는 token 삭제
+                  await storage.delete(key: 'accessToken');
+                  await storage.delete(key: 'refreshToken');
+                  await storage.delete(key: 'loginPlatform');
+                  Map<String, String> allData = await storage.readAll();
+                  logger.d("secure storage delete read : ${allData}");
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()), // bottom_navigation_bar.dart
+                        (route) => false,  // 모든 이전 페이지 제거
+                  );
+                }
               },
               child: Container(
                 width: double.infinity,

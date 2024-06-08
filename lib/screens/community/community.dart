@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'community_top10.dart';
 
 class CommunityPage extends StatefulWidget {
@@ -17,6 +16,7 @@ class CommunityPageState extends State<CommunityPage>{
       backgroundColor: Color(0xFFF4F4F4),
       appBar: AppBar(
         backgroundColor: Color(0xFFF4F4F4),
+        automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

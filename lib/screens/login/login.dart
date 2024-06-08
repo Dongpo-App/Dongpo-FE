@@ -1,15 +1,10 @@
 import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/main.dart';
-import 'package:dongpo_test/screens/main/main_01.dart';
 import 'login_view_model.dart';
-
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,10 +15,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final loginViewModel = LoginViewModel(KakaoNaverLogin());
+  bool isLogined = false;
+  bool isLogouted = false;
 
   // FlutterSecureStorage
-  static final storage = new FlutterSecureStorage(); //flutter_secure_storage 초기화 작업
-  Map<String, String>? _allData; // secure storage 데이터 확인용
+  static final storage = new FlutterSecureStorage(); //flutter_secure_storage 사용을 위한 초기화 작업
 
   @override
   void initState(){
@@ -41,11 +37,16 @@ class _LoginPageState extends State<LoginPage> {
     // token 데이터가 있다면 메인페이지로 이동
     if (accessToken != null && refreshToken != null){
       logger.d("secure storage read 1 : ${allData}");
-      Navigator.push(context, MaterialPageRoute(
-          builder: (context) =>
-              MyAppPage()
-      ));
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => MyAppPage()), // bottom_navigation_bar.dart
+            (route) => false,  // 모든 이전 페이지 제거
+      );
     }
+  }
+
+  Future<void> loginsfa() async {
+
   }
 
   @override
@@ -76,15 +77,21 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  await loginViewModel.naverLogin();
-                  // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
-                  await storage.write(key: 'accessToken', value: loginViewModel.accessToken);
-                  await storage.write(key: 'refreshToken', value: loginViewModel.refreshToken);
-                  Map<String, String> allData = await storage.readAll();
-                  logger.d("secure storage naver read : ${allData}");
-                  setState(() {
-                    // 로그인 후 단순 화면 갱신
-                  });
+                  isLogined = await loginViewModel.naverLogin();
+                  if (isLogined){
+                    // 로그인플랫폼 & 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
+                    await storage.write(key: 'accessToken', value: loginViewModel.accessToken);
+                    await storage.write(key: 'refreshToken', value: loginViewModel.refreshToken);
+                    await storage.write(key: 'loginPlatform', value: loginViewModel.loginPlatform.name);
+                    Map<String, String> allData = await storage.readAll();
+                    logger.d("secure storage naver read : ${allData}");
+                    // 메인페이지로 이동
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyAppPage()), // bottom_navigation_bar.dart
+                          (route) => false,  // 모든 이전 페이지 제거
+                    );
+                  }
                 },
                 child: Container(
                   height: 44,
@@ -105,15 +112,21 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  await loginViewModel.kakaoLogin();
-                  // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
-                  await storage.write(key: 'accessToken', value: loginViewModel.accessToken);
-                  await storage.write(key: 'refreshToken', value: loginViewModel.refreshToken);
-                  Map<String, String> allData = await storage.readAll();
-                  logger.d("secure storage kakao read : ${allData}");
-                  setState(() {
-                    // 로그인 후 단순 화면 갱신
-                  });
+                  isLogined = await loginViewModel.kakaoLogin();
+                  if (isLogined){
+                    // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
+                    await storage.write(key: 'accessToken', value: loginViewModel.accessToken);
+                    await storage.write(key: 'refreshToken', value: loginViewModel.refreshToken);
+                    await storage.write(key: 'loginPlatform', value: loginViewModel.loginPlatform.name);
+                    Map<String, String> allData = await storage.readAll();
+                    logger.d("secure storage kakao read : ${allData}");
+                    // 메인페이지로 이동
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyAppPage()), // bottom_navigation_bar.dart
+                          (route) => false,  // 모든 이전 페이지 제거
+                    );
+                  }
                 },
                 child: Container(
                   height: 44,
@@ -129,20 +142,17 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             SizedBox(height: 24),
-            // 로그아웃
+            // 로그인 X - 테스트 용
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  await loginViewModel.logout();
-                  // FlutterSecureStorage에 있는 token 삭제
-                  await storage.delete(key: 'accessToken');
-                  await storage.delete(key: 'refreshToken');
-                  Map<String, String> allData = await storage.readAll();
-                  logger.d("secure storage delete read : ${allData}");
-                  setState(() {
-                    // 로그아웃 후 단순 화면 갱신
-                  });
+                  // 메인페이지로 이동
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyAppPage()), // bottom_navigation_bar.dart
+                        (route) => false,  // 모든 이전 페이지 제거
+                  );
                 },
                 child: Container(
                   height: 44,
@@ -154,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      'Logout',
+                      'IOS - 로그인 X',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -163,15 +173,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-              ),
-            ),
-            SizedBox(height: 24),
-
-            Text(
-              '${loginViewModel.loginPlatform.name} login test : ${loginViewModel.isLogined}',
-              style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white
               ),
             ),
           ],
