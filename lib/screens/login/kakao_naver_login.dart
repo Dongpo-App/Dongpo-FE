@@ -9,58 +9,56 @@ import 'login_platform.dart';
 
 class KakaoNaverLogin implements SocialLogin{
   @override
-  Future<bool> isKakaoLogin() async {
-    OAuthToken kakaoToken;
+  Future<String?> isKakaoLogin() async {
     try {
       // 카카오톡 실행 가능 여부 확인
       bool isInstalled = await isKakaoTalkInstalled();
       if (await isInstalled) {
         try {
           // 카카오톡으로 로그인
-          await UserApi.instance.loginWithKakaoTalk();
-          return true;
+          final oauthToken = await UserApi.instance.loginWithKakaoTalk();
+          logger.d("kakaoTalk login accessToken : ${oauthToken.accessToken.toString()}");
+          return oauthToken.accessToken.toString();
         } catch (e) {
+          logger.d("kakaoTalk login errer : $e");
           if (e is PlatformException && e.code == "CANCELED") {
-            return false;
+            return null;
           }
           try {
-            kakaoToken = await UserApi.instance.loginWithKakaoAccount();
-            logger.d("kakao login access Token : ${kakaoToken.accessToken}");
-            logger.d("kakao login refresh Token : ${kakaoToken.refreshToken}");
-            return true;
+            final kakaoToken = await UserApi.instance.loginWithKakaoAccount();
+            logger.d("kakaoAccount login accessToken : ${kakaoToken.accessToken}");
+            return kakaoToken.accessToken.toString();
           } catch (e) {
-            return false;
+            return null;
           }
         }
       } else {
         try {
           // 카카오톡 어플이 없는 경우 -> 카카오 계정으로 로그인 유도
-          kakaoToken = await UserApi.instance.loginWithKakaoAccount();
-          logger.d("kakao login access Token : ${kakaoToken.accessToken}");
-          logger.d("kakao login refresh Token : ${kakaoToken.refreshToken}");
-          return true;
+          final kakaoToken = await UserApi.instance.loginWithKakaoAccount();
+          logger.d("kakaoAccount login accessToken : ${kakaoToken.accessToken}");
+          return kakaoToken.accessToken.toString();
         } catch (e) {
-          return false;
+          return null;
         }
       }
     } catch (e) {
-      return false;
+      return null;
     }
   }
 
   @override
-  Future<bool> isNaverLogin() async {
+  Future<String?> isNaverLogin() async {
     NaverLoginResult result;
     try {
       // 네이버 로그인 시도
       result = await FlutterNaverLogin.logIn();
       NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
-      logger.d("naver login access token : ${token.accessToken}");
-      logger.d("naver login refresh token : ${token.refreshToken}");
-      return true;
+      logger.d("naver login accessToken : ${token.accessToken}");
+      return token.accessToken.toString();
     } catch (e) {
       logger.d("naver login error : ${e}");
-      return false;
+      return null;
     }
   }
 
@@ -90,7 +88,6 @@ class KakaoNaverLogin implements SocialLogin{
       case LoginPlatform.none:
         logger.d("login Platform none!");
         return true;
-
     }
   }
 }

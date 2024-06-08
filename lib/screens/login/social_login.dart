@@ -1,9 +1,9 @@
 import 'package:dongpo_test/screens/login/login_platform.dart';
 
 abstract class SocialLogin{
-  Future<bool> isKakaoLogin();
+  Future<String?> isKakaoLogin();
 
-  Future<bool> isNaverLogin();
+  Future<String?> isNaverLogin();
 
   Future<bool> isLogout(LoginPlatform loginPlatform);
 }

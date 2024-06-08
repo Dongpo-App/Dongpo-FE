@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-
 import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/main.dart';
@@ -12,39 +11,9 @@ import 'package:dongpo_test/screens/main/main_01.dart';
 import 'login_view_model.dart';
 
 
-void main() async {
-  // runApp() 호출 전 Flutter SDK 초기화
-  KakaoSdk.init(
-    nativeAppKey: nativeAppKey,
-  );
-
-  // splash widgetBinding
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  // splash 화면 시작
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
-  await reset_map();
-
-  runApp(MyLoginApp());
-}
-
-class MyLoginApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '동포',
-      debugShowCheckedModeBanner: false, // 우측 상단 debug 표시 제거
-      theme: ThemeData(
-        fontFamily: 'Pretendard',
-        splashColor: Colors.transparent, // splash 효과 없애기
-        highlightColor: Colors.transparent, // splash 효과 없애기
-      ),
-      home: LoginPage(),
-    );
-  }
-}
-
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -54,6 +23,7 @@ class _LoginPageState extends State<LoginPage> {
 
   // FlutterSecureStorage
   static final storage = new FlutterSecureStorage(); //flutter_secure_storage 초기화 작업
+  Map<String, String>? _allData; // secure storage 데이터 확인용
 
   @override
   void initState(){
@@ -171,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                   Map<String, String> allData = await storage.readAll();
                   logger.d("secure storage delete read : ${allData}");
                   setState(() {
-                     // 로그아웃 후 단순 화면 갱신
+                    // 로그아웃 후 단순 화면 갱신
                   });
                 },
                 child: Container(
@@ -200,8 +170,8 @@ class _LoginPageState extends State<LoginPage> {
             Text(
               '${loginViewModel.loginPlatform.name} login test : ${loginViewModel.isLogined}',
               style: TextStyle(
-                fontSize: 16,
-                color: Colors.white
+                  fontSize: 16,
+                  color: Colors.white
               ),
             ),
           ],

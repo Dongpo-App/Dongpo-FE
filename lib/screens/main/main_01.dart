@@ -98,6 +98,7 @@ class _MainPageState extends State<MainPage>
   // 화면관련 여기서부터 보면 됌
 
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: FutureBuilder<String>(
         future: checkPermission(),
