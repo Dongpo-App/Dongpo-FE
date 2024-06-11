@@ -19,35 +19,36 @@ class _LoginPageState extends State<LoginPage> {
   bool isLogouted = false;
 
   // FlutterSecureStorage
-  static final storage = new FlutterSecureStorage(); //flutter_secure_storage 사용을 위한 초기화 작업
+  static final storage =
+      new FlutterSecureStorage(); //flutter_secure_storage 사용을 위한 초기화 작업
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     //비동기로 flutter secure storage 정보를 불러오는 작업.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadAuthToken();
     });
   }
+
   Future<void> _loadAuthToken() async {
     // key값에 맞는 데이터 값 불러옴 데이터가 없을 때는 null을 반환
     final accessToken = await storage.read(key: 'accessToken');
     final refreshToken = await storage.read(key: 'refreshToken');
     Map<String, String> allData = await storage.readAll();
     // token 데이터가 있다면 메인페이지로 이동
-    if (accessToken != null && refreshToken != null){
+    if (accessToken != null && refreshToken != null) {
       logger.d("secure storage read 1 : ${allData}");
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => MyAppPage()), // bottom_navigation_bar.dart
-            (route) => false,  // 모든 이전 페이지 제거
+        MaterialPageRoute(
+            builder: (context) => MyAppPage()), // bottom_navigation_bar.dart
+        (route) => false, // 모든 이전 페이지 제거
       );
     }
   }
 
-  Future<void> loginsfa() async {
-
-  }
+  Future<void> loginsfa() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -78,18 +79,25 @@ class _LoginPageState extends State<LoginPage> {
               child: InkWell(
                 onTap: () async {
                   isLogined = await loginViewModel.naverLogin();
-                  if (isLogined){
+                  if (isLogined) {
                     // 로그인플랫폼 & 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
-                    await storage.write(key: 'accessToken', value: loginViewModel.accessToken);
-                    await storage.write(key: 'refreshToken', value: loginViewModel.refreshToken);
-                    await storage.write(key: 'loginPlatform', value: loginViewModel.loginPlatform.name);
+                    await storage.write(
+                        key: 'accessToken', value: loginViewModel.accessToken);
+                    await storage.write(
+                        key: 'refreshToken',
+                        value: loginViewModel.refreshToken);
+                    await storage.write(
+                        key: 'loginPlatform',
+                        value: loginViewModel.loginPlatform.name);
                     Map<String, String> allData = await storage.readAll();
                     logger.d("secure storage naver read : ${allData}");
                     // 메인페이지로 이동
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => MyAppPage()), // bottom_navigation_bar.dart
-                          (route) => false,  // 모든 이전 페이지 제거
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              MyAppPage()), // bottom_navigation_bar.dart
+                      (route) => false, // 모든 이전 페이지 제거
                     );
                   }
                 },
@@ -113,18 +121,25 @@ class _LoginPageState extends State<LoginPage> {
               child: InkWell(
                 onTap: () async {
                   isLogined = await loginViewModel.kakaoLogin();
-                  if (isLogined){
+                  if (isLogined) {
                     // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
-                    await storage.write(key: 'accessToken', value: loginViewModel.accessToken);
-                    await storage.write(key: 'refreshToken', value: loginViewModel.refreshToken);
-                    await storage.write(key: 'loginPlatform', value: loginViewModel.loginPlatform.name);
+                    await storage.write(
+                        key: 'accessToken', value: loginViewModel.accessToken);
+                    await storage.write(
+                        key: 'refreshToken',
+                        value: loginViewModel.refreshToken);
+                    await storage.write(
+                        key: 'loginPlatform',
+                        value: loginViewModel.loginPlatform.name);
                     Map<String, String> allData = await storage.readAll();
                     logger.d("secure storage kakao read : ${allData}");
                     // 메인페이지로 이동
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => MyAppPage()), // bottom_navigation_bar.dart
-                          (route) => false,  // 모든 이전 페이지 제거
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              MyAppPage()), // bottom_navigation_bar.dart
+                      (route) => false, // 모든 이전 페이지 제거
                     );
                   }
                 },
@@ -150,8 +165,10 @@ class _LoginPageState extends State<LoginPage> {
                   // 메인페이지로 이동
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => MyAppPage()), // bottom_navigation_bar.dart
-                        (route) => false,  // 모든 이전 페이지 제거
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            MyAppPage()), // bottom_navigation_bar.dart
+                    (route) => false, // 모든 이전 페이지 제거
                   );
                 },
                 child: Container(
@@ -164,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      'IOS - 로그인 X',
+                      '비회원으로 로그인',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

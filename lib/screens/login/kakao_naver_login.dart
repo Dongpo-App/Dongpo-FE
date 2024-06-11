@@ -5,8 +5,7 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'login_platform.dart';
 
-
-class KakaoNaverLogin implements SocialLogin{
+class KakaoNaverLogin implements SocialLogin {
   @override
   Future<String?> isKakaoLogin() async {
     try {
@@ -16,7 +15,8 @@ class KakaoNaverLogin implements SocialLogin{
         try {
           // 카카오톡으로 로그인
           final oauthToken = await UserApi.instance.loginWithKakaoTalk();
-          logger.d("kakaoTalk login accessToken : ${oauthToken.accessToken.toString()}");
+          logger.d(
+              "kakaoTalk login accessToken : ${oauthToken.accessToken.toString()}");
           return oauthToken.accessToken.toString();
         } catch (e) {
           logger.d("kakaoTalk login errer : $e");
@@ -25,7 +25,8 @@ class KakaoNaverLogin implements SocialLogin{
           }
           try {
             final kakaoToken = await UserApi.instance.loginWithKakaoAccount();
-            logger.d("kakaoAccount login accessToken : ${kakaoToken.accessToken}");
+            logger.d(
+                "kakaoAccount login accessToken : ${kakaoToken.accessToken}");
             return kakaoToken.accessToken.toString();
           } catch (e) {
             return null;
@@ -35,7 +36,8 @@ class KakaoNaverLogin implements SocialLogin{
         try {
           // 카카오톡 어플이 없는 경우 -> 카카오 계정으로 로그인 유도
           final kakaoToken = await UserApi.instance.loginWithKakaoAccount();
-          logger.d("kakaoAccount login accessToken : ${kakaoToken.accessToken}");
+          logger
+              .d("kakaoAccount login accessToken : ${kakaoToken.accessToken}");
           return kakaoToken.accessToken.toString();
         } catch (e) {
           return null;
@@ -63,14 +65,14 @@ class KakaoNaverLogin implements SocialLogin{
 
   @override
   Future<bool> isLogout(LoginPlatform loginPlatform) async {
-    switch(loginPlatform) {
+    switch (loginPlatform) {
       case LoginPlatform.kakao:
         try {
           // logout 실행 코드. SDK에서 토큰 삭제
           await UserApi.instance.unlink();
           logger.d("${loginPlatform} : logout");
           return true;
-        } catch (e){
+        } catch (e) {
           logger.d("kakao logout error : ${e}");
           return false;
         }
