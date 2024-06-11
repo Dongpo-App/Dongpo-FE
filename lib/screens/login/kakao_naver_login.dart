@@ -21,6 +21,7 @@ class KakaoNaverLogin implements SocialLogin{
         } catch (e) {
           logger.d("kakaoTalk login errer : $e");
           if (e is PlatformException && e.code == "CANCELED") {
+            logger.d("e : ${e}");
             return null;
           }
           try {
@@ -28,6 +29,7 @@ class KakaoNaverLogin implements SocialLogin{
             logger.d("kakaoAccount login accessToken : ${kakaoToken.accessToken}");
             return kakaoToken.accessToken.toString();
           } catch (e) {
+            logger.d("e : ${e}");
             return null;
           }
         }
@@ -38,10 +40,12 @@ class KakaoNaverLogin implements SocialLogin{
           logger.d("kakaoAccount login accessToken : ${kakaoToken.accessToken}");
           return kakaoToken.accessToken.toString();
         } catch (e) {
+          logger.d("e : ${e}");
           return null;
         }
       }
     } catch (e) {
+      logger.d("e : ${e}");
       return null;
     }
   }

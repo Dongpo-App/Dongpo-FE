@@ -96,7 +96,7 @@ class _MyPageState extends State<MyPage> {
               // 프로필 편집 버튼
               child:  OutlinedButton(
                 onPressed: () {
-                  // 프로필 편집 페이지 이동
+                  showEditProfileBottomSheet(context);
                 },
                 style: OutlinedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -109,7 +109,7 @@ class _MyPageState extends State<MyPage> {
                   '프로필 편집',
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     color: Color(0xFF767676),
                   ),
                 ),
@@ -120,7 +120,7 @@ class _MyPageState extends State<MyPage> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 24, vertical : 24),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   // 등록한 가게
                   Text(
@@ -131,6 +131,7 @@ class _MyPageState extends State<MyPage> {
                       color: Color(0xFF767676),
                     ),
                   ),
+                  Spacer(),
                   // 칭호
                   Text(
                     '칭호',
@@ -140,8 +141,8 @@ class _MyPageState extends State<MyPage> {
                       color: Color(0xFF767676),
                     ),
                   ),
+                  Spacer(),
                   // 선물함
-                  // 칭호
                   Text(
                     '선물함',
                     style: TextStyle(
@@ -170,7 +171,7 @@ class _MyPageState extends State<MyPage> {
                   '내 칭호',
                   style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w400,
                       color: Color(0xFF767676)
                   ),
                 ),
@@ -187,7 +188,7 @@ class _MyPageState extends State<MyPage> {
                   '내가 쓴 리뷰',
                   style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w400,
                       color: Color(0xFF767676)
                   ),
                 ),
@@ -204,7 +205,7 @@ class _MyPageState extends State<MyPage> {
                   '북마크한 가게',
                   style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w400,
                       color: Color(0xFF767676)
                   ),
                 ),
@@ -221,7 +222,7 @@ class _MyPageState extends State<MyPage> {
                   '선물함',
                   style: TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w400,
                       color: Color(0xFF767676)
                   ),
                 ),
@@ -231,49 +232,131 @@ class _MyPageState extends State<MyPage> {
                 },
               ),
             ),
-            GestureDetector(
-              onTap: () async {
-                String? loginPlatform = await storage.read(key: 'loginPlatform');
-                // 로그인 X - 테스트 용(단순 로그인 화면 이동)
-                if (loginPlatform == null){
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()), // bottom_navigation_bar.dart
-                        (route) => false,  // 모든 이전 페이지 제거
-                  );
-                }
-                isLogouted = await loginViewModel.logout(loginPlatform);
-                if (isLogouted) {
-                  // FlutterSecureStorage에 있는 token 삭제
-                  await storage.delete(key: 'accessToken');
-                  await storage.delete(key: 'refreshToken');
-                  await storage.delete(key: 'loginPlatform');
-                  Map<String, String> allData = await storage.readAll();
-                  logger.d("secure storage delete read : ${allData}");
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()), // bottom_navigation_bar.dart
-                        (route) => false,  // 모든 이전 페이지 제거
-                  );
-                }
-              },
-              child: Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(24),
-                color: Color(0xFFF4F4F4),
-                child: Text(
-                  '로그아웃',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    color: Color(0xFF767676),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(24),
+              color: Color(0xFFF4F4F4),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      String? loginPlatform = await storage.read(key: 'loginPlatform');
+                      if (loginPlatform == null){
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                              (route) => false,  // 모든 이전 페이지 제거
+                        );
+                      }
+                      isLogouted = await loginViewModel.logout(loginPlatform);
+                      if (isLogouted) {
+                        // FlutterSecureStorage에 있는 token 삭제
+                        await storage.delete(key: 'accessToken');
+                        await storage.delete(key: 'refreshToken');
+                        await storage.delete(key: 'loginPlatform');
+                        Map<String, String> allData = await storage.readAll();
+                        logger.d("secure storage delete read : ${allData}");
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                              (route) => false,  // 모든 이전 페이지 제거
+                        );
+                      }
+                    },
+                    child: Text(
+                      '로그아웃',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                        color: Color(0xFF767676),
+                      ),
+                    ),
                   ),
-                ),
+                  Spacer(),
+                  GestureDetector(
+                    onTap: () async {
+                      String? loginPlatform = await storage.read(key: 'loginPlatform');
+                      if (loginPlatform == null){
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                              (route) => false,  // 모든 이전 페이지 제거
+                        );
+                      }
+                      isLogouted = await loginViewModel.logout(loginPlatform);
+                      if (isLogouted) {
+                        // FlutterSecureStorage에 있는 token 삭제
+                        await storage.delete(key: 'accessToken');
+                        await storage.delete(key: 'refreshToken');
+                        await storage.delete(key: 'loginPlatform');
+                        Map<String, String> allData = await storage.readAll();
+                        logger.d("secure storage delete read : ${allData}");
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                              (route) => false,  // 모든 이전 페이지 제거
+                        );
+                      }
+                    },
+                    child: Text(
+                      '탈퇴',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                        color: Color(0xFF767676),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+  void showEditProfileBottomSheet(BuildContext context){
+    final screenHeight = MediaQuery.of(context).size.height; // 현재 화면 높이
+    final bottomSheetHeight = screenHeight * 0.5; // 화면 높이의 50%
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          height: bottomSheetHeight,
+          width: double.infinity,
+          margin: EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    "프로필 편집",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Spacer(),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(
+                        CupertinoIcons.xmark,
+                        size: 24,
+                      )
+                  )
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
