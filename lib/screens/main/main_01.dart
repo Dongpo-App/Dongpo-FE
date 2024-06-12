@@ -1,3 +1,4 @@
+import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +10,94 @@ import 'package:dongpo_test/api_key.dart';
 import 'dart:developer';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+
+//여러개 띄울 마커 받아놓을 마커리스트
+List<NMarker> _markers = [];
+
+//임의로 마커 여러개 생성
+List<MyData> _DummyData2() {
+  return [
+    MyData(
+      id: '4',
+      name: '가게 1',
+      address: '주소 1',
+      latitude: 37.5021,
+      longitude: 126.8697,
+      openTime: '09:00',
+      closeTime: '21:00',
+      isToiletValid: true,
+      operatingDays: ['월', '화', '수', '목', '금'],
+      payMethods: ['카드', '현금'],
+    ),
+    MyData(
+      id: '5',
+      name: '가게 2',
+      address: '주소 2',
+      latitude: 37.5041,
+      longitude: 126.8668,
+      openTime: '10:00',
+      closeTime: '22:00',
+      isToiletValid: false,
+      operatingDays: ['월', '화', '수', '목', '금'],
+      payMethods: ['카드', '현금'],
+    ),
+    MyData(
+      id: '6',
+      name: '가게 3',
+      address: '주소 3',
+      latitude: 37.5051,
+      longitude: 126.8619,
+      openTime: '08:00',
+      closeTime: '20:00',
+      isToiletValid: true,
+      operatingDays: ['월', '화', '수', '목', '금'],
+      payMethods: ['카드', '현금'],
+    ),
+    // ...
+  ];
+}
+
+List<MyData> _DummyData() {
+  return [
+    MyData(
+      id: '1',
+      name: '가게 1',
+      address: '주소 1',
+      latitude: 37.5001,
+      longitude: 126.8677,
+      openTime: '09:00',
+      closeTime: '21:00',
+      isToiletValid: true,
+      operatingDays: ['월', '화', '수', '목', '금'],
+      payMethods: ['카드', '현금'],
+    ),
+    MyData(
+      id: '2',
+      name: '가게 2',
+      address: '주소 2',
+      latitude: 37.5011,
+      longitude: 126.8678,
+      openTime: '10:00',
+      closeTime: '22:00',
+      isToiletValid: false,
+      operatingDays: ['월', '화', '수', '목', '금'],
+      payMethods: ['카드', '현금'],
+    ),
+    MyData(
+      id: '3',
+      name: '가게 3',
+      address: '주소 3',
+      latitude: 37.5021,
+      longitude: 126.8679,
+      openTime: '08:00',
+      closeTime: '20:00',
+      isToiletValid: true,
+      operatingDays: ['월', '화', '수', '목', '금'],
+      payMethods: ['카드', '현금'],
+    ),
+    // ...
+  ];
+}
 
 // 지도 초기화하기
 Future<void> reset_map() async {
@@ -98,7 +187,6 @@ class _MainPageState extends State<MainPage>
   // 화면관련 여기서부터 보면 됌
 
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: FutureBuilder<String>(
         future: checkPermission(),
@@ -114,43 +202,37 @@ class _MainPageState extends State<MainPage>
               children: [
                 //네이버 지도 시작
                 NaverMap(
-                  onMapReady:
-                      //마커 생성
-                      (controller) async {
+                  onMapReady: (controller) async {
                     _onMapReady(controller);
-                    log("onMapReady", name: "onMapReady");
-                    final NLatLng test = NLatLng(
-                        37.49993604717163, 126.86768245932946); //테스트 위도 경도
 
-                    NMarker marker = NMarker(
-                      id: "test_Maker",
-                      position: test,
-                    );
+                    //   //여러 좌표를 받아서 마커 생성
+                    //   final NLatLng test = NLatLng(
+                    //       37.49993604717163, 126.86768245932946); //테스트 위도 경도
 
-                    // 커스텀 마커를 비동기로 로드하여 메인 스레드의 부담을 줄입니다.
-                    var customMarker = await NOverlayImage.fromAssetImage(
-                        "assets/images/rakoon.png");
+                    //   NMarker marker = NMarker(
+                    //     id: "test_Maker",
+                    //     position: test,
+                    //   );
 
-                    var clickedMaker = await NOverlayImage.fromAssetImage(
-                        "assets/images/profile_img1.jpg");
-                    marker.setIcon(customMarker);
+                    //   // 커스텀 마커를 비동기로 로드하여 메인 스레드의 부담을 줄입니다.
+                    //   var customMarker = await NOverlayImage.fromAssetImage(
+                    //       "assets/images/rakoon.png");
 
-                    marker.setOnTapListener((overlay) {
-                      //마커 아이콘 바뀌기
-                      marker.setIcon(clickedMaker);
-                      controller.addOverlay(marker);
+                    //   var clickedMaker = await NOverlayImage.fromAssetImage(
+                    //       "assets/images/profile_img1.jpg");
 
-                      //마커 있는 위치로 화면 전환
-                      //하단에 Container 올라와서 가게상세 페이지 연동
-                      logger.d('마커 동작');
-                    });
+                    //   marker.setIcon(customMarker);
 
-                    // 마커 크기 조절을 통해 성능 최적화
-                    var defaultMarkerSize = Size(40, 50);
-                    marker.setSize(defaultMarkerSize);
+                    //   //마커 클릭시 이벤트
+                    //   marker.setOnTapListener((overlay) {});
 
-                    // 마커 표시
-                    controller.addOverlay(marker);
+                    //   // 마커 크기 조절을 통해 성능 최적화
+                    //   var defaultMarkerSize = Size(40, 50);
+                    //   marker.setSize(defaultMarkerSize);
+
+                    //   // 마커 표시
+                    //   controller.addOverlay(marker);
+                    //
                   },
 
                   //렉 유발 하는 듯 setstate로 인한 지도 재호출
@@ -427,18 +509,116 @@ class _MainPageState extends State<MainPage>
     _mapController = controller;
   }
 
-  Future<void> _moveToCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    _mapController.updateCamera(
-      NCameraUpdate.fromCameraPosition(
-        NCameraPosition(
-          target: NLatLng(position.latitude, position.longitude),
-          zoom: 16,
+  //마커 관련
+// 기존 마커 삭제 함수
+  Future<void> _clearMarkers() async {
+    logger.d('마커가 정상적으로 들어왔음 ${_markers}');
+    // for (int i =0 ; i >= _markers.length; i++) {
+    //   _mapController
+    //       .deleteOverlay(NOverlayInfo(type: NOverlayType.marker, id:  )); // 마커 제거
+    // }
+    _mapController.clearOverlays();
+    _markers.clear(); // 리스트 초기화
+    logger.d('마커삭제 테스트 $_markers');
+  }
+
+// 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
+  void _addMarkers(List<MyData> dataList) async {
+    //여러개 마커 담는 리스트
+    try {
+      var defaultMarkerSize = Size(40, 50);
+      await _clearMarkers(); // 기존 마커 제거
+      for (var data in dataList) {
+        var markerIcon = await NOverlayImage.fromAssetImage(
+            'assets/images/defalutMarker.png');
+
+        NMarker marker = NMarker(
+          id: data.id,
+          position: NLatLng(data.latitude, data.longitude),
+          icon: markerIcon,
+        );
+        //마커 사이즈 조절
+        marker.setSize(defaultMarkerSize);
+        marker.setOnTapListener((overlay) {
+          _onMarkerTapped(marker, data);
+          logger.d('함수 실행 잘됌');
+        });
+        _mapController.addOverlay(marker);
+        // 마커 리스트에 추가
+        _markers.add(marker);
+      }
+    } catch (e) {
+      logger.w('에러발생 :$e');
+    }
+  }
+
+  //마커 클릭 이벤트 함수
+  void _onMarkerTapped(NMarker marker, MyData data) {
+    try {
+      marker.setIcon(
+          NOverlayImage.fromAssetImage('assets/images/clickedMarker.png'));
+      //해당 위치로 이동
+      logger.d('tap_1');
+      _mapController.updateCamera(
+        NCameraUpdate.fromCameraPosition(
+          NCameraPosition(
+            target: NLatLng(data.latitude, data.longitude),
+            zoom: 16,
+          ),
         ),
-      ),
-    );
-    _updateAddress(position.latitude, position.longitude);
+      );
+      _showBottomSheet(context);
+    } catch (e) {
+      logger.d('에러발생');
+    } finally {
+      logger.d('finally 실행');
+    }
+  }
+
+  Future<void> _reSearchCurrentLocation() async {
+    //해당 카메라 기준 위도경도 가져옴
+    final cameraPosition = await _mapController.getCameraPosition();
+    final latitude = cameraPosition.target.latitude;
+    final longitude = cameraPosition.target.longitude;
+
+    //서버에 보내고 더미데이터 받아옴
+    logger.d('현재 지도의 중앙 좌표: 위도 $latitude, 경도 $longitude');
+
+    //클래스에 담고 마커를 출력함
+    _addMarkers(_DummyData());
+  }
+
+  Future<void> _moveToCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      final myLocation = NLatLng(position.latitude, position.longitude);
+
+      final myLocationIcon =
+          NOverlayImage.fromAssetImage('assets/images/myLocation.png');
+
+      NMarker myLocationMarker = NMarker(
+        id: "my_location_marker",
+        position: myLocation,
+        icon: myLocationIcon,
+      );
+
+      myLocationMarker.setSize(Size(40, 50));
+      _mapController.addOverlay(myLocationMarker);
+
+      _mapController.updateCamera(
+        NCameraUpdate.fromCameraPosition(
+          NCameraPosition(
+            target: myLocation,
+            zoom: 16,
+          ),
+        ),
+      );
+      _updateAddress(position.latitude, position.longitude);
+    } catch (e) {
+      // 에러 발생 시 로그 출력
+      logger.d("Error in _moveToCurrentLocation: $e");
+    }
   }
 
   Future<void> _updateAddress(double latitude, double longitude) async {
@@ -450,17 +630,8 @@ class _MainPageState extends State<MainPage>
         _currentAddress = '${place.locality} ' '${place.street} ';
       });
     } catch (e) {
-      setState(() {
-        _currentAddress = '주소를 불러오지 못했습니다.';
-      });
+      logger.d('주소 찾지못함');
     }
-  }
-
-  Future<void> _reSearchCurrentLocation() async {
-    final cameraPosition = await _mapController.getCameraPosition();
-    final latitude = cameraPosition.target.latitude;
-    final longitude = cameraPosition.target.longitude;
-    print('현재 지도의 중앙 좌표: 위도 $latitude, 경도 $longitude');
   }
 
   Future<String> checkPermission() async {
@@ -527,4 +698,21 @@ class _MainPageState extends State<MainPage>
   //     _mapController.addOverlay(marker);
   //   }
   // }
+
+  //가게 기본정보 바텀시트
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.3,
+          color: Colors.white,
+          child: Center(
+            child: Text('Bottom Sheet Content'),
+          ),
+        );
+      },
+    );
+  }
 }

@@ -80,7 +80,7 @@ class _AddPageState extends State<AddPage> {
                       NCameraUpdate.fromCameraPosition(
                         NCameraPosition(
                           target: snapshot.data!, // 초기 카메라 위치 설정
-                          zoom: 18,
+                          zoom: 17,
                         ),
                       ),
                     );
@@ -97,6 +97,8 @@ class _AddPageState extends State<AddPage> {
                     }
                   },
                   options: NaverMapViewOptions(
+                    //줌 확대 불가능
+                    zoomGesturesEnable: false,
                     initialCameraPosition: NCameraPosition(
                       target: snapshot.data!, // 초기 카메라 위치 설정
                       zoom: 18,

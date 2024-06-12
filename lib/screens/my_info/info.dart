@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:dongpo_test/models/user_profile.dart';
+import 'package:dongpo_test/screens/my_info/my_page_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -18,9 +20,26 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
+  // 로그아웃 관련
   final loginViewModel = LoginViewModel(KakaoNaverLogin());
   static final storage = FlutterSecureStorage();
   bool isLogouted = false;
+
+  // 사용자 정보 관련
+  MyPageViewModel viewModel = MyPageViewModel();
+  UserProfile? _userProfile;
+
+  @override
+  void initState(){
+    super.initState();
+    userProfile();
+  }
+  Future<void> userProfile() async {
+    UserProfile? userProfile = await viewModel.userProfileGetAPI();
+    setState(() {
+      _userProfile = userProfile;
+    });
+  }
 
   // 프로필 사진 수정 관련
   final picker = ImagePicker();
@@ -57,8 +76,14 @@ class _MyPageState extends State<MyPage> {
                   // 프로필 사진
                   CircleAvatar(
                     radius: 48,
+<<<<<<< HEAD
                     backgroundImage:
                         AssetImage('assets/images/profile_img1.jpg'),
+=======
+                    backgroundImage: _userProfile!.profilePic != null
+                    ? NetworkImage(_userProfile!.profilePic!) as ImageProvider
+                    : AssetImage('assets/images/profile.jpg'),
+>>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
                   ),
                   SizedBox(width: 16), // 간격 조정
                   Expanded(
@@ -88,7 +113,7 @@ class _MyPageState extends State<MyPage> {
                         SizedBox(height: 8), // 간격 조정
                         // 닉네임
                         Text(
-                          "도도한 고양이",
+                          _userProfile!.nickname,
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w600,
@@ -137,7 +162,7 @@ class _MyPageState extends State<MyPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '0',
+                        _userProfile!.registerCount.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -163,7 +188,7 @@ class _MyPageState extends State<MyPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '0',
+                      _userProfile!.titleCount.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -189,7 +214,7 @@ class _MyPageState extends State<MyPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '0',
+                      _userProfile!.presentCount.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -377,8 +402,12 @@ class _MyPageState extends State<MyPage> {
     final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 50%
 
     // TextEditingController를 사용하여 초기값 설정
+<<<<<<< HEAD
     final TextEditingController nicknameController =
         TextEditingController(text: "사용자1");
+=======
+    final TextEditingController nicknameController = TextEditingController(text: _userProfile!.nickname);
+>>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
     String nickname = nicknameController.text;
 
     showModalBottomSheet(
@@ -431,9 +460,13 @@ class _MyPageState extends State<MyPage> {
                               )
                             ],
                           ),
+<<<<<<< HEAD
                           SizedBox(
                             height: 40,
                           ),
+=======
+                          SizedBox(height: 24,),
+>>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
                           GestureDetector(
                             onTap: () async {
                               final XFile? pickedFile = await picker.pickImage(
@@ -453,9 +486,13 @@ class _MyPageState extends State<MyPage> {
                                   radius: 40, // 80 / 2
                                   backgroundImage: image != null
                                       ? FileImage(File(image!.path))
+<<<<<<< HEAD
                                       : AssetImage(
                                               'assets/images/profile_img1.jpg')
                                           as ImageProvider,
+=======
+                                      : NetworkImage(_userProfile!.profilePic!) as ImageProvider,
+>>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -483,8 +520,13 @@ class _MyPageState extends State<MyPage> {
                             height: 44,
                             width: double.infinity,
                             child: TextField(
+<<<<<<< HEAD
                               controller:
                                   nicknameController, // TextEditingController를 연결
+=======
+                              textAlignVertical: TextAlignVertical.center,
+                              controller: nicknameController, // TextEditingController를 연결
+>>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
                               onChanged: (text) {
                                 setState(() {
                                   nickname = text;
@@ -492,9 +534,18 @@ class _MyPageState extends State<MyPage> {
                                   logger.d("image value : ${value}");
                                 });
                               },
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                              ),
                               decoration: InputDecoration(
                                 labelText: "닉네임",
                                 hintText: '7글자까지 입력 가능해요',
+                                hintStyle: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF767676),
+                                ),
                                 labelStyle: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
@@ -523,6 +574,7 @@ class _MyPageState extends State<MyPage> {
                             width: double.infinity,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
+                                  elevation: 0,  // 그림자 제거
                                   splashFactory: (value == 0)
                                       ? NoSplash.splashFactory
                                       : InkSplash.splashFactory,
@@ -541,9 +593,16 @@ class _MyPageState extends State<MyPage> {
                               child: Text(
                                 '저장',
                                 style: TextStyle(
+<<<<<<< HEAD
                                     color: (value == 1)
                                         ? Colors.white
                                         : Color(0xFF767676)),
+=======
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  color: (value == 1) ? Colors.white : Color(0xFF767676)
+                                ),
+>>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
                               ),
                             ),
                           ),
