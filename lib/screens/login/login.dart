@@ -156,42 +156,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            SizedBox(height: 24),
-            // 로그인 X - 테스트 용
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: InkWell(
-                onTap: () async {
-                  // 메인페이지로 이동
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            MyAppPage()), // bottom_navigation_bar.dart
-                    (route) => false, // 모든 이전 페이지 제거
-                  );
-                },
-                child: Container(
-                  height: 44,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF15A2B),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      '비회원으로 로그인',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),

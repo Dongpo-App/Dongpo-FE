@@ -44,3 +44,6 @@ app.*.map.json
 
 # Hide API key
 api_key.dart
+
+#Hide info.plist
+info.plist
