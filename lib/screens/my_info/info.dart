@@ -397,12 +397,7 @@ class _MyPageState extends State<MyPage> {
     final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 50%
 
     // TextEditingController를 사용하여 초기값 설정
-<<<<<<< HEAD
-    final TextEditingController nicknameController =
-        TextEditingController(text: "사용자1");
-=======
     final TextEditingController nicknameController = TextEditingController(text: _userProfile!.nickname);
->>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
     String nickname = nicknameController.text;
 
     showModalBottomSheet(
