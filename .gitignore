@@ -44,3 +44,7 @@ app.*.map.json
 
 # Hide API key
 api_key.dart
+
+# Hide AndroidManifest
+/android/app/src/main/AndroidManifest.xml
+/android/app/src/main/res/values/strings.xml
