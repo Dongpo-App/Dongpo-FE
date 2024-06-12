@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
 import 'login_platform.dart';
 
-class LoginViewModel{
+class LoginViewModel {
   final SocialLogin _socialLogin;
   bool isLogined = false;
   bool isLogouted = false;
@@ -31,8 +31,10 @@ class LoginViewModel{
   }
 
   Future<bool> naverLogin() async {
+    logger.d('naverLogin() 진입했다');
     socialToken = await _socialLogin.isNaverLogin();
-    if(socialToken != null) {
+    logger.d('_socialLogin.isNaverLogin() 성공했다.');
+    if (socialToken != null) {
       // 네이버 로그인 성공함
       loginPlatform = LoginPlatform.naver;
       isLogined = await tokenAPI();
@@ -45,9 +47,10 @@ class LoginViewModel{
   }
 
   Future<bool> logout(String? loginPlatformString) async {
-    LoginPlatform loginPlatform = LoginPlatformExtension.fromString(loginPlatformString); // String -> enum
+    LoginPlatform loginPlatform = LoginPlatformExtension.fromString(
+        loginPlatformString); // String -> enum
     isLogouted = await _socialLogin.isLogout(loginPlatform);
-    if(isLogouted){
+    if (isLogouted) {
       // 로그아웃 성공
       loginPlatform = LoginPlatform.none;
       isLogined = false;

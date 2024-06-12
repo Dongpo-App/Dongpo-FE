@@ -44,7 +44,40 @@
 		<string>storykompassauth</string>
 		<string>kakaolink</string>
 		<string>kakaotalk-5.9.7</string>
+		 <string>naversearchapp</string>
+            <string>naversearchthirdlogin</string>
 	</array>
+	<key>naverServiceAppUrlScheme</key>
+        <string>com.example.dongpoTest</string>
+        <key>naverConsumerKey</key>
+        <string>RONVWbHjr_XuPhPRuiGo</string>
+        <key>naverConsumerSecret</key>
+        <string>BixpaNuybB</string>
+        <key>naverServiceAppName</key>
+        <string>dongpo</string>
+		<key>NSAppTransportSecurity</key>
+        <dict>
+           <key>NSAllowsArbitraryLoads</key>
+           <true/>
+           <key>NSExceptionDomains</key>
+           <dict>
+              <key>naver.com</key>
+              <dict>
+                 <key>NSExceptionRequiresForwardSecrecy</key>
+                 <false/>
+                 <key>NSIncludesSubdomains</key>
+                 <true/>
+              </dict>
+              <key>naver.net</key>
+              <dict>
+                 <key>NSExceptionRequiresForwardSecrecy</key>
+                 <false/>
+                 <key>NSIncludesSubdomains</key>
+                 <true/>
+              </dict>
+           </dict>
+        </dict>
+
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
@@ -78,5 +111,23 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<key>LSApplicationQueriesSchemes</key>
+<array>
+    <string>naverlogin</string>
+</array>
+	<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.example.dongpoTest</string>
+        </array>
+    </dict>
+</array>
+
+
+
+	
 </dict>
 </plist>

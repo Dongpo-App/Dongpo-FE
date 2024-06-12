@@ -12,7 +12,6 @@ import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:image_picker/image_picker.dart';
 
-
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
 
@@ -64,7 +63,8 @@ class _MyPageState extends State<MyPage> {
           ),
         ),
       ),
-      body: SingleChildScrollView( // 스크롤
+      body: SingleChildScrollView(
+        // 스크롤
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -87,7 +87,8 @@ class _MyPageState extends State<MyPage> {
                       children: [
                         // 칭호
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                           decoration: BoxDecoration(
                             color: Color(0xFFF5E0D9),
                             borderRadius: BorderRadius.circular(12.0),
@@ -125,17 +126,15 @@ class _MyPageState extends State<MyPage> {
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: 24),
               // 프로필 편집 버튼
-              child:  OutlinedButton(
+              child: OutlinedButton(
                 onPressed: () {
                   showEditProfileBottomSheet(context);
                 },
                 style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(12),
-                    )
-                  )
-                ),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                  Radius.circular(12),
+                ))),
                 child: Text(
                   '프로필 편집',
                   style: TextStyle(
@@ -149,7 +148,7 @@ class _MyPageState extends State<MyPage> {
             SizedBox(height: 24), // 간격 조정
             // 등록한 가게, 칭호, 선물함
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical : 24),
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -165,7 +164,9 @@ class _MyPageState extends State<MyPage> {
                           color: Color(0xFF767676),
                         ),
                       ),
-                      SizedBox(height: 8,),
+                      SizedBox(
+                        height: 8,
+                      ),
                       Text(
                         '등록한 가게',
                         style: TextStyle(
@@ -189,7 +190,9 @@ class _MyPageState extends State<MyPage> {
                           color: Color(0xFF767676),
                         ),
                       ),
-                      SizedBox(height: 8,),
+                      SizedBox(
+                        height: 8,
+                      ),
                       Text(
                         '칭호',
                         style: TextStyle(
@@ -213,7 +216,9 @@ class _MyPageState extends State<MyPage> {
                           color: Color(0xFF767676),
                         ),
                       ),
-                      SizedBox(height: 8,),
+                      SizedBox(
+                        height: 8,
+                      ),
                       Text(
                         '선물함',
                         style: TextStyle(
@@ -245,8 +250,7 @@ class _MyPageState extends State<MyPage> {
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF767676)
-                  ),
+                      color: Color(0xFF767676)),
                 ),
                 trailing: Icon(Icons.keyboard_arrow_right),
                 onTap: () {
@@ -262,8 +266,7 @@ class _MyPageState extends State<MyPage> {
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF767676)
-                  ),
+                      color: Color(0xFF767676)),
                 ),
                 trailing: Icon(Icons.keyboard_arrow_right),
                 onTap: () {
@@ -279,8 +282,7 @@ class _MyPageState extends State<MyPage> {
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF767676)
-                  ),
+                      color: Color(0xFF767676)),
                 ),
                 trailing: Icon(Icons.keyboard_arrow_right),
                 onTap: () {
@@ -296,8 +298,7 @@ class _MyPageState extends State<MyPage> {
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xFF767676)
-                  ),
+                      color: Color(0xFF767676)),
                 ),
                 trailing: Icon(Icons.keyboard_arrow_right),
                 onTap: () {
@@ -313,12 +314,13 @@ class _MyPageState extends State<MyPage> {
                 children: [
                   GestureDetector(
                     onTap: () async {
-                      String? loginPlatform = await storage.read(key: 'loginPlatform');
-                      if (loginPlatform == null){
+                      String? loginPlatform =
+                          await storage.read(key: 'loginPlatform');
+                      if (loginPlatform == null) {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => LoginPage()),
-                              (route) => false,  // 모든 이전 페이지 제거
+                          (route) => false, // 모든 이전 페이지 제거
                         );
                       }
                       isLogouted = await loginViewModel.logout(loginPlatform);
@@ -332,7 +334,7 @@ class _MyPageState extends State<MyPage> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => LoginPage()),
-                              (route) => false,  // 모든 이전 페이지 제거
+                          (route) => false, // 모든 이전 페이지 제거
                         );
                       }
                     },
@@ -348,12 +350,13 @@ class _MyPageState extends State<MyPage> {
                   Spacer(),
                   GestureDetector(
                     onTap: () async {
-                      String? loginPlatform = await storage.read(key: 'loginPlatform');
-                      if (loginPlatform == null){
+                      String? loginPlatform =
+                          await storage.read(key: 'loginPlatform');
+                      if (loginPlatform == null) {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => LoginPage()),
-                              (route) => false,  // 모든 이전 페이지 제거
+                          (route) => false, // 모든 이전 페이지 제거
                         );
                       }
                       isLogouted = await loginViewModel.logout(loginPlatform);
@@ -367,7 +370,7 @@ class _MyPageState extends State<MyPage> {
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => LoginPage()),
-                              (route) => false,  // 모든 이전 페이지 제거
+                          (route) => false, // 모든 이전 페이지 제거
                         );
                       }
                     },
@@ -388,6 +391,7 @@ class _MyPageState extends State<MyPage> {
       ),
     );
   }
+
   void showEditProfileBottomSheet(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height; // 현재 화면 높이
     final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 50%
@@ -404,10 +408,10 @@ class _MyPageState extends State<MyPage> {
           builder: (BuildContext context, StateSetter setState) {
             return Padding(
               padding: EdgeInsets.only(
-                bottom : MediaQuery.of(context).viewInsets.bottom,
+                bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
               child: GestureDetector(
-                onTap: (){
+                onTap: () {
                   FocusScope.of(context).unfocus(); //
                 },
                 child: Container(
@@ -415,7 +419,9 @@ class _MyPageState extends State<MyPage> {
                   width: double.infinity,
                   margin: EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12)),
                   ),
                   child: SafeArea(
                     child: SingleChildScrollView(
@@ -447,7 +453,8 @@ class _MyPageState extends State<MyPage> {
                           SizedBox(height: 24,),
                           GestureDetector(
                             onTap: () async {
-                              final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                              final XFile? pickedFile = await picker.pickImage(
+                                  source: ImageSource.gallery);
                               if (pickedFile != null) {
                                 setState(() {
                                   image = pickedFile;
@@ -484,7 +491,9 @@ class _MyPageState extends State<MyPage> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 16,),
+                          SizedBox(
+                            height: 16,
+                          ),
                           SizedBox(
                             height: 44,
                             width: double.infinity,
@@ -516,13 +525,19 @@ class _MyPageState extends State<MyPage> {
                                   color: Color(0xFF767676),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                                  borderSide: BorderSide(width: 1, color: Color(0xFF767676),)
-                                ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(12)),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Color(0xFF767676),
+                                    )),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                                  borderSide: BorderSide(width: 1, color: Color(0xFF767676),)
-                                ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(12)),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Color(0xFF767676),
+                                    )),
                               ),
                             ),
                           ),
@@ -537,11 +552,13 @@ class _MyPageState extends State<MyPage> {
                                       ? NoSplash.splashFactory
                                       : InkSplash.splashFactory,
                                   // 수정이 있을 경우 버튼 활성화
-                                  backgroundColor:
-                                  (value == 1) ? Color(0xffF15A2B) : Color(0xFFF4F4F4),
+                                  backgroundColor: (value == 1)
+                                      ? Color(0xffF15A2B)
+                                      : Color(0xFFF4F4F4),
                                   minimumSize: Size(double.infinity, 40),
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(Radius.circular(12)))),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(12)))),
                               onPressed: () {
                                 // 프로필 수정 로직 구현
                                 (value == 0) ? null : logger.d("저장 완");
