@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../main.dart';
 
 class MyPageViewModel{
+  // test
   // secure storage
   static final storage = FlutterSecureStorage();
 
