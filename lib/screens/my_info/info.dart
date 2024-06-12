@@ -76,14 +76,9 @@ class _MyPageState extends State<MyPage> {
                   // 프로필 사진
                   CircleAvatar(
                     radius: 48,
-<<<<<<< HEAD
-                    backgroundImage:
-                        AssetImage('assets/images/profile_img1.jpg'),
-=======
                     backgroundImage: _userProfile!.profilePic != null
                     ? NetworkImage(_userProfile!.profilePic!) as ImageProvider
                     : AssetImage('assets/images/profile.jpg'),
->>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
                   ),
                   SizedBox(width: 16), // 간격 조정
                   Expanded(
@@ -460,13 +455,7 @@ class _MyPageState extends State<MyPage> {
                               )
                             ],
                           ),
-<<<<<<< HEAD
-                          SizedBox(
-                            height: 40,
-                          ),
-=======
                           SizedBox(height: 24,),
->>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
                           GestureDetector(
                             onTap: () async {
                               final XFile? pickedFile = await picker.pickImage(
@@ -486,13 +475,7 @@ class _MyPageState extends State<MyPage> {
                                   radius: 40, // 80 / 2
                                   backgroundImage: image != null
                                       ? FileImage(File(image!.path))
-<<<<<<< HEAD
-                                      : AssetImage(
-                                              'assets/images/profile_img1.jpg')
-                                          as ImageProvider,
-=======
                                       : NetworkImage(_userProfile!.profilePic!) as ImageProvider,
->>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -520,13 +503,8 @@ class _MyPageState extends State<MyPage> {
                             height: 44,
                             width: double.infinity,
                             child: TextField(
-<<<<<<< HEAD
-                              controller:
-                                  nicknameController, // TextEditingController를 연결
-=======
                               textAlignVertical: TextAlignVertical.center,
                               controller: nicknameController, // TextEditingController를 연결
->>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
                               onChanged: (text) {
                                 setState(() {
                                   nickname = text;
@@ -593,16 +571,10 @@ class _MyPageState extends State<MyPage> {
                               child: Text(
                                 '저장',
                                 style: TextStyle(
-<<<<<<< HEAD
-                                    color: (value == 1)
-                                        ? Colors.white
-                                        : Color(0xFF767676)),
-=======
                                   fontWeight: FontWeight.w600,
                                   fontSize: 16,
                                   color: (value == 1) ? Colors.white : Color(0xFF767676)
                                 ),
->>>>>>> 4a538510a409a646d66eb573b8f512ed601c714f
                               ),
                             ),
                           ),
