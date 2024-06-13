@@ -5,21 +5,31 @@ import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 //메인 함수
 void main() async {
-  // runApp() 호출 전 Flutter SDK 초기화
+  // Flutter SDK 초기화 보장
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // FlutterSecureStorage 초기화 및 토큰 삭제
+  final storage = FlutterSecureStorage();
+  await storage.delete(key: 'accessToken');
+  await storage.delete(key: 'refreshToken');
+  await storage.delete(key: 'loginPlatform');
+
+  // Kakao SDK 초기화
   KakaoSdk.init(
     nativeAppKey: nativeAppKey,
   );
 
-  // splash widgetBinding
+  // 스플래시 화면 초기화 및 유지
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  // splash 화면 시작
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await reset_map();
 
+  // 앱 실행
   runApp(const MyApp());
 }
 
@@ -48,6 +58,8 @@ var logger = Logger(
 var loggerNoStack = Logger(
   printer: PrettyPrinter(methodCount: 0),
 );
+
+
 
 /* 
 로거 사용법 
