@@ -1,4 +1,5 @@
 import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
+import 'package:dongpo_test/screens/my_info/info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -42,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (context) => MyAppPage()), // bottom_navigation_bar.dart
+            builder: (context) => MyPage()),
         (route) => false, // 모든 이전 페이지 제거
       );
     }
@@ -91,7 +92,6 @@ class _LoginPageState extends State<LoginPage> {
                         value: loginViewModel.loginPlatform.name);
                     Map<String, String> allData = await storage.readAll();
                     logger.d("secure storage naver read : ${allData}");
-                    // 메인페이지로 이동
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(

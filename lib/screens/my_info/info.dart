@@ -12,6 +12,8 @@ import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../widgets/bottom_navigation_bar.dart';
+
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
 
@@ -586,7 +588,7 @@ class _MyPageState extends State<MyPage> {
                                   value = 0;
                                   Navigator.pushAndRemoveUntil(
                                     context,
-                                    MaterialPageRoute(builder: (context) => MyPage()),
+                                    MaterialPageRoute(builder: (context) => MyAppPage(initialIndex: 3)),
                                         (route) => false, // 모든 이전 페이지 제거
                                   ).then((value) {
                                     setState(() {}); // 페이지 새로고침

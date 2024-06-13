@@ -1,3 +1,4 @@
+import 'package:dongpo_test/main.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/add/add_01.dart';
@@ -6,14 +7,15 @@ import 'package:dongpo_test/screens/my_info/info.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MyAppPage extends StatefulWidget {
-  const MyAppPage({super.key});
+  final int initialIndex;
+  const MyAppPage({super.key, this.initialIndex = 0});
 
   @override
   State<MyAppPage> createState() => MyAppPageState();
 }
 
 class MyAppPageState extends State<MyAppPage> {
-  int selectedIndex = 0;
+  late int selectedIndex;
 
   final List<Widget> screens = [
     const MainPage(),
@@ -21,6 +23,12 @@ class MyAppPageState extends State<MyAppPage> {
     const CommunityPage(),
     const MyPage(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    selectedIndex = widget.initialIndex;
+  }
 
   void onItemTapped(int index) {
     // 콜백 함수
