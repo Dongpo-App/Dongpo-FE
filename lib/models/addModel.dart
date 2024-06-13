@@ -1,56 +1,48 @@
-class MyData {
-  late int id;
+class AddClass {
   String? name;
+  String? address;
   double? latitude;
   double? longitude;
   String? openTime;
   String? closeTime;
-  int? memberId;
-  String? status;
+  bool? isToiletValid;
   List<String>? operatingDays;
   List<String>? payMethods;
-  bool? toiletValid;
 
-  MyData(
-      {required this.id,
-      this.name,
+  AddClass(
+      {this.name,
+      this.address,
       this.latitude,
       this.longitude,
       this.openTime,
       this.closeTime,
-      this.memberId,
-      this.status,
+      this.isToiletValid,
       this.operatingDays,
-      this.payMethods,
-      this.toiletValid});
+      this.payMethods});
 
-  MyData.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+  AddClass.fromJson(Map<String, dynamic> json) {
     name = json['name'];
+    address = json['address'];
     latitude = json['latitude'];
     longitude = json['longitude'];
     openTime = json['openTime'];
     closeTime = json['closeTime'];
-    memberId = json['memberId'];
-    status = json['status'];
-    operatingDays = json['operatingDays']?.cast<String>() ?? [];
-    payMethods = json['payMethods']?.cast<String>() ?? [];
-    toiletValid = json['toiletValid'];
+    isToiletValid = json['isToiletValid'];
+    operatingDays = json['operatingDays'].cast<String>();
+    payMethods = json['payMethods'].cast<String>();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
     data['name'] = this.name;
+    data['address'] = this.address;
     data['latitude'] = this.latitude;
     data['longitude'] = this.longitude;
     data['openTime'] = this.openTime;
     data['closeTime'] = this.closeTime;
-    data['memberId'] = this.memberId;
-    data['status'] = this.status;
+    data['isToiletValid'] = this.isToiletValid;
     data['operatingDays'] = this.operatingDays;
     data['payMethods'] = this.payMethods;
-    data['toiletValid'] = this.toiletValid;
     return data;
   }
 }

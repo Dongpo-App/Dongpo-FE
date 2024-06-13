@@ -1,5 +1,6 @@
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -13,92 +14,88 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:dongpo_test/screens/main/main_03/03_title.dart';
 import 'package:dongpo_test/screens/main/main_03/03_photo_List.dart';
 import 'package:dongpo_test/main.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+/*
+메인페이지 맨처음 보여줄 때 
+ 1)내위치로 카메라 옮기기 => init 초기화할때 함수 사용
+ 2) 마커 여러개 표시 => 냅둬 
+ 3) 등록한 가게 전체조회해서 마커 추가 => get 리스트에 담고 마커 여러개 출력 
+*/
 
 //여러개 띄울 마커 받아놓을 마커리스트
 List<NMarker> _markers = [];
 
-//임의로 마커 여러개 생성
-List<MyData> _DummyData2() {
+// //임의로 마커 여러개 생성
+List<MyData> generateDummyData() {
   return [
     MyData(
-      id: '4',
+      id: 1,
       name: '가게 1',
-      address: '주소 1',
       latitude: 37.5021,
       longitude: 126.8697,
-      openTime: '09:00',
-      closeTime: '21:00',
-      isToiletValid: true,
+      openTime: '09:00:00',
+      closeTime: '21:00:00',
+      memberId: 1,
+      status: 'ACTIVE',
       operatingDays: ['월', '화', '수', '목', '금'],
       payMethods: ['카드', '현금'],
+      toiletValid: true,
     ),
     MyData(
-      id: '5',
+      id: 2,
       name: '가게 2',
-      address: '주소 2',
       latitude: 37.5041,
       longitude: 126.8668,
-      openTime: '10:00',
-      closeTime: '22:00',
-      isToiletValid: false,
+      openTime: '10:00:00',
+      closeTime: '22:00:00',
+      memberId: 1,
+      status: 'ACTIVE',
       operatingDays: ['월', '화', '수', '목', '금'],
       payMethods: ['카드', '현금'],
+      toiletValid: false,
     ),
     MyData(
-      id: '6',
+      id: 3,
       name: '가게 3',
-      address: '주소 3',
       latitude: 37.5051,
       longitude: 126.8619,
-      openTime: '08:00',
-      closeTime: '20:00',
-      isToiletValid: true,
+      openTime: '08:00:00',
+      closeTime: '20:00:00',
+      memberId: 1,
+      status: 'ACTIVE',
       operatingDays: ['월', '화', '수', '목', '금'],
       payMethods: ['카드', '현금'],
-    ),
-    // ...
-  ];
-}
-
-List<MyData> _DummyData() {
-  return [
-    MyData(
-      id: '1',
-      name: '가게 1',
-      address: '주소 1',
-      latitude: 37.5001,
-      longitude: 126.8677,
-      openTime: '09:00',
-      closeTime: '21:00',
-      isToiletValid: true,
-      operatingDays: ['월', '화', '수', '목', '금'],
-      payMethods: ['카드', '현금'],
+      toiletValid: true,
     ),
     MyData(
-      id: '2',
-      name: '가게 2',
-      address: '주소 2',
-      latitude: 37.5011,
-      longitude: 126.8678,
-      openTime: '10:00',
-      closeTime: '22:00',
-      isToiletValid: false,
+      id: 4,
+      name: '가게 4',
+      latitude: 37.5061,
+      longitude: 126.8630,
+      openTime: '11:00:00',
+      closeTime: '23:00:00',
+      memberId: 1,
+      status: 'ACTIVE',
       operatingDays: ['월', '화', '수', '목', '금'],
       payMethods: ['카드', '현금'],
+      toiletValid: false,
     ),
     MyData(
-      id: '3',
-      name: '가게 3',
-      address: '주소 3',
-      latitude: 37.5021,
-      longitude: 126.8679,
-      openTime: '08:00',
-      closeTime: '20:00',
-      isToiletValid: true,
+      id: 5,
+      name: '가게 5',
+      latitude: 37.5071,
+      longitude: 126.8650,
+      openTime: '07:00:00',
+      closeTime: '19:00:00',
+      memberId: 1,
+      status: 'ACTIVE',
       operatingDays: ['월', '화', '수', '목', '금'],
       payMethods: ['카드', '현금'],
+      toiletValid: true,
     ),
-    // ...
   ];
 }
 
@@ -122,6 +119,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
+  static final storage = FlutterSecureStorage();
+
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
   late NaverMapController _mapController;
   String _currentAddress = "";
@@ -207,7 +206,7 @@ class _MainPageState extends State<MainPage>
                 NaverMap(
                   onMapReady: (controller) async {
                     _onMapReady(controller);
-
+                    _moveToCurrentLocation();
                     //   //여러 좌표를 받아서 마커 생성
                     //   final NLatLng test = NLatLng(
                     //       37.49993604717163, 126.86768245932946); //테스트 위도 경도
@@ -536,8 +535,8 @@ class _MainPageState extends State<MainPage>
             'assets/images/defalutMarker.png');
 
         NMarker marker = NMarker(
-          id: data.id,
-          position: NLatLng(data.latitude, data.longitude),
+          id: data.id.toString(),
+          position: NLatLng(data.latitude!, data.longitude!),
           icon: markerIcon,
         );
         //마커 사이즈 조절
@@ -561,18 +560,18 @@ class _MainPageState extends State<MainPage>
       marker.setIcon(
           NOverlayImage.fromAssetImage('assets/images/clickedMarker.png'));
       //해당 위치로 이동
-      logger.d('tap_1');
+
       _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
           NCameraPosition(
-            target: NLatLng(data.latitude, data.longitude),
+            target: NLatLng(data.latitude!, data.longitude!),
             zoom: 16,
           ),
         ),
       );
       _showBottomSheet(context);
     } catch (e) {
-      logger.d('에러발생');
+      logger.d('에러발생 $e');
     } finally {
       logger.d('finally 실행');
     }
@@ -584,11 +583,15 @@ class _MainPageState extends State<MainPage>
     final latitude = cameraPosition.target.latitude;
     final longitude = cameraPosition.target.longitude;
 
-    //서버에 보내고 더미데이터 받아옴
-    logger.d('현재 지도의 중앙 좌표: 위도 $latitude, 경도 $longitude');
+    //서버에 위도경도 보내서 데이터 더미로 받아와야함
 
     //클래스에 담고 마커를 출력함
-    _addMarkers(_DummyData());
+    //임시 데이터
+    //_addMarkers(generateDummyData());
+    //등록한 데이터
+    _addMarkers(await _mainPageAPI());
+    _moveToCurrentLocation();
+    // _addMarkers(dataList)
   }
 
   Future<void> _moveToCurrentLocation() async {
@@ -676,12 +679,12 @@ class _MainPageState extends State<MainPage>
                 child: Text('앱 종료'),
                 onPressed: () {
                   SystemNavigator.pop(); // 앱 종료
-                  print('앱 종료');
+                  logger.d('앱 종료');
                 },
               ),
               TextButton(
                   onPressed: () {
-                    print('설정으로 이동');
+                    logger.d('설정으로 이동');
                     openAppSettings();
                   },
                   child: Text("설정으로 이동"))
@@ -737,5 +740,23 @@ class _MainPageState extends State<MainPage>
         );
       },
     );
+  }
+
+  Future<List<MyData>> _mainPageAPI() async {
+    final accessToken = await storage.read(key: 'accessToken');
+    final url = Uri.parse('https://1417mhz.xyz/api/store/member');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
+      logger.d(jsonResponse);
+      return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
+    } else {
+      throw Exception('HTTP ERROR !!! ${response.body}');
+    }
   }
 }
