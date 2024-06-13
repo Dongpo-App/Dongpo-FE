@@ -180,15 +180,15 @@ class _GagaeUpdateState extends State<GagaeUpdate> {
                 return GestureDetector(
                   onTap: () => _onDayTapped(index),
                   child: Container(
-                    margin: EdgeInsets.all(5.0),
+                    margin: EdgeInsets.all(6.0),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _selectedDays[index]
                           ? Color(0xffF15A2B)
                           : Colors.grey[300],
                     ),
-                    width: 40.0,
-                    height: 50.0,
+                    width: 32.0,
+                    height: 48.0,
                     child: Center(
                       child: Text(
                         ['일', '월', '화', '수', '목', '금', '토'][index],
@@ -196,7 +196,7 @@ class _GagaeUpdateState extends State<GagaeUpdate> {
                           color: _selectedDays[index]
                               ? Colors.white
                               : Colors.black,
-                          fontSize: 18.0,
+                          fontSize: 16.0,
                         ),
                       ),
                     ),
@@ -315,8 +315,8 @@ class _GagaeUpdateState extends State<GagaeUpdate> {
                           ? Color(0xffF15A2B)
                           : Colors.grey[300],
                     ),
-                    width: 110.0,
-                    height: 50.0,
+                    width: 92.0,
+                    height: 48.0,
                     child: Center(
                       child: Text(
                         ['현금', '계좌이체', '카드'][index],
@@ -324,7 +324,7 @@ class _GagaeUpdateState extends State<GagaeUpdate> {
                           color: _selectedPaymentMethods[index]
                               ? Colors.white
                               : Colors.black,
-                          fontSize: 18.0,
+                          fontSize: 14.0,
                         ),
                       ),
                     ),

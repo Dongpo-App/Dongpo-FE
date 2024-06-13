@@ -289,9 +289,9 @@ class _MainPageState extends State<MainPage>
                         children: <Widget>[
                           SizedBox(width: 8.0),
                           Text(
-                            _currentAddress,
+                            _currentAddress.length > 28 ? '${_currentAddress.substring(0, 28)}...' : _currentAddress,
                             style: TextStyle(
-                                fontSize: 20, color: Colors.grey[400]),
+                                fontSize: 14, color: Colors.grey[400]),
                           ),
                           Spacer(),
                           Icon(Icons.search),

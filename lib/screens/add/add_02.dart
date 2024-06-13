@@ -190,8 +190,8 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                           ? Color(0xffF15A2B)
                           : Colors.grey[300],
                     ),
-                    width: 40.0,
-                    height: 50.0,
+                    width: 32.0,
+                    height: 48.0,
                     child: Center(
                       child: Text(
                         ['일', '월', '화', '수', '목', '금', '토'][index],
@@ -199,7 +199,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                           color: _selectedDays[index]
                               ? Colors.white
                               : Colors.black,
-                          fontSize: 18.0,
+                          fontSize: 16.0,
                         ),
                       ),
                     ),
@@ -318,7 +318,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                           ? Color(0xffF15A2B)
                           : Colors.grey[300],
                     ),
-                    width: 110.0,
+                    width: 96.0,
                     height: 50.0,
                     child: Center(
                       child: Text(
@@ -327,7 +327,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                           color: _selectedPaymentMethods[index]
                               ? Colors.white
                               : Colors.black,
-                          fontSize: 18.0,
+                          fontSize: 14.0,
                         ),
                       ),
                     ),

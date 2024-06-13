@@ -1,6 +1,7 @@
 import 'dart:convert'; // JSON 데이터를 다루기 위해 사용
 import 'package:dongpo_test/screens/add/add_02.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart'; // Naver Map API를 사용하기 위해 사용
 import 'package:geolocator/geolocator.dart'; // 위치 정보를 얻기 위해 사용
 import 'package:http/http.dart' as http; // HTTP 요청을 보내기 위해 사용
@@ -67,6 +68,7 @@ class _AddPageState extends State<AddPage> {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             // 에러가 발생했을 때 에러 메시지 표시
+            logger.d("hasError : ${snapshot.error}");
             return Center(child: Text('위치 정보를 불러오는데 실패했습니다.'));
           } else if (snapshot.hasData) {
             // 데이터가 있을 때 지도와 UI 요소를 표시
@@ -261,11 +263,22 @@ Future<NLatLng> getCurrentLocation() async {
   return NLatLng(position.latitude, position.longitude);
 }
 
-Future<void> reset_map() async {
+// Future<void> reset_map() async {
   // 네이버 맵 초기화
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await NaverMapSdk.instance.initialize(
+      // clientId: naverApiKey,
+      // onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
+// }
+
+// 지도 초기화하기
+Future<void> reset_map() async {
+  // splash 화면 종료
+  FlutterNativeSplash.remove();
+
   WidgetsFlutterBinding.ensureInitialized();
   await NaverMapSdk.instance.initialize(
-      clientId: naverApiKey,
+      clientId: naverApiKey, // 클라이언트 ID 설정
       onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
 }
 

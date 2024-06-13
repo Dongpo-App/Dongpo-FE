@@ -54,7 +54,10 @@ class BangMoon extends StatelessWidget {
                 ),
                 Text(
                   '방문 성공 A명',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold
+                  ),
                 ),
                 SizedBox(
                   width: 20,
@@ -78,7 +81,7 @@ class BangMoon extends StatelessWidget {
                 SizedBox(
                   width: 10,
                 ),
-                Text('방문 실패 A명', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('방문 실패 A명', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                 SizedBox(
                   width: 20,
                 )
@@ -256,7 +259,7 @@ class _SecondPageState extends State<SecondPage> {
                   ),
                   Container(
                     padding: EdgeInsets.all(10.0),
-                    margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                    margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
                     child: ElevatedButton(
                       onPressed: () {
                         (okValue == 1 || noValue == 1)

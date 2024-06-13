@@ -45,7 +45,7 @@ class _ShowReviewState extends State<ShowReview> {
                     return StatefulBuilder(
                         builder: (BuildContext context, StateSetter _setState) {
                       return SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.65,
+                        height: MediaQuery.of(context).size.height * 0.8,
                         child: Container(
                           margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
                           child: Column(
@@ -200,6 +200,7 @@ class _ShowReviewState extends State<ShowReview> {
             ),
           ),
           SizedBox(height: 15),
+          SizedBox(height: 40),
           SizedBox(height: 40),
           _showReview(context, 4),
           _showReview(context, 3.2),
