@@ -10,6 +10,9 @@ import 'package:dongpo_test/api_key.dart';
 import 'dart:developer';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:dongpo_test/screens/main/main_03/03_title.dart';
+import 'package:dongpo_test/screens/main/main_03/03_photo_List.dart';
+import 'package:dongpo_test/main.dart';
 
 //여러개 띄울 마커 받아놓을 마커리스트
 List<NMarker> _markers = [];
@@ -702,14 +705,34 @@ class _MainPageState extends State<MainPage>
   //가게 기본정보 바텀시트
   void _showBottomSheet(BuildContext context) {
     showModalBottomSheet(
+      barrierColor: Colors.transparent,
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.3,
-          color: Colors.white,
-          child: Center(
-            child: Text('Bottom Sheet Content'),
+          margin: EdgeInsets.only(left: 15, right: 15),
+          height: MediaQuery.of(context).size.height * 0.36,
+          decoration: BoxDecoration(),
+          child: Column(
+            children: [
+              TextButton(
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                  return StoreInfo();
+                })),
+                child: Icon(Icons.menu),
+              ),
+              //제목, 영업가능성, 거리
+              MainTitle(),
+              //사진
+              SizedBox(
+                height: 30,
+              ),
+              MainPhoto(),
+              SizedBox(
+                height: 20,
+              ),
+            ],
           ),
         );
       },

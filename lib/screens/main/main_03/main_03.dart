@@ -15,20 +15,6 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-final dio = Dio();
-final logger = Logger();
-
-void main() async {
-  // splash widgetBinding
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  // splash 화면 시작
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
-  await reset_map();
-
-  runApp(const MyApp());
-}
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

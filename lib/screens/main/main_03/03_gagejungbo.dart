@@ -1,3 +1,4 @@
+import 'package:dongpo_test/screens/main/main_03/03_gagaeUpdate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/buttonForm.dart';
@@ -81,7 +82,9 @@ class GageJungbo extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 //가게 정보 수정하기
-                //등록할 때 꺼 들거오면 될듯
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return GagaeUpdate();
+                }));
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 45),

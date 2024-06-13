@@ -51,4 +51,4 @@ api_key.dart
 /android/app/src/main/res/values/strings.xml
 
 #Hide info.plist
-info.plist
+/ios/Runner/Info.plist

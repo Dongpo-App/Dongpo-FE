@@ -30,10 +30,11 @@ class _MyPageState extends State<MyPage> {
   UserProfile? _userProfile;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     userProfile();
   }
+
   Future<void> userProfile() async {
     UserProfile? userProfile = await viewModel.userProfileGetAPI();
     setState(() {
@@ -77,8 +78,9 @@ class _MyPageState extends State<MyPage> {
                   CircleAvatar(
                     radius: 48,
                     backgroundImage: _userProfile!.profilePic != null
-                    ? NetworkImage(_userProfile!.profilePic!) as ImageProvider
-                    : AssetImage('assets/images/profile.jpg'),
+                        ? NetworkImage(_userProfile!.profilePic!)
+                            as ImageProvider
+                        : AssetImage('assets/images/profile.jpg'),
                   ),
                   SizedBox(width: 16), // 간격 조정
                   Expanded(
@@ -183,7 +185,7 @@ class _MyPageState extends State<MyPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                      _userProfile!.titleCount.toString(),
+                        _userProfile!.titleCount.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -209,7 +211,7 @@ class _MyPageState extends State<MyPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                      _userProfile!.presentCount.toString(),
+                        _userProfile!.presentCount.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -397,7 +399,8 @@ class _MyPageState extends State<MyPage> {
     final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 50%
 
     // TextEditingController를 사용하여 초기값 설정
-    final TextEditingController nicknameController = TextEditingController(text: _userProfile!.nickname);
+    final TextEditingController nicknameController =
+        TextEditingController(text: _userProfile!.nickname);
     String nickname = nicknameController.text;
 
     showModalBottomSheet(
@@ -450,7 +453,9 @@ class _MyPageState extends State<MyPage> {
                               )
                             ],
                           ),
-                          SizedBox(height: 24,),
+                          SizedBox(
+                            height: 24,
+                          ),
                           GestureDetector(
                             onTap: () async {
                               final XFile? pickedFile = await picker.pickImage(
@@ -470,7 +475,8 @@ class _MyPageState extends State<MyPage> {
                                   radius: 40, // 80 / 2
                                   backgroundImage: image != null
                                       ? FileImage(File(image!.path))
-                                      : NetworkImage(_userProfile!.profilePic!) as ImageProvider,
+                                      : NetworkImage(_userProfile!.profilePic!)
+                                          as ImageProvider,
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -499,7 +505,8 @@ class _MyPageState extends State<MyPage> {
                             width: double.infinity,
                             child: TextField(
                               textAlignVertical: TextAlignVertical.center,
-                              controller: nicknameController, // TextEditingController를 연결
+                              controller:
+                                  nicknameController, // TextEditingController를 연결
                               onChanged: (text) {
                                 setState(() {
                                   nickname = text;
@@ -547,7 +554,7 @@ class _MyPageState extends State<MyPage> {
                             width: double.infinity,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  elevation: 0,  // 그림자 제거
+                                  elevation: 0, // 그림자 제거
                                   splashFactory: (value == 0)
                                       ? NoSplash.splashFactory
                                       : InkSplash.splashFactory,
@@ -566,10 +573,11 @@ class _MyPageState extends State<MyPage> {
                               child: Text(
                                 '저장',
                                 style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                  color: (value == 1) ? Colors.white : Color(0xFF767676)
-                                ),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                    color: (value == 1)
+                                        ? Colors.white
+                                        : Color(0xFF767676)),
                               ),
                             ),
                           ),
