@@ -7,6 +7,7 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/screens/add/add_01.dart';
 import 'package:dongpo_test/main.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class GageAddSangsea extends StatefulWidget {
   const GageAddSangsea({super.key});
@@ -16,6 +17,8 @@ class GageAddSangsea extends StatefulWidget {
 }
 
 class _GageAddSangseaState extends State<GageAddSangsea> {
+  static final storage = FlutterSecureStorage();
+
   String openTime = '00:00';
   String closeTime = '00:00';
   int bathSelected = 0; //화장실 라디오 버튼
@@ -422,11 +425,19 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
   }
 
   Future<void> sendData() async {
+    final accessToken = await storage.read(key: 'accessToken');
+    double value1 = dataForm.sendLatitude;
+    double value2 = dataForm.sendLongitude;
+
+    double truncatedValue1 = (value1 * 1000000).truncateToDouble() / 1000000;
+    double truncatedValue2 = (value2 * 1000000).truncateToDouble() / 1000000;
+
+    logger.d("$truncatedValue1 || $truncatedValue2");
     final data = {
       'name': _nameController.text,
       'address': dataForm.sendAddress,
-      'latitude': dataForm.sendLatitude, //latitude
-      'longitude': dataForm.sendLongitude, //longitude
+      'latitude': truncatedValue1, //latitude
+      'longitude': truncatedValue2, //longitude
       'openTime': openTime,
       'closeTime': closeTime,
       'isToiletValid': bathSelected == 1,
@@ -434,18 +445,24 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       'payMethods': _getSelectedPaymentMethods(),
     };
 
-    final url = Uri.parse('https://dongpo-api-server.xyz');
-    final headers = {'Content-Type': 'application/json'};
+    final url = Uri.parse('https://1417mhz.xyz/api/store');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
     final body = jsonEncode(data);
 
-    final response = await http.post(url, headers: headers, body: body);
-    if (response.statusCode == 200) {
-      print('Data sent successfully');
-    } else {
-      print('Failed to send data');
-      logger.d(data);
-      //실패했을 떄
-      showAlertDialog(context);
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        logger.d('성공 보낸 데이터: $data');
+        showAlertDialog(context);
+      } else {
+        logger.d('전송 실패 ${response.statusCode} 에러');
+        //실패했을 떄
+      }
+    } catch (e) {
+      logger.d('Error $e');
     }
   }
 
