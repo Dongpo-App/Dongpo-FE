@@ -1,9 +1,9 @@
 class UserProfile {
-  final String nickname; // 닉네임
-  final String? profilePic; // 프로필사진 URL
-  final int registerCount; // 점포 등록 횟수
-  final int titleCount; // 칭호 보유 개수
-  final int presentCount; // 선물함 선물 개수
+  late final String nickname; // 닉네임
+  late final String? profilePic; // 프로필사진 URL
+  late final int registerCount; // 점포 등록 횟수
+  late final int titleCount; // 칭호 보유 개수
+  late final int presentCount; // 선물함 선물 개수
 
   UserProfile({
     required this.nickname,

@@ -27,7 +27,7 @@ class _MyPageState extends State<MyPage> {
 
   // 사용자 정보 관련
   MyPageViewModel viewModel = MyPageViewModel();
-  UserProfile? _userProfile;
+  late UserProfile _userProfile = UserProfile(nickname: "nickname", registerCount: 0, titleCount: 0, presentCount: 0);
 
   @override
   void initState() {
@@ -35,8 +35,8 @@ class _MyPageState extends State<MyPage> {
     userProfile();
   }
 
-  Future<void> userProfile() async {
-    UserProfile? userProfile = await viewModel.userProfileGetAPI();
+  void userProfile() async {
+    UserProfile userProfile = await viewModel.userProfileGetAPI();
     setState(() {
       _userProfile = userProfile;
     });
@@ -44,7 +44,6 @@ class _MyPageState extends State<MyPage> {
 
   // 프로필 사진 수정 관련
   final picker = ImagePicker();
-  XFile? image;
 
   //버튼 활성화 비활성화를 위한 value값
   int value = 0;
@@ -77,8 +76,8 @@ class _MyPageState extends State<MyPage> {
                   // 프로필 사진
                   CircleAvatar(
                     radius: 48,
-                    backgroundImage: _userProfile!.profilePic != null
-                        ? NetworkImage(_userProfile!.profilePic!)
+                    backgroundImage: _userProfile.profilePic != null
+                        ? NetworkImage(_userProfile.profilePic!)
                             as ImageProvider
                         : AssetImage('assets/images/profile.jpg'),
                   ),
@@ -110,7 +109,7 @@ class _MyPageState extends State<MyPage> {
                         SizedBox(height: 8), // 간격 조정
                         // 닉네임
                         Text(
-                          _userProfile!.nickname,
+                          _userProfile.nickname,
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w600,
@@ -159,7 +158,7 @@ class _MyPageState extends State<MyPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _userProfile!.registerCount.toString(),
+                        _userProfile.registerCount.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -185,7 +184,7 @@ class _MyPageState extends State<MyPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _userProfile!.titleCount.toString(),
+                        _userProfile.titleCount.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -211,7 +210,7 @@ class _MyPageState extends State<MyPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _userProfile!.presentCount.toString(),
+                        _userProfile.presentCount.toString(),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -331,8 +330,7 @@ class _MyPageState extends State<MyPage> {
                         await storage.delete(key: 'accessToken');
                         await storage.delete(key: 'refreshToken');
                         await storage.delete(key: 'loginPlatform');
-                        Map<String, String> allData = await storage.readAll();
-                        logger.d("secure storage delete read : ${allData}");
+
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => LoginPage()),
@@ -368,7 +366,7 @@ class _MyPageState extends State<MyPage> {
                         await storage.delete(key: 'refreshToken');
                         await storage.delete(key: 'loginPlatform');
                         Map<String, String> allData = await storage.readAll();
-                        logger.d("secure storage delete read : ${allData}");
+                        logger.d("logout token : ${allData}");
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => LoginPage()),
@@ -400,8 +398,18 @@ class _MyPageState extends State<MyPage> {
 
     // TextEditingController를 사용하여 초기값 설정
     final TextEditingController nicknameController =
-        TextEditingController(text: _userProfile!.nickname);
+        TextEditingController(text: _userProfile.nickname);
     String nickname = nicknameController.text;
+
+    // userProfileUpdate 초기값 설정
+    String userPic = (_userProfile.profilePic != null) ? _userProfile.profilePic! : 'assets/images/profile.jpg';
+
+    // 사용자 사진 선택
+    XFile? pickedFile;
+    dynamic? sendData;
+
+    // 사용자 정보 수정 상태 변수
+    bool userProfileUpdate = false;
 
     showModalBottomSheet(
       isScrollControlled: true, // 키보드가 올라올 때 바텀시트가 따라 올라감
@@ -458,14 +466,15 @@ class _MyPageState extends State<MyPage> {
                           ),
                           GestureDetector(
                             onTap: () async {
-                              final XFile? pickedFile = await picker.pickImage(
-                                  source: ImageSource.gallery);
+                              pickedFile = await picker.pickImage(
+                                  source: ImageSource.gallery,
+                                imageQuality: 30,
+                              );
                               if (pickedFile != null) {
                                 setState(() {
-                                  image = pickedFile;
                                   value = 1;
-                                  logger.d("image path : ${image!.path}");
-                                  logger.d("image value : ${value}");
+                                  // 서버에 보낼 이미지 경로 XFile? image;
+                                  sendData = pickedFile!.path;
                                 });
                               }
                             },
@@ -473,10 +482,11 @@ class _MyPageState extends State<MyPage> {
                               children: [
                                 CircleAvatar(
                                   radius: 40, // 80 / 2
-                                  backgroundImage: image != null
-                                      ? FileImage(File(image!.path))
-                                      : NetworkImage(_userProfile!.profilePic!)
-                                          as ImageProvider,
+                                  backgroundImage: pickedFile != null
+                                      ? FileImage(File(pickedFile!.path))
+                                      : (_userProfile.profilePic != null)
+                                        ? NetworkImage(userPic) as ImageProvider
+                                        : AssetImage(userPic),
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -511,7 +521,6 @@ class _MyPageState extends State<MyPage> {
                                 setState(() {
                                   nickname = text;
                                   value = 1;
-                                  logger.d("image value : ${value}");
                                 });
                               },
                               style: TextStyle(
@@ -522,7 +531,7 @@ class _MyPageState extends State<MyPage> {
                                 labelText: "닉네임",
                                 hintText: '7글자까지 입력 가능해요',
                                 hintStyle: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   color: Color(0xFF767676),
                                 ),
@@ -566,9 +575,19 @@ class _MyPageState extends State<MyPage> {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(12)))),
-                              onPressed: () {
-                                // 프로필 수정 로직 구현
-                                (value == 0) ? null : logger.d("저장 완");
+                              onPressed: () async {
+                                // 프로필 수정
+                                (value == 0)
+                                  ? null : userProfileUpdate = await viewModel.userProfileUpdateAPI(sendData, nickname);
+                                logger.d("profile update : ${userProfileUpdate}");
+                                // 프로필 수정에 성공할 경우 바텀시트 내리고 화면 새로고침
+                                if (userProfileUpdate) {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) => MyPage()))
+                                      .then((value) {
+                                    setState(() {});
+                                  });
+                                }
                               },
                               child: Text(
                                 '저장',
