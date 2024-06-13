@@ -11,7 +11,7 @@ class MyPageViewModel{
   // secure storage
   static final storage = FlutterSecureStorage();
 
-  Future<dynamic> userProfileGetAPI() async {
+  Future<UserProfile> userProfileGetAPI() async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
@@ -30,12 +30,11 @@ class MyPageViewModel{
         return UserProfile.fromJson(userProfileJson);
       } else {
         // 실패
-        logger.d("Fail to load. status code : ${response.statusCode}");
-        return null;
+        throw UserProfileException("Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
       logger.d("error : ${e}");
-      return null;
+      throw UserProfileException("Error occurred: $e");
     }
   }
 
@@ -117,5 +116,12 @@ class MyPageViewModel{
       return null;
     }
   }
+}
+// user 예외 클래스 정의
+class UserProfileException implements Exception {
+  final String message;
+  UserProfileException(this.message);
 
+  @override
+  String toString() => 'UserProfileException: $message';
 }

@@ -27,26 +27,22 @@ class _MyPageState extends State<MyPage> {
 
   // 사용자 정보 관련
   MyPageViewModel viewModel = MyPageViewModel();
-  late UserProfile _userProfile = UserProfile(nickname: "nickname", registerCount: 0, titleCount: 0, presentCount: 0);
+  late UserProfile _userProfile = UserProfile(nickname: "", profilePic: "", registerCount: 0, titleCount: 0, presentCount: 0);
 
   @override
   void initState() {
     super.initState();
-    userProfile();
+    getUserProfile();
   }
 
-  void userProfile() async {
-    UserProfile userProfile = await viewModel.userProfileGetAPI();
+  void getUserProfile() async {
+    _userProfile = await viewModel.userProfileGetAPI();
     setState(() {
-      _userProfile = userProfile;
     });
   }
 
   // 프로필 사진 수정 관련
   final picker = ImagePicker();
-
-  //버튼 활성화 비활성화를 위한 value값
-  int value = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -411,6 +407,9 @@ class _MyPageState extends State<MyPage> {
     // 사용자 정보 수정 상태 변수
     bool userProfileUpdate = false;
 
+    //버튼 활성화 비활성화를 위한 value값
+    int value = 0;
+
     showModalBottomSheet(
       isScrollControlled: true, // 키보드가 올라올 때 바텀시트가 따라 올라감
       context: context,
@@ -452,6 +451,7 @@ class _MyPageState extends State<MyPage> {
                               Spacer(),
                               IconButton(
                                 onPressed: () {
+                                  value = 0;
                                   Navigator.pop(context);
                                 },
                                 icon: Icon(
@@ -578,14 +578,18 @@ class _MyPageState extends State<MyPage> {
                               onPressed: () async {
                                 // 프로필 수정
                                 (value == 0)
-                                  ? null : userProfileUpdate = await viewModel.userProfileUpdateAPI(sendData, nickname);
+                                  ? null
+                                  : userProfileUpdate = await viewModel.userProfileUpdateAPI(sendData, nickname);
                                 logger.d("profile update : ${userProfileUpdate}");
                                 // 프로필 수정에 성공할 경우 바텀시트 내리고 화면 새로고침
                                 if (userProfileUpdate) {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) => MyPage()))
-                                      .then((value) {
-                                    setState(() {});
+                                  value = 0;
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => MyPage()),
+                                        (route) => false, // 모든 이전 페이지 제거
+                                  ).then((value) {
+                                    setState(() {}); // 페이지 새로고침
                                   });
                                 }
                               },

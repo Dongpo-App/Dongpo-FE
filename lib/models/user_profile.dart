@@ -23,4 +23,21 @@ class UserProfile {
       presentCount: json['presentCount'],
     );
   }
+
+  // getter
+  String getNickname() {
+    return nickname;
+  }
+  String? getProfilePic() {
+    return profilePic;
+  }
+  int getRegisterCount() {
+    return registerCount;
+  }
+  int getTtleCount() {
+    return titleCount;
+  }
+  int getPresentCount() {
+    return presentCount;
+  }
 }
