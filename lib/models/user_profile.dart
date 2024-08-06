@@ -1,4 +1,4 @@
-import '../screens/my_info/title.dart';
+import 'title.dart';
 
 class UserProfile {
   late final String nickname; // 닉네임

@@ -13,7 +13,7 @@ import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../widgets/bottom_navigation_bar.dart';
-import 'title.dart';
+import '../../models/title.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
