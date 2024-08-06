@@ -22,7 +22,7 @@ class MyPageViewModel{
     };
     try {
       final response = await http.get(url, headers: headers);
-
+      logger.d("message : ${response.body}");
       if (response.statusCode == 200) {
         final jsonData = json.decode(utf8.decode(response.bodyBytes));
         final userProfileJson = jsonData['data'];

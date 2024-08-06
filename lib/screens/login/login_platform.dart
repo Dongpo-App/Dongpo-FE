@@ -14,3 +14,4 @@ extension LoginPlatformExtension on LoginPlatform {
     return LoginPlatform.values.firstWhere((e) => e.toShortString() == string, orElse: () => throw Exception('Invalid platform string'));
   }
 }
+

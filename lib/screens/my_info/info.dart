@@ -13,6 +13,7 @@ import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../widgets/bottom_navigation_bar.dart';
+import 'title.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -29,7 +30,8 @@ class _MyPageState extends State<MyPage> {
 
   // 사용자 정보 관련
   MyPageViewModel viewModel = MyPageViewModel();
-  late UserProfile _userProfile = UserProfile(nickname: "", profilePic: "", registerCount: 0, titleCount: 0, presentCount: 0);
+  late UserProfile _userProfile = UserProfile(nickname: "", profilePic: "", mainTitle: UserTitle(title: "", description: ""),
+      titles: [], registerCount: 0, titleCount: 0, presentCount: 0);
 
   @override
   void initState() {
@@ -74,7 +76,7 @@ class _MyPageState extends State<MyPage> {
                   // 프로필 사진
                   CircleAvatar(
                     radius: 48,
-                    backgroundImage: _userProfile.profilePic != null
+                    backgroundImage: (_userProfile.profilePic != null)
                         ? NetworkImage(_userProfile.profilePic!)
                             as ImageProvider
                         : AssetImage('assets/images/profile.jpg'),

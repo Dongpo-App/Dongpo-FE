@@ -68,7 +68,6 @@ class _AddPageState extends State<AddPage> {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             // 에러가 발생했을 때 에러 메시지 표시
-            logger.d("hasError : ${snapshot.error}");
             return Center(child: Text('위치 정보를 불러오는데 실패했습니다.'));
           } else if (snapshot.hasData) {
             // 데이터가 있을 때 지도와 UI 요소를 표시
