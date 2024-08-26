@@ -65,7 +65,7 @@ class LoginViewModel {
     final data = {
       "token": socialToken,
     };
-    final url = Uri.parse('https://1417mhz.xyz/auth/${loginPlatform.name}');
+    final url = Uri.parse('https://ysw123.xyz/auth/${loginPlatform.name}');
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode(data);
 

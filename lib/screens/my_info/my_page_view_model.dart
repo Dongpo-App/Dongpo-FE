@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../main.dart';
 
-class MyPageViewModel{
+class MyPageViewModel {
   // secure storage
   static final storage = FlutterSecureStorage();
 
@@ -15,7 +15,7 @@ class MyPageViewModel{
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('https://1417mhz.xyz/api/my-page');
+    final url = Uri.parse('https://ysw123.xyz/api/my-page');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -30,7 +30,8 @@ class MyPageViewModel{
         return UserProfile.fromJson(userProfileJson);
       } else {
         // 실패
-        throw UserProfileException("Fail to load. status code: ${response.statusCode}");
+        throw UserProfileException(
+            "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
       logger.d("error : ${e}");
@@ -46,7 +47,7 @@ class MyPageViewModel{
 
     // 사용자 프로필 사진 업로드 API
     String? userPicURL;
-    if(pic != null){
+    if (pic != null) {
       userPicURL = await userPicUploadAPI(pic);
     } else {
       userPicURL = null;
@@ -54,9 +55,9 @@ class MyPageViewModel{
 
     final data = {
       "nickname": nickname,
-      "profilePic" : userPicURL,
+      "profilePic": userPicURL,
     };
-    final url = Uri.parse('https://1417mhz.xyz/api/my-page');
+    final url = Uri.parse('https://ysw123.xyz/api/my-page');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -76,7 +77,6 @@ class MyPageViewModel{
       logger.d("error : ${e}");
       return false;
     }
-
   }
 
   Future<String?> userPicUploadAPI(dynamic pic) async {
@@ -85,17 +85,14 @@ class MyPageViewModel{
 
     var dio = new Dio();
 
-    var formData = FormData.fromMap({
-      'image' : await MultipartFile.fromFile(pic)
-    });
+    var formData =
+        FormData.fromMap({'image': await MultipartFile.fromFile(pic)});
 
-    final url = 'https://1417mhz.xyz/api/file-upload';
+    final url = 'https://ysw123.xyz/api/file-upload';
 
     try {
       dio.options.contentType = 'multipart/form-data';
-      dio.options.headers = {
-        'Authorization': 'Bearer $accessToken'
-      };
+      dio.options.headers = {'Authorization': 'Bearer $accessToken'};
 
       final response = await dio.post(url, data: formData);
       if (response.statusCode == 200) {
@@ -107,7 +104,8 @@ class MyPageViewModel{
         return imageUrl;
       } else {
         // 실패
-        logger.d("Fail to upload ${formData}. status code : ${response.statusCode}");
+        logger.d(
+            "Fail to upload ${formData}. status code : ${response.statusCode}");
 
         return null;
       }
@@ -117,6 +115,7 @@ class MyPageViewModel{
     }
   }
 }
+
 // user 예외 클래스 정의
 class UserProfileException implements Exception {
   final String message;

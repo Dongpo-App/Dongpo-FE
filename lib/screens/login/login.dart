@@ -42,8 +42,7 @@ class _LoginPageState extends State<LoginPage> {
       logger.d("secure storage read 1 : ${allData}");
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-            builder: (context) => MyPage()),
+        MaterialPageRoute(builder: (context) => MyPage()),
         (route) => false, // 모든 이전 페이지 제거
       );
     }

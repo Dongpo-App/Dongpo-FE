@@ -289,7 +289,9 @@ class _MainPageState extends State<MainPage>
                         children: <Widget>[
                           SizedBox(width: 8.0),
                           Text(
-                            _currentAddress.length > 28 ? '${_currentAddress.substring(0, 28)}...' : _currentAddress,
+                            _currentAddress.length > 28
+                                ? '${_currentAddress.substring(0, 28)}...'
+                                : _currentAddress,
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey[400]),
                           ),
@@ -744,7 +746,7 @@ class _MainPageState extends State<MainPage>
 
   Future<List<MyData>> _mainPageAPI() async {
     final accessToken = await storage.read(key: 'accessToken');
-    final url = Uri.parse('https://1417mhz.xyz/api/store/member');
+    final url = Uri.parse('https://ysw123.xyz/api/store/member');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
