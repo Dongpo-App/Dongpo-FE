@@ -20,8 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   bool isLogouted = false;
 
   // FlutterSecureStorage
-  static final storage =
-      new FlutterSecureStorage(); //flutter_secure_storage 사용을 위한 초기화 작업
+  static const storage =
+      FlutterSecureStorage(); //flutter_secure_storage 사용을 위한 초기화 작업
 
   @override
   void initState() {
@@ -39,10 +39,10 @@ class _LoginPageState extends State<LoginPage> {
     Map<String, String> allData = await storage.readAll();
     // token 데이터가 있다면 메인페이지로 이동
     if (accessToken != null && refreshToken != null) {
-      logger.d("secure storage read 1 : ${allData}");
+      logger.d("secure storage read 1 : $allData");
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => MyPage()),
+        MaterialPageRoute(builder: (context) => const MyPage()),
         (route) => false, // 모든 이전 페이지 제거
       );
     }
@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF33393F), // 바탕색 설정
+      backgroundColor: const Color(0xFF33393F), // 바탕색 설정
       body: Center(
         child: Column(
           children: [
@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.1,
             ),
-            Text(
+            const Text(
               '동포 시작하기',
               style: TextStyle(
                 fontFamily: 'Chosun',
@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             // 소셜 로그인 - 네이버
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
                   isLogined = await loginViewModel.naverLogin();
@@ -90,12 +90,12 @@ class _LoginPageState extends State<LoginPage> {
                         key: 'loginPlatform',
                         value: loginViewModel.loginPlatform.name);
                     Map<String, String> allData = await storage.readAll();
-                    logger.d("secure storage naver read : ${allData}");
+                    logger.d("secure storage naver read : $allData");
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              MyAppPage()), // bottom_navigation_bar.dart
+                              const MyAppPage()), // bottom_navigation_bar.dart
                       (route) => false, // 모든 이전 페이지 제거
                     );
                   }
@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: 44,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Color(0xFF03C75A),
+                    color: const Color(0xFF03C75A),
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Image.asset(
@@ -113,10 +113,10 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             // 소셜 로그인 - 카카오
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
                   isLogined = await loginViewModel.kakaoLogin();
@@ -131,13 +131,13 @@ class _LoginPageState extends State<LoginPage> {
                         key: 'loginPlatform',
                         value: loginViewModel.loginPlatform.name);
                     Map<String, String> allData = await storage.readAll();
-                    logger.d("secure storage kakao read : ${allData}");
+                    logger.d("secure storage kakao read : $allData");
                     // 메인페이지로 이동
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              MyAppPage()), // bottom_navigation_bar.dart
+                              const MyAppPage()), // bottom_navigation_bar.dart
                       (route) => false, // 모든 이전 페이지 제거
                     );
                   }
@@ -146,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: 44,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Color(0xFFFEE500),
+                    color: const Color(0xFFFEE500),
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Image.asset(
