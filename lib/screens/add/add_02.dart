@@ -445,7 +445,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       'payMethods': _getSelectedPaymentMethods(),
     };
 
-    final url = Uri.parse('https://1417mhz.xyz/api/store');
+    final url = Uri.parse('https://ysw123.xyz/api/store');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
