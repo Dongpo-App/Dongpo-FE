@@ -27,7 +27,7 @@ import 'dart:convert';
 
 //여러개 띄울 마커 받아놓을 마커리스트
 List<NMarker> _markers = [];
-
+List<MyData> myDataList = [];
 // //임의로 마커 여러개 생성
 List<MyData> generateDummyData() {
   return [
@@ -98,6 +98,8 @@ List<MyData> generateDummyData() {
     ),
   ];
 }
+
+List<MyData> myTestList = generateDummyData();
 
 // 지도 초기화하기
 Future<void> reset_map() async {
@@ -289,7 +291,9 @@ class _MainPageState extends State<MainPage>
                         children: <Widget>[
                           SizedBox(width: 8.0),
                           Text(
-                            _currentAddress.length > 28 ? '${_currentAddress.substring(0, 28)}...' : _currentAddress,
+                            _currentAddress.length > 28
+                                ? '${_currentAddress.substring(0, 28)}...'
+                                : _currentAddress,
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey[400]),
                           ),
@@ -543,7 +547,6 @@ class _MainPageState extends State<MainPage>
         marker.setSize(defaultMarkerSize);
         marker.setOnTapListener((overlay) {
           _onMarkerTapped(marker, data);
-          logger.d('함수 실행 잘됌');
         });
         _mapController.addOverlay(marker);
         // 마커 리스트에 추가
@@ -577,23 +580,57 @@ class _MainPageState extends State<MainPage>
     }
   }
 
+  //해당 위치로 재검색
   Future<void> _reSearchCurrentLocation() async {
+    //서버에 위도경도 보내서 데이터 더미로 받아와야함
+    List<MyData> myList = await _researchFromMe();
+    //클래스에 담고 마커를 출력함
+    logger.d(myList);
+
+    //하단에 bottomsheet에 기본정보들 업데이트 해야됌
+    //구, 동 나오게 바꾸기
+
+    //임시 데이터
+    _addMarkers(myList);
+    //등록한 데이터
+    //_addMarkers(await _mainPageAPI());
+    // _addMarkers(dataList)
+  }
+
+  //내위치 기반으로 근처 가게 검색
+  Future<List<MyData>> _researchFromMe() async {
     //해당 카메라 기준 위도경도 가져옴
+
     final cameraPosition = await _mapController.getCameraPosition();
     final latitude = cameraPosition.target.latitude;
     final longitude = cameraPosition.target.longitude;
 
-    //서버에 위도경도 보내서 데이터 더미로 받아와야함
+    final accessToken = await storage.read(key: 'accessToken');
 
-    //클래스에 담고 마커를 출력함
-    //임시 데이터
-    //_addMarkers(generateDummyData());
-    //등록한 데이터
-    _addMarkers(await _mainPageAPI());
-    _moveToCurrentLocation();
-    // _addMarkers(dataList)
+    final url = Uri.parse(
+        'https://ysw123.xyz/api/store?longitude=$longitude&latitude=$latitude');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
+      List jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
+      final List<MyData> myDataList =
+          jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
+      return myDataList;
+    } else {
+      logger.e(
+          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
+      throw Exception('HTTP ERROR !!! ${response.body}');
+    }
   }
 
+  //내위치로 이동
   Future<void> _moveToCurrentLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
@@ -627,6 +664,7 @@ class _MainPageState extends State<MainPage>
     }
   }
 
+  // 주소 띄우기
   Future<void> _updateAddress(double latitude, double longitude) async {
     try {
       List<Placemark> placemarks =
@@ -640,6 +678,7 @@ class _MainPageState extends State<MainPage>
     }
   }
 
+  //위치권한
   Future<String> checkPermission() async {
     final isLocationEnabled = await Geolocator.isLocationServiceEnabled();
 
@@ -742,21 +781,23 @@ class _MainPageState extends State<MainPage>
     );
   }
 
-  Future<List<MyData>> _mainPageAPI() async {
-    final accessToken = await storage.read(key: 'accessToken');
-    final url = Uri.parse('https://1417mhz.xyz/api/store/member');
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
-    final response = await http.get(url, headers: headers);
+  // --http 통신 예제
+  //
+  // Future<List<MyData>> _mainPageAPI() async {
+  //   final accessToken = await storage.read(key: 'accessToken');
+  //   final url = Uri.parse('https://ysw123.xyz/api/store/member');
+  //   final headers = {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': 'Bearer $accessToken',
+  //   };
+  //   final response = await http.get(url, headers: headers);
 
-    if (response.statusCode == 200) {
-      List jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
-      logger.d(jsonResponse);
-      return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
-    } else {
-      throw Exception('HTTP ERROR !!! ${response.body}');
-    }
-  }
+  //   if (response.statusCode == 200) {
+  //     List jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
+  //     logger.d(jsonResponse);
+  //     return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
+  //   } else {
+  //     throw Exception('HTTP ERROR !!! ${response.body}');
+  //   }
+  // }
 }
