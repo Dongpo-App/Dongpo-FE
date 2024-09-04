@@ -98,7 +98,7 @@ class _MyPageState extends State<MyPage> {
                             ),
                           ),
                           child: Text(
-                            "막 개장한 포장마차",
+                            _userProfile.mainTitle.description,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -412,7 +412,12 @@ class _MyPageState extends State<MyPage> {
     bool userProfileUpdate = false;
 
     //버튼 활성화 비활성화를 위한 value값
-    int value = 0;
+    int updateValue = 0;
+
+    // dropdown 초기값 설정
+    String dropDownValue = _userProfile.mainTitle.description;
+    // title update
+    String mainTitle = _userProfile.mainTitle.title;
 
     showModalBottomSheet(
       isScrollControlled: true, // 키보드가 올라올 때 바텀시트가 따라 올라감
@@ -455,7 +460,7 @@ class _MyPageState extends State<MyPage> {
                               Spacer(),
                               IconButton(
                                 onPressed: () {
-                                  value = 0;
+                                  updateValue = 0;
                                   Navigator.pop(context);
                                 },
                                 icon: Icon(
@@ -471,12 +476,12 @@ class _MyPageState extends State<MyPage> {
                           GestureDetector(
                             onTap: () async {
                               pickedFile = await picker.pickImage(
-                                  source: ImageSource.gallery,
+                                source: ImageSource.gallery,
                                 imageQuality: 30,
                               );
                               if (pickedFile != null) {
                                 setState(() {
-                                  value = 1;
+                                  updateValue = 1;
                                   // 서버에 보낼 이미지 경로 XFile? image;
                                   logger.d("image path : pickedFile!.path");
                                   sendData = pickedFile!.path;
@@ -488,10 +493,10 @@ class _MyPageState extends State<MyPage> {
                                 CircleAvatar(
                                   radius: 40, // 80 / 2
                                   backgroundImage: pickedFile != null
-                                      ? FileImage(File(pickedFile!.path))
-                                      : (_userProfile.profilePic != null)
-                                        ? NetworkImage(userPic) as ImageProvider
-                                        : AssetImage(userPic),
+                                    ? FileImage(File(pickedFile!.path))
+                                    : (_userProfile.profilePic != null)
+                                      ? NetworkImage(userPic) as ImageProvider
+                                      : AssetImage(userPic),
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -525,7 +530,7 @@ class _MyPageState extends State<MyPage> {
                               onChanged: (text) {
                                 setState(() {
                                   nickname = text;
-                                  value = 1;
+                                  updateValue = 1;
                                 });
                               },
                               style: TextStyle(
@@ -546,21 +551,51 @@ class _MyPageState extends State<MyPage> {
                                   color: Color(0xFF767676),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(12)),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: Color(0xFF767676),
-                                    )),
+                                  borderRadius:
+                                    BorderRadius.all(Radius.circular(12)),
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: Color(0xFF767676),
+                                  )),
                                 border: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(12)),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: Color(0xFF767676),
-                                    )),
+                                  borderRadius:
+                                    BorderRadius.all(Radius.circular(12)),
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: Color(0xFF767676),
+                                  )
+                                ),
                               ),
                             ),
+                          ),
+                          SizedBox(height: 24),
+                          SizedBox(
+                            width: double.infinity,
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<UserTitle>(
+                                value: _userProfile.titles.firstWhere((title) => title.title == mainTitle), // 현재 선택된 항목
+                                items: _userProfile.titles.map<DropdownMenuItem<UserTitle>>((UserTitle title) {
+                                  return DropdownMenuItem<UserTitle>(
+                                    value: title, // UserTitle 객체를 value로 사용
+                                    child: Text(title.description), // description을 보여줌
+                                  );
+                                }).toList(),
+                                onChanged: (UserTitle? selectedTitle) {
+                                  setState(() {
+                                    dropDownValue = selectedTitle!.description; // dropDownValue에 description 저장
+                                    mainTitle = selectedTitle.title; // mainTitle에 title 저장
+                                    updateValue = 1;
+                                    logger.d("userTitle : ${mainTitle}");
+                                    logger.d("userTitleDescription : ${dropDownValue}");
+                                  });
+                                },
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF767676),
+                                ),
+                              ),
+                            )
                           ),
                           SizedBox(height: 24),
                           SizedBox(
@@ -568,31 +603,33 @@ class _MyPageState extends State<MyPage> {
                             width: double.infinity,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  elevation: 0, // 그림자 제거
-                                  splashFactory: (value == 0)
-                                      ? NoSplash.splashFactory
-                                      : InkSplash.splashFactory,
-                                  // 수정이 있을 경우 버튼 활성화
-                                  backgroundColor: (value == 1)
-                                      ? Color(0xffF15A2B)
-                                      : Color(0xFFF4F4F4),
-                                  minimumSize: Size(double.infinity, 40),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(12)))),
+                                elevation: 0, // 그림자 제거
+                                splashFactory: (updateValue == 0)
+                                  ? NoSplash.splashFactory
+                                  : InkSplash.splashFactory,
+                                // 수정이 있을 경우 버튼 활성화
+                                backgroundColor: (updateValue == 1)
+                                  ? Color(0xffF15A2B)
+                                  : Color(0xFFF4F4F4),
+                                minimumSize: Size(double.infinity, 40),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(12))
+                                )
+                              ),
                               onPressed: () async {
                                 // 프로필 수정
-                                (value == 0)
+                                (updateValue == 0)
                                   ? null
-                                  : userProfileUpdate = await viewModel.userProfileUpdateAPI(sendData, nickname);
+                                  : userProfileUpdate = await viewModel.userProfileUpdateAPI(sendData, nickname, mainTitle);
                                 logger.d("profile update : ${userProfileUpdate}");
                                 // 프로필 수정에 성공할 경우 바텀시트 내리고 화면 새로고침
                                 if (userProfileUpdate) {
-                                  value = 0;
+                                  updateValue = 0;
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(builder: (context) => MyAppPage(initialIndex: 3)),
-                                        (route) => false, // 모든 이전 페이지 제거
+                                      (route) => false, // 모든 이전 페이지 제거
                                   ).then((value) {
                                     setState(() {}); // 페이지 새로고침
                                   });
@@ -601,11 +638,12 @@ class _MyPageState extends State<MyPage> {
                               child: Text(
                                 '저장',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                    color: (value == 1)
-                                        ? Colors.white
-                                        : Color(0xFF767676)),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  color: (updateValue == 1)
+                                    ? Colors.white
+                                    : Color(0xFF767676)
+                                ),
                               ),
                             ),
                           ),

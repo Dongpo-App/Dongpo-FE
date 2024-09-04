@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:dongpo_test/models/user_profile.dart';
@@ -27,6 +26,8 @@ class MyPageViewModel {
         final jsonData = json.decode(utf8.decode(response.bodyBytes));
         final userProfileJson = jsonData['data'];
 
+        logger.d("userData : ${userProfileJson}");
+
         return UserProfile.fromJson(userProfileJson);
       } else {
         // 실패
@@ -39,7 +40,7 @@ class MyPageViewModel {
     }
   }
 
-  Future<bool> userProfileUpdateAPI(dynamic? pic, String nickname) async {
+  Future<bool> userProfileUpdateAPI(dynamic? pic, String nickname, String newMainTitle) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
@@ -56,6 +57,7 @@ class MyPageViewModel {
     final data = {
       "nickname": nickname,
       "profilePic": userPicURL,
+      "newMainTitle" : newMainTitle,
     };
     final url = Uri.parse('https://ysw123.xyz/api/my-page');
     final headers = {
