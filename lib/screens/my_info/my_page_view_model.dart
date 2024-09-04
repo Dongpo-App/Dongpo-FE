@@ -15,7 +15,7 @@ class MyPageViewModel{
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('https://1417mhz.xyz/api/my-page');
+    final url = Uri.parse('https://ysw123.xyz/api/my-page');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -56,7 +56,7 @@ class MyPageViewModel{
       "nickname": nickname,
       "profilePic" : userPicURL,
     };
-    final url = Uri.parse('https://1417mhz.xyz/api/my-page');
+    final url = Uri.parse('https://ysw123.xyz/api/my-page');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -89,7 +89,7 @@ class MyPageViewModel{
       'image' : await MultipartFile.fromFile(pic)
     });
 
-    final url = 'https://1417mhz.xyz/api/file-upload';
+    final url = 'https://ysw123.xyz/api/file-upload';
 
     try {
       dio.options.contentType = 'multipart/form-data';
@@ -103,7 +103,7 @@ class MyPageViewModel{
 
         List<dynamic> dataList = jsonData['data'];
         String imageUrl = dataList[0]['imageUrl'];
-
+        
         return imageUrl;
       } else {
         // 실패
