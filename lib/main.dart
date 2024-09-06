@@ -13,7 +13,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // FlutterSecureStorage 초기화 및 토큰 삭제
-  final storage = FlutterSecureStorage();
+  const storage = FlutterSecureStorage();
   await storage.delete(key: 'accessToken');
   await storage.delete(key: 'refreshToken');
   await storage.delete(key: 'loginPlatform');
