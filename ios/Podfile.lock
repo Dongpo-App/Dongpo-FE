@@ -5,9 +5,9 @@ PODS:
   - flutter_naver_login (0.0.1):
     - Flutter
     - naveridlogin-sdk-ios (~> 4.1.0)
-  - flutter_naver_map (1.0.0):
+  - flutter_naver_map (1.2.3):
     - Flutter
-    - NMapsMap (= 3.17.0)
+    - NMapsMap (= 3.18.1)
   - flutter_secure_storage (6.0.0):
     - Flutter
   - flutter_web_auth (0.5.0):
@@ -18,11 +18,11 @@ PODS:
     - Flutter
   - image_picker_ios (0.0.1):
     - Flutter
-  - kakao_flutter_sdk_common (1.9.2):
+  - kakao_flutter_sdk_common (1.9.6):
     - Flutter
   - naveridlogin-sdk-ios (4.1.6)
   - NMapsGeometry (1.0.2)
-  - NMapsMap (3.17.0):
+  - NMapsMap (3.18.1):
     - NMapsGeometry
   - open_settings_plus (0.0.1):
     - Flutter
@@ -38,6 +38,7 @@ PODS:
     - Flutter
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
+    - FlutterMacOS
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -55,7 +56,7 @@ DEPENDENCIES:
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
-  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
+  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
 SPEC REPOS:
   trunk:
@@ -95,28 +96,28 @@ EXTERNAL SOURCES:
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   webview_flutter_wkwebview:
-    :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
+    :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_native_splash: edf599c81f74d093a4daf8e17bd7a018854bc778
   flutter_naver_login: 1dbf6d21aae5235cdf76a28ac79cf6871899282f
-  flutter_naver_map: b18663bc83c2caaab484c58dccf239a87ebbed1b
+  flutter_naver_map: 9b36cee8e83421f40782af8a4e7afbdf63ee5f92
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   flutter_web_auth: c25208760459cec375a3c39f6a8759165ca0fa4d
   geocoding_ios: d7460f56e80e118d57678efe5c2cdc888739ff18
   geolocator_apple: 6cbaf322953988e009e5ecb481f07efece75c450
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
-  kakao_flutter_sdk_common: 049c9341e325da17ac75751a35646dbbcfa06891
+  kakao_flutter_sdk_common: 4f10f98226da5d0f7cbdeeaed5cc21f144515209
   naveridlogin-sdk-ios: cdd34e3585a3d5aaf37c1d84c1f41faba4a25d1a
   NMapsGeometry: 4e02554fa9880ef02ed96b075dc84355d6352479
-  NMapsMap: a5b909a31b6f3d27a670f6eb2ddc913c38975474
+  NMapsMap: e879088eeee2d1e3b97f0a609076e1824dce2cad
   open_settings_plus: 4bd848866fea2becc124581d868a6164cf768831
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
-  shared_preferences_foundation: b4c3b4cddf1c21f02770737f147a3f5da9d39695
+  shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
-  webview_flutter_wkwebview: be0f0d33777f1bfd0c9fdcb594786704dbf65f36
+  webview_flutter_wkwebview: 0982481e3d9c78fd5c6f62a002fcd24fc791f1e4
 
 PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
 
