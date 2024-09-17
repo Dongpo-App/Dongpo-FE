@@ -11,19 +11,19 @@ class MainTitle extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(
+            const Text(
               "A(가게이름 출력)",
               style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
-            Spacer(),
+            const Spacer(),
             IconButton(
                 onPressed: () {},
-                icon: Icon(CupertinoIcons.arrow_up_right_diamond_fill,
+                icon: const Icon(CupertinoIcons.arrow_up_right_diamond_fill,
                     color: Color(0xffF15A2B)))
           ],
         ),
-        Text("{A} M"),
-        Row(
+        const Text("{A} M"),
+        const Row(
           children: [
             Icon(
               Icons.location_on_outlined,

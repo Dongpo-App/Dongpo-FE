@@ -20,9 +20,9 @@ import 'dart:convert';
 
 /*
 메인페이지 맨처음 보여줄 때 
- 1)내위치로 카메라 옮기기 => init 초기화할때 함수 사용
- 2) 마커 여러개 표시 => 냅둬 
- 3) 등록한 가게 전체조회해서 마커 추가 => get 리스트에 담고 마커 여러개 출력 
+1)내위치로 카메라 옮기기 => init 초기화할때 함수 사용
+2) 마커 여러개 표시 => 냅둬 
+3) 등록한 가게 전체조회해서 마커 추가 => get 리스트에 담고 마커 여러개 출력 
 */
 
 //여러개 띄울 마커 받아놓을 마커리스트
@@ -113,7 +113,7 @@ Future<void> reset_map() async {
 }
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -121,7 +121,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
-  static final storage = FlutterSecureStorage();
+  static const storage = FlutterSecureStorage();
 
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
   late NaverMapController _mapController;
@@ -190,6 +190,7 @@ class _MainPageState extends State<MainPage>
 
   // 화면관련 여기서부터 보면 됌
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<String>(
@@ -197,7 +198,7 @@ class _MainPageState extends State<MainPage>
         builder: (context, snapshot) {
           if (!snapshot.hasData &&
               snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -249,7 +250,7 @@ class _MainPageState extends State<MainPage>
                     }
                   },
 
-                  options: NaverMapViewOptions(
+                  options: const NaverMapViewOptions(
                     locationButtonEnable: false, // 위치 버튼 표시 여부 설정
                     minZoom: 15, //쵀대 줄일 수 있는 크기?
                     maxZoom: 18, //최대 당길 수 있는 크기
@@ -270,15 +271,15 @@ class _MainPageState extends State<MainPage>
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
-                        return AddressSearchPage();
+                        return const AddressSearchPage();
                       }));
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black26,
                             blurRadius: 5.0,
@@ -289,7 +290,7 @@ class _MainPageState extends State<MainPage>
                       //검색바 안에 주소
                       child: Row(
                         children: <Widget>[
-                          SizedBox(width: 8.0),
+                          const SizedBox(width: 8.0),
                           Text(
                             _currentAddress.length > 28
                                 ? '${_currentAddress.substring(0, 28)}...'
@@ -297,8 +298,8 @@ class _MainPageState extends State<MainPage>
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey[400]),
                           ),
-                          Spacer(),
-                          Icon(Icons.search),
+                          const Spacer(),
+                          const Icon(Icons.search),
                         ],
                       ),
                     ),
@@ -310,22 +311,22 @@ class _MainPageState extends State<MainPage>
                   child: SlideTransition(
                     position: _offsetAnimation, // 슬라이더 애니메이션 적용
                     child: Container(
-                      padding: EdgeInsets.all(25),
+                      padding: const EdgeInsets.all(25),
                       height: 200, // 튀어나오는 부분을 포함한 전체 높이
                       width: 500,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.white,
                       ),
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'A (구로구 고척동)',
                               style: TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.bold),
                             ),
                             Container(
-                              margin: EdgeInsets.only(top: 10),
+                              margin: const EdgeInsets.only(top: 10),
                               height: 90,
                               child: ListView.builder(
                                   shrinkWrap: true,
@@ -339,21 +340,21 @@ class _MainPageState extends State<MainPage>
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
-                                              return StoreInfo(); //터치하면 해당 가게 상세보기로
+                                              return const StoreInfo(); //터치하면 해당 가게 상세보기로
                                             }));
                                           },
                                           child: Container(
-                                            padding: EdgeInsets.fromLTRB(
+                                            padding: const EdgeInsets.fromLTRB(
                                                 10, 20, 20, 20),
                                             decoration: BoxDecoration(
                                                 color: Colors.grey[200],
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
                                             height: 100,
-                                            child: Row(
+                                            child: const Row(
                                               children: [
                                                 //CircleAvatar 컨테이너
-                                                Container(
+                                                SizedBox(
                                                   height: 30,
                                                   width: 40,
                                                   child: CircleAvatar(
@@ -403,7 +404,7 @@ class _MainPageState extends State<MainPage>
                                             ),
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 20,
                                         )
                                       ],
@@ -417,7 +418,7 @@ class _MainPageState extends State<MainPage>
 
                 //위치 재검색 버튼
                 AnimatedPositioned(
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   top: _showReSearchButton ? 110.0 : -40.0,
                   left: MediaQuery.of(context).size.width / 3.5,
                   right: MediaQuery.of(context).size.width / 3.5,
@@ -429,12 +430,12 @@ class _MainPageState extends State<MainPage>
                       });
                     },
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 16.0),
                       decoration: BoxDecoration(
-                        color: Color(0xffF15A2B),
+                        color: const Color(0xffF15A2B),
                         borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black26,
                             blurRadius: 5.0,
@@ -442,7 +443,7 @@ class _MainPageState extends State<MainPage>
                           ),
                         ],
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
@@ -465,13 +466,13 @@ class _MainPageState extends State<MainPage>
                         left: 16.0,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              shape: CircleBorder(),
-                              padding: EdgeInsets.all(12),
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(12),
                               foregroundColor: Colors.blue,
-                              backgroundColor: MaterialStateColor.resolveWith(
+                              backgroundColor: WidgetStateColor.resolveWith(
                                   (states) => Colors.white)),
                           onPressed: _moveToCurrentLocation,
-                          child: Icon(Icons.my_location),
+                          child: const Icon(Icons.my_location),
                         ),
                       );
                     }),
@@ -491,7 +492,7 @@ class _MainPageState extends State<MainPage>
                               //현재 위치 위도경도 기준으로해서 리스트 받아온거 기본정보 띄우는 함수 만들어야함
                               //ex)) 게시판의 제목
                             },
-                            icon: Icon(Icons.menu)),
+                            icon: const Icon(Icons.menu)),
                       ),
                     );
                   },
@@ -518,7 +519,7 @@ class _MainPageState extends State<MainPage>
   //마커 관련
 // 기존 마커 삭제 함수
   Future<void> _clearMarkers() async {
-    logger.d('마커가 정상적으로 들어왔음 ${_markers}');
+    logger.d('마커가 정상적으로 들어왔음 $_markers');
     // for (int i =0 ; i >= _markers.length; i++) {
     //   _mapController
     //       .deleteOverlay(NOverlayInfo(type: NOverlayType.marker, id:  )); // 마커 제거
@@ -532,10 +533,10 @@ class _MainPageState extends State<MainPage>
   void _addMarkers(List<MyData> dataList) async {
     //여러개 마커 담는 리스트
     try {
-      var defaultMarkerSize = Size(40, 50);
+      var defaultMarkerSize = const Size(40, 50);
       await _clearMarkers(); // 기존 마커 제거
       for (var data in dataList) {
-        var markerIcon = await NOverlayImage.fromAssetImage(
+        var markerIcon = const NOverlayImage.fromAssetImage(
             'assets/images/defalutMarker.png');
 
         NMarker marker = NMarker(
@@ -560,8 +561,8 @@ class _MainPageState extends State<MainPage>
   //마커 클릭 이벤트 함수
   void _onMarkerTapped(NMarker marker, MyData data) {
     try {
-      marker.setIcon(
-          NOverlayImage.fromAssetImage('assets/images/clickedMarker.png'));
+      marker.setIcon(const NOverlayImage.fromAssetImage(
+          'assets/images/clickedMarker.png'));
       //해당 위치로 이동
 
       _mapController.updateCamera(
@@ -637,7 +638,7 @@ class _MainPageState extends State<MainPage>
           desiredAccuracy: LocationAccuracy.high);
       final myLocation = NLatLng(position.latitude, position.longitude);
 
-      final myLocationIcon =
+      const myLocationIcon =
           NOverlayImage.fromAssetImage('assets/images/myLocation.png');
 
       NMarker myLocationMarker = NMarker(
@@ -646,7 +647,7 @@ class _MainPageState extends State<MainPage>
         icon: myLocationIcon,
       );
 
-      myLocationMarker.setSize(Size(40, 50));
+      myLocationMarker.setSize(const Size(40, 50));
       _mapController.addOverlay(myLocationMarker);
 
       _mapController.updateCamera(
@@ -711,11 +712,11 @@ class _MainPageState extends State<MainPage>
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('위치 권한 필요!'),
-            content: Text('이 앱은 위치 권한이 필요합니다. 권한을 허용해주세요.'),
+            title: const Text('위치 권한 필요!'),
+            content: const Text('이 앱은 위치 권한이 필요합니다. 권한을 허용해주세요.'),
             actions: <Widget>[
               TextButton(
-                child: Text('앱 종료'),
+                child: const Text('앱 종료'),
                 onPressed: () {
                   SystemNavigator.pop(); // 앱 종료
                   logger.d('앱 종료');
@@ -726,7 +727,7 @@ class _MainPageState extends State<MainPage>
                     logger.d('설정으로 이동');
                     openAppSettings();
                   },
-                  child: Text("설정으로 이동"))
+                  child: const Text("설정으로 이동"))
             ],
           );
         },
@@ -752,26 +753,26 @@ class _MainPageState extends State<MainPage>
       isScrollControlled: true,
       builder: (BuildContext context) {
         return Container(
-          margin: EdgeInsets.only(left: 15, right: 15),
+          margin: const EdgeInsets.only(left: 15, right: 15),
           height: MediaQuery.of(context).size.height * 0.36,
-          decoration: BoxDecoration(),
+          decoration: const BoxDecoration(),
           child: Column(
             children: [
               TextButton(
                 onPressed: () => Navigator.push(context,
                     MaterialPageRoute(builder: (context) {
-                  return StoreInfo();
+                  return const StoreInfo();
                 })),
-                child: Icon(Icons.menu),
+                child: const Icon(Icons.menu),
               ),
               //제목, 영업가능성, 거리
-              MainTitle(),
+              const MainTitle(),
               //사진
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               MainPhoto(),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
             ],

@@ -58,17 +58,17 @@ class _AddPageState extends State<AddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('위치 제보'),
+        title: const Text('위치 제보'),
       ),
       body: FutureBuilder<NLatLng>(
         future: getCurrentLocation(), // 현재 위치 정보를 가져오는 Future를 빌드
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // 로딩 중일 때 로딩 인디케이터 표시
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             // 에러가 발생했을 때 에러 메시지 표시
-            return Center(child: Text('위치 정보를 불러오는데 실패했습니다.'));
+            return const Center(child: Text('위치 정보를 불러오는데 실패했습니다.'));
           } else if (snapshot.hasData) {
             // 데이터가 있을 때 지도와 UI 요소를 표시
             return Stack(
@@ -106,14 +106,14 @@ class _AddPageState extends State<AddPage> {
                     ),
                   ),
                 ),
-                Center(
+                const Center(
                   child: Icon(
                     Icons.location_pin, // 중앙에 위치 핀 아이콘 표시
                     size: 40,
                     color: Colors.orangeAccent,
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 500,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -121,13 +121,13 @@ class _AddPageState extends State<AddPage> {
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(),
-                            padding: EdgeInsets.all(12),
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(12),
                             foregroundColor: Colors.blue,
-                            backgroundColor: MaterialStateColor.resolveWith(
+                            backgroundColor: WidgetStateColor.resolveWith(
                                 (states) => Colors.white)),
                         onPressed: _moveToCurrentLocation,
-                        child: Icon(Icons.my_location),
+                        child: const Icon(Icons.my_location),
                       ),
                     ],
                   ),
@@ -136,15 +136,15 @@ class _AddPageState extends State<AddPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
-                      padding: EdgeInsets.all(16.0), // 패딩 설정
+                      padding: const EdgeInsets.all(16.0), // 패딩 설정
                       color: Colors.white,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            margin: EdgeInsets.only(bottom: 10),
-                            child: Text(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: const Text(
                               "가게 위치를 알려주세요",
                               style: TextStyle(
                                 fontSize: 24,
@@ -153,7 +153,7 @@ class _AddPageState extends State<AddPage> {
                             ),
                           ),
                           Container(
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(8),
@@ -174,15 +174,16 @@ class _AddPageState extends State<AddPage> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Container(
-                            margin: EdgeInsets.fromLTRB(0, 5, 20, 10),
+                            margin: const EdgeInsets.fromLTRB(0, 5, 20, 10),
                             width: double.infinity,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xffF15A2B), // 버튼 색상 설정
+                                backgroundColor:
+                                    const Color(0xffF15A2B), // 버튼 색상 설정
                               ),
-                              child: Text(
+                              child: const Text(
                                 '여기로 등록',
                                 style: TextStyle(
                                     fontSize: 20, color: Colors.white),
@@ -192,7 +193,7 @@ class _AddPageState extends State<AddPage> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            GageAddSangsea()));
+                                            const GageAddSangsea()));
                               },
                             ),
                           ),
@@ -212,13 +213,11 @@ class _AddPageState extends State<AddPage> {
   }
 
   Future<void> _updateAddress() async {
-    if (_mapController != null) {
-      final position = await _mapController.getCameraPosition();
-      final latLng = position.target;
-      final address = await _reverseGeocode(latLng);
-      _addressNotifier.value = address; // 주소 업데이트
-      _address = address;
-    }
+    final position = await _mapController.getCameraPosition();
+    final latLng = position.target;
+    final address = await _reverseGeocode(latLng);
+    _addressNotifier.value = address; // 주소 업데이트
+    _address = address;
   }
 
   Future<String> _reverseGeocode(NLatLng latLng) async {
@@ -263,11 +262,11 @@ Future<NLatLng> getCurrentLocation() async {
 }
 
 // Future<void> reset_map() async {
-  // 네이버 맵 초기화
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await NaverMapSdk.instance.initialize(
-      // clientId: naverApiKey,
-      // onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
+// 네이버 맵 초기화
+// WidgetsFlutterBinding.ensureInitialized();
+// await NaverMapSdk.instance.initialize(
+// clientId: naverApiKey,
+// onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
 // }
 
 // 지도 초기화하기

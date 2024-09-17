@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/api_key.dart';
-import 'package:dongpo_test/screens/main/main_03/03_review.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;

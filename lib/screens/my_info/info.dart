@@ -4,7 +4,6 @@ import 'package:dongpo_test/models/user_profile.dart';
 import 'package:dongpo_test/screens/my_info/my_page_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/screens/login/kakao_naver_login.dart';

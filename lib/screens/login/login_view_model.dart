@@ -60,7 +60,7 @@ class LoginViewModel {
   }
 
   Future<bool> tokenAPI() async {
-    logger.d("loginPlatform : ${loginPlatform}");
+    logger.d("loginPlatform : $loginPlatform");
 
     final data = {
       "token": socialToken,
@@ -81,11 +81,11 @@ class LoginViewModel {
         return true;
       } else {
         // 실패
-        logger.d("Fail to load ${data}. status code : ${response.statusCode}");
+        logger.d("Fail to load $data. status code : ${response.statusCode}");
         return false;
       }
     } catch (e) {
-      logger.d("error : ${e}");
+      logger.d("error : $e");
       return false;
     }
   }
