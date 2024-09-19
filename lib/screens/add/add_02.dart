@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:dongpo_test/screens/add/add_01.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:geolocator/geolocator.dart';
 
 class GageAddSangsea extends StatefulWidget {
   const GageAddSangsea({super.key});
@@ -432,6 +433,10 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
     double truncatedValue1 = (value1 * 1000000).truncateToDouble() / 1000000;
     double truncatedValue2 = (value2 * 1000000).truncateToDouble() / 1000000;
 
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    logger.d("현재 나의 위치 : ${position.latitude}");
+
     logger.d("$truncatedValue1 || $truncatedValue2");
     final data = {
       'name': _nameController.text,
@@ -443,6 +448,8 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       'isToiletValid': bathSelected == 1,
       'operatingDays': _getSelectedDays(),
       'payMethods': _getSelectedPaymentMethods(),
+      "currentLatitude": position.latitude,
+      "currentLongitude": position.longitude
     };
 
     final url = Uri.parse('$serverUrl/api/store');
