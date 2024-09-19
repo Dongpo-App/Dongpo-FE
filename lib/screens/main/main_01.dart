@@ -17,6 +17,7 @@ import 'package:dongpo_test/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dongpo_test/screens/add/add_01.dart';
 
 /*
 메인페이지 맨처음 보여줄 때 
@@ -28,78 +29,9 @@ import 'dart:convert';
 //여러개 띄울 마커 받아놓을 마커리스트
 List<NMarker> _markers = [];
 List<MyData> myDataList = [];
-// //임의로 마커 여러개 생성
-List<MyData> generateDummyData() {
-  return [
-    MyData(
-      id: 1,
-      name: '가게 1',
-      latitude: 37.5021,
-      longitude: 126.8697,
-      openTime: '09:00:00',
-      closeTime: '21:00:00',
-      memberId: 1,
-      status: 'ACTIVE',
-      operatingDays: ['월', '화', '수', '목', '금'],
-      payMethods: ['카드', '현금'],
-      toiletValid: true,
-    ),
-    MyData(
-      id: 2,
-      name: '가게 2',
-      latitude: 37.5041,
-      longitude: 126.8668,
-      openTime: '10:00:00',
-      closeTime: '22:00:00',
-      memberId: 1,
-      status: 'ACTIVE',
-      operatingDays: ['월', '화', '수', '목', '금'],
-      payMethods: ['카드', '현금'],
-      toiletValid: false,
-    ),
-    MyData(
-      id: 3,
-      name: '가게 3',
-      latitude: 37.5051,
-      longitude: 126.8619,
-      openTime: '08:00:00',
-      closeTime: '20:00:00',
-      memberId: 1,
-      status: 'ACTIVE',
-      operatingDays: ['월', '화', '수', '목', '금'],
-      payMethods: ['카드', '현금'],
-      toiletValid: true,
-    ),
-    MyData(
-      id: 4,
-      name: '가게 4',
-      latitude: 37.5061,
-      longitude: 126.8630,
-      openTime: '11:00:00',
-      closeTime: '23:00:00',
-      memberId: 1,
-      status: 'ACTIVE',
-      operatingDays: ['월', '화', '수', '목', '금'],
-      payMethods: ['카드', '현금'],
-      toiletValid: false,
-    ),
-    MyData(
-      id: 5,
-      name: '가게 5',
-      latitude: 37.5071,
-      longitude: 126.8650,
-      openTime: '07:00:00',
-      closeTime: '19:00:00',
-      memberId: 1,
-      status: 'ACTIVE',
-      operatingDays: ['월', '화', '수', '목', '금'],
-      payMethods: ['카드', '현금'],
-      toiletValid: true,
-    ),
-  ];
-}
 
-List<MyData> myTestList = generateDummyData();
+//바텀시트에 표시되는 주소
+String bsAddress = '';
 
 // 지도 초기화하기
 Future<void> reset_map() async {
@@ -136,7 +68,6 @@ class _MainPageState extends State<MainPage>
   //초기화
   void initState() {
     super.initState();
-
     // 애니메이션 컨트롤러 초기화 (300ms 동안 애니메이션 실행)
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -188,8 +119,7 @@ class _MainPageState extends State<MainPage>
     });
   }
 
-  // 화면관련 여기서부터 보면 됌
-
+  // UI 여기부터 시작
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<String>(
@@ -209,34 +139,6 @@ class _MainPageState extends State<MainPage>
                   onMapReady: (controller) async {
                     _onMapReady(controller);
                     _moveToCurrentLocation();
-                    //   //여러 좌표를 받아서 마커 생성
-                    //   final NLatLng test = NLatLng(
-                    //       37.49993604717163, 126.86768245932946); //테스트 위도 경도
-
-                    //   NMarker marker = NMarker(
-                    //     id: "test_Maker",
-                    //     position: test,
-                    //   );
-
-                    //   // 커스텀 마커를 비동기로 로드하여 메인 스레드의 부담을 줄입니다.
-                    //   var customMarker = await NOverlayImage.fromAssetImage(
-                    //       "assets/images/rakoon.png");
-
-                    //   var clickedMaker = await NOverlayImage.fromAssetImage(
-                    //       "assets/images/profile_img1.jpg");
-
-                    //   marker.setIcon(customMarker);
-
-                    //   //마커 클릭시 이벤트
-                    //   marker.setOnTapListener((overlay) {});
-
-                    //   // 마커 크기 조절을 통해 성능 최적화
-                    //   var defaultMarkerSize = Size(40, 50);
-                    //   marker.setSize(defaultMarkerSize);
-
-                    //   // 마커 표시
-                    //   controller.addOverlay(marker);
-                    //
                   },
 
                   //렉 유발 하는 듯 setstate로 인한 지도 재호출
@@ -248,7 +150,6 @@ class _MainPageState extends State<MainPage>
                       });
                     }
                   },
-
                   options: NaverMapViewOptions(
                     locationButtonEnable: false, // 위치 버튼 표시 여부 설정
                     minZoom: 15, //쵀대 줄일 수 있는 크기?
@@ -320,7 +221,7 @@ class _MainPageState extends State<MainPage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'A (구로구 고척동)',
+                              bsAddress,
                               style: TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.bold),
                             ),
@@ -330,7 +231,7 @@ class _MainPageState extends State<MainPage>
                               child: ListView.builder(
                                   shrinkWrap: true,
                                   scrollDirection: Axis.horizontal,
-                                  itemCount: 5,
+                                  itemCount: myDataList.length,
                                   itemBuilder: (BuildContext ctx, int idx) {
                                     return Row(
                                       children: [
@@ -367,7 +268,7 @@ class _MainPageState extends State<MainPage>
                                                       CrossAxisAlignment.center,
                                                   children: [
                                                     Text(
-                                                      'A(고척 포장마차 1)',
+                                                      '${myDataList[idx].name}',
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold),
@@ -388,7 +289,7 @@ class _MainPageState extends State<MainPage>
                                                               Color(0xffF15A2B),
                                                         ),
                                                         Text(
-                                                          'A 영업 가능성 높아요!',
+                                                          '영업 가능성 있어요!',
                                                           style: TextStyle(
                                                               fontWeight:
                                                                   FontWeight
@@ -584,17 +485,24 @@ class _MainPageState extends State<MainPage>
   Future<void> _reSearchCurrentLocation() async {
     //서버에 위도경도 보내서 데이터 더미로 받아와야함
     List<MyData> myList = await _researchFromMe();
-    //클래스에 담고 마커를 출력함
-    logger.d(myList);
 
-    //하단에 bottomsheet에 기본정보들 업데이트 해야됌
-    //구, 동 나오게 바꾸기
-
-    //임시 데이터
+    //받아온 데이터 myDataList에 넣기
+    myDataList = myList;
     _addMarkers(myList);
-    //등록한 데이터
-    //_addMarkers(await _mainPageAPI());
-    // _addMarkers(dataList)
+    late String getAddress;
+    //하단 주소 업뎃
+    try {
+      final position = await _mapController.getCameraPosition();
+      final latLng = position.target;
+      final myLocation = NLatLng(latLng.latitude, latLng.longitude);
+      getAddress = await _reverseGeocode(myLocation);
+      logger.d("안에 든 내용 : $getAddress");
+    } on Exception catch (e) {
+      // TODO
+      logger.w("Error! 내용: $e 위치: _reSearchCurrentLocation() ");
+    }
+
+    bsAddress = getAddress;
   }
 
   //내위치 기반으로 근처 가게 검색
@@ -608,7 +516,7 @@ class _MainPageState extends State<MainPage>
     final accessToken = await storage.read(key: 'accessToken');
 
     final url = Uri.parse(
-        'https://ysw123.xyz/api/store?longitude=$longitude&latitude=$latitude');
+        '$serverUrl/api/store?longitude=$longitude&latitude=$latitude');
 
     final headers = {
       'Content-Type': 'application/json',
@@ -734,15 +642,45 @@ class _MainPageState extends State<MainPage>
     });
   }
 
-  //마커를 지도에 띄우는 함수
-  // Future<void> showMarker() async {
-  //   for (int i in phoChaList) {
-  //     NMarker marker = NMarker(
-  //         id: "marker_$i",
-  //         position: NLatLng(phoChaList[i].latitude, phoChaList[i].longitude));
-  //     _mapController.addOverlay(marker);
-  //   }
-  // }
+  //
+  Future<String> _reverseGeocode(NLatLng latLng) async {
+    final url = Uri.parse(
+        'https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${latLng.longitude}&y=${latLng.latitude}');
+    final response = await http.get(url, headers: {
+      'Authorization': 'KakaoAK $kakaoApiKey',
+      'KA': 'sdk/1.0 os/flutter origin/localhost'
+    });
+
+    late String _address;
+
+    logger.d('statusCode : ${response.statusCode}');
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      if (data['documents'].isNotEmpty) {
+        // 도로명 주소가 있는 경우 반환
+        if (data['documents'][0]['road_address'] != null) {
+          dataForm = DataForm(
+              sendAddress: data['documents'][0]['road_address']['address_name'],
+              sendLatitude: latLng.latitude,
+              sendLongitude: latLng.longitude);
+          _address =
+              "${data['documents'][0]['road_address']['region_2depth_name']} ${data['documents'][0]['road_address']['road_name']}";
+          return _address;
+        }
+        // 도로명 주소가 없는 경우 지번 주소 반환
+        else if (data['documents'][0]['address'] != null) {
+          dataForm = DataForm(
+              sendAddress: data['documents'][0]['address']['address_name'],
+              sendLatitude: latLng.latitude,
+              sendLongitude: latLng.longitude);
+          _address =
+              "${data['documents'][0]['address']['region_2depth_name']} ${data['documents'][0]['address']['region_3depth_name']}  ";
+          return _address;
+        }
+      }
+    }
+    return ' ';
+  }
 
   //가게 기본정보 바텀시트
   void _showBottomSheet(BuildContext context) {
@@ -780,24 +718,4 @@ class _MainPageState extends State<MainPage>
       },
     );
   }
-
-  // --http 통신 예제
-  //
-  // Future<List<MyData>> _mainPageAPI() async {
-  //   final accessToken = await storage.read(key: 'accessToken');
-  //   final url = Uri.parse('https://ysw123.xyz/api/store/member');
-  //   final headers = {
-  //     'Content-Type': 'application/json',
-  //     'Authorization': 'Bearer $accessToken',
-  //   };
-  //   final response = await http.get(url, headers: headers);
-
-  //   if (response.statusCode == 200) {
-  //     List jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
-  //     logger.d(jsonResponse);
-  //     return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
-  //   } else {
-  //     throw Exception('HTTP ERROR !!! ${response.body}');
-  //   }
-  // }
 }

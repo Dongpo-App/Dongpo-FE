@@ -7,6 +7,8 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+const serverUrl = "https://ysw123.xyz";
+
 //메인 함수
 void main() async {
   // Flutter SDK 초기화 보장
