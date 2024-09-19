@@ -209,7 +209,7 @@ class _MainPageState extends State<MainPage>
                 NaverMap(
                   onMapReady: (controller) async {
                     _onMapReady(controller);
-                    _moveToCurrentLocation();
+                    _moveCamera();
                     //   //여러 좌표를 받아서 마커 생성
                     //   final NLatLng test = NLatLng(
                     //       37.49993604717163, 126.86768245932946); //테스트 위도 경도
@@ -268,11 +268,25 @@ class _MainPageState extends State<MainPage>
                   right: 16.0,
                   //상단 검색바
                   child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
+                    onTap: () async {
+                      // 검색에서 선택한 결과를 기다림
+                      final searchResult = await Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
                         return const AddressSearchPage();
                       }));
+                      logger.d("search result is $searchResult");
+                      // 검색 결과가 있는 경우 해당 위치로 이동
+                      if (searchResult != null) {
+                        _moveCamera(
+                          lat: searchResult['lat'],
+                          lng: searchResult['lng'],
+                        );
+                        List<MyData> storeList = await _researchFromMe();
+                        logger.d("storeList is empty? : ${storeList.isEmpty}");
+                        setState(() {
+                          _addMarkers(storeList);
+                        });
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -305,7 +319,7 @@ class _MainPageState extends State<MainPage>
                     ),
                   ),
                 ),
-
+                // 바텀 슬라이드
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: SlideTransition(
@@ -471,7 +485,7 @@ class _MainPageState extends State<MainPage>
                               foregroundColor: Colors.blue,
                               backgroundColor: WidgetStateColor.resolveWith(
                                   (states) => Colors.white)),
-                          onPressed: _moveToCurrentLocation,
+                          onPressed: _moveCamera,
                           child: const Icon(Icons.my_location),
                         ),
                       );
@@ -517,7 +531,7 @@ class _MainPageState extends State<MainPage>
   }
 
   //마커 관련
-// 기존 마커 삭제 함수
+  // 기존 마커 삭제 함수
   Future<void> _clearMarkers() async {
     logger.d('마커가 정상적으로 들어왔음 $_markers');
     // for (int i =0 ; i >= _markers.length; i++) {
@@ -529,7 +543,7 @@ class _MainPageState extends State<MainPage>
     logger.d('마커삭제 테스트 $_markers');
   }
 
-// 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
+  // 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
   void _addMarkers(List<MyData> dataList) async {
     //여러개 마커 담는 리스트
     try {
@@ -586,7 +600,6 @@ class _MainPageState extends State<MainPage>
     //서버에 위도경도 보내서 데이터 더미로 받아와야함
     List<MyData> myList = await _researchFromMe();
     //클래스에 담고 마커를 출력함
-    logger.d(myList);
 
     //하단에 bottomsheet에 기본정보들 업데이트 해야됌
     //구, 동 나오게 바꾸기
@@ -598,14 +611,13 @@ class _MainPageState extends State<MainPage>
     // _addMarkers(dataList)
   }
 
-  //내위치 기반으로 근처 가게 검색
+  // 카메라 위치 기반으로 근처 가게 검색
   Future<List<MyData>> _researchFromMe() async {
     //해당 카메라 기준 위도경도 가져옴
-
     final cameraPosition = await _mapController.getCameraPosition();
     final latitude = cameraPosition.target.latitude;
     final longitude = cameraPosition.target.longitude;
-
+    logger.d("researchFromME:$cameraPosition");
     final accessToken = await storage.read(key: 'accessToken');
 
     final url = Uri.parse(
@@ -631,37 +643,48 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  //내위치로 이동
-  Future<void> _moveToCurrentLocation() async {
+  // 위치 정보를 받아 해당 위치로 이동
+  // 내 위치로 또는 특정 위치로 이동
+  Future<void> _moveCamera({String? lat, String? lng}) async {
+    late NLatLng target;
+
     try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      final myLocation = NLatLng(position.latitude, position.longitude);
+      if (lat == null || lng == null) {
+        // 매개변수가 없으면 현재 위치로 이동
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        target = NLatLng(position.latitude, position.longitude);
+        // 사용자 위치 아이콘 에셋 지정
+        const myLocationIcon =
+            NOverlayImage.fromAssetImage('assets/images/myLocation.png');
+        // 마커 객체 생성
+        NMarker myLocationMarker = NMarker(
+          id: "my_location_marker",
+          position: target,
+          icon: myLocationIcon,
+        );
+        // 마커 사이즈 지정 및 지도에 추가
+        myLocationMarker.setSize(const Size(40, 50));
+        _mapController.addOverlay(myLocationMarker);
+      } else {
+        // 매개변수를 받는 경우 해당 위치로 이동
+        target = NLatLng(double.parse(lat), double.parse(lng));
+      }
 
-      const myLocationIcon =
-          NOverlayImage.fromAssetImage('assets/images/myLocation.png');
-
-      NMarker myLocationMarker = NMarker(
-        id: "my_location_marker",
-        position: myLocation,
-        icon: myLocationIcon,
-      );
-
-      myLocationMarker.setSize(const Size(40, 50));
-      _mapController.addOverlay(myLocationMarker);
-
+      // 카메라 이동
       _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
           NCameraPosition(
-            target: myLocation,
+            target: target,
             zoom: 16,
           ),
         ),
       );
-      _updateAddress(position.latitude, position.longitude);
+      // 검색창에 주소 표시
+      _updateAddress(target.latitude, target.longitude);
+      await _reSearchCurrentLocation();
     } catch (e) {
-      // 에러 발생 시 로그 출력
-      logger.d("Error in _moveToCurrentLocation: $e");
+      logger.e("Error in _moveToCurrentLocation: $e");
     }
   }
 

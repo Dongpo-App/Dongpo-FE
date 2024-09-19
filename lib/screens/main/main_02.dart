@@ -20,6 +20,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   Timer? _debounce;
   final String _apiKey = kakaoApiKey;
   final String baseUrl = "https://dapi.kakao.com/v2/local/search";
+  final Map<String, List<dynamic>> _cache = {};
 
   @override
   void dispose() {
@@ -31,7 +32,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   // 디바운스 적용 검색 함수
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(microseconds: 1000), () {
+    _debounce = Timer(const Duration(milliseconds: 200), () {
       // 딜레이 시간 설정
       if (query.isNotEmpty) {
         _searchKeyword(query); // 디바운스 적용할 함수
@@ -62,6 +63,13 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
 
   // 키워드 검색 함수
   Future<void> _searchKeyword(String query) async {
+    if (_cache.containsKey(query)) {
+      setState(() {
+        _results = _cache[query]!;
+      });
+      return;
+    }
+
     String url = "$baseUrl/keyword.json";
     final headers = {'Authorization': 'KakaoAK $_apiKey'};
     try {
@@ -87,6 +95,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
     }
   }
 
+  // 미터 단위 변환 및 소수점 슬라이싱
   String alterDistance(String meter) {
     if (meter == "") {
       throw Exception("현재 위치 정보가 확인되지 않거나 오류가 발생");
@@ -158,23 +167,26 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                       ],
                     ),
                     onTap: () {
-                      final lat = item['y'];
-                      final lng = item['x'];
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('위치 정보'),
-                          content: Text('위도: $lat\n경도: $lng'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('확인'),
-                            ),
-                          ],
-                        ),
-                      );
+                      Map data = {
+                        'lat': item['y'],
+                        'lng': item['x'],
+                      };
+                      Navigator.pop(context, data);
+                      // showDialog(
+                      //   context: context,
+                      //   builder: (context) => AlertDialog(
+                      //     title: const Text('위치 정보'),
+                      //     content: Text('위도: $lat\n경도: $lng'),
+                      //     actions: [
+                      //       TextButton(
+                      //         onPressed: () {
+                      //           Navigator.of(context).pop();
+                      //         },
+                      //         child: const Text('확인'),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // );
                     },
                   );
                 },
