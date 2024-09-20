@@ -6,7 +6,7 @@ import 'package:dongpo_test/main.dart';
 
 late NaverMapController _mapController;
 void main() async {
-  await reset_map();
+  await resetMap();
   runApp(const MyApp());
 }
 

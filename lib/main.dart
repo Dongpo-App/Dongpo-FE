@@ -27,7 +27,7 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  await reset_map();
+  await resetMap();
 
   // 앱 실행
   runApp(const MyApp());

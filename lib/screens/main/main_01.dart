@@ -102,7 +102,7 @@ List<MyData> generateDummyData() {
 List<MyData> myTestList = generateDummyData();
 
 // 지도 초기화하기
-Future<void> reset_map() async {
+Future<void> resetMap() async {
   // splash 화면 종료
   FlutterNativeSplash.remove();
 
@@ -249,7 +249,6 @@ class _MainPageState extends State<MainPage>
                       });
                     }
                   },
-
                   options: const NaverMapViewOptions(
                     locationButtonEnable: false, // 위치 버튼 표시 여부 설정
                     minZoom: 15, //쵀대 줄일 수 있는 크기?
@@ -277,7 +276,7 @@ class _MainPageState extends State<MainPage>
                       logger.d("search result is $searchResult");
                       // 검색 결과가 있는 경우 해당 위치로 이동
                       if (searchResult != null) {
-                        _moveCamera(
+                        await _moveCamera(
                           lat: searchResult['lat'],
                           lng: searchResult['lng'],
                         );
@@ -289,10 +288,11 @@ class _MainPageState extends State<MainPage>
                       }
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 16.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.0),
+                        borderRadius: BorderRadius.circular(12.0),
                         boxShadow: const [
                           BoxShadow(
                             color: Colors.black26,
@@ -433,7 +433,7 @@ class _MainPageState extends State<MainPage>
                 //위치 재검색 버튼
                 AnimatedPositioned(
                   duration: const Duration(milliseconds: 300),
-                  top: _showReSearchButton ? 110.0 : -40.0,
+                  top: _showReSearchButton ? 120.0 : -40.0,
                   left: MediaQuery.of(context).size.width / 3.5,
                   right: MediaQuery.of(context).size.width / 3.5,
                   child: GestureDetector(
@@ -477,7 +477,7 @@ class _MainPageState extends State<MainPage>
                     builder: (context, child) {
                       return Positioned(
                         bottom: _locationBtn.value,
-                        left: 16.0,
+                        left: 10.0,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                               shape: const CircleBorder(),
