@@ -21,7 +21,6 @@ class MyPageViewModel {
     };
     try {
       final response = await http.get(url, headers: headers);
-      logger.d("message : ${response.body}");
       if (response.statusCode == 200) {
         final jsonData = json.decode(utf8.decode(response.bodyBytes));
         final userProfileJson = jsonData['data'];
@@ -70,7 +69,6 @@ class MyPageViewModel {
     try {
       final response = await http.patch(url, headers: headers, body: body);
       if (response.statusCode == 200) {
-        logger.d("user update : ${response.body}");
         return true;
       } else {
         // 실패

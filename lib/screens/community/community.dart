@@ -1,5 +1,8 @@
+import 'package:dongpo_test/models/community_rack.dart';
+import 'package:dongpo_test/screens/community/community_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:dongpo_test/models/title.dart';
 import 'community_top10.dart';
 
 class CommunityPage extends StatefulWidget {
@@ -10,6 +13,26 @@ class CommunityPage extends StatefulWidget {
 }
 
 class CommunityPageState extends State<CommunityPage>{
+  // 커뮤니티 Top 10
+  CommunityViewModel viewModel = CommunityViewModel();
+  late List<CommunityRank> _storeTop10GetAPI = [CommunityRank(nickname: "", title: "", pic: "", count: 0,),];
+  late List<CommunityRank> _visitTop10GetAPI = [CommunityRank(nickname: "", title: "", pic: "", count: 0,),];
+  late List<CommunityRank> _reviewTop10GetAPI = [CommunityRank(nickname: "", title: "", pic: "", count: 0,),];
+
+  @override
+  void initState() {
+    super.initState();
+    getTop10();
+  }
+
+  void getTop10() async {
+    _storeTop10GetAPI = await viewModel.storeTop10GetAPI();
+    _visitTop10GetAPI = await viewModel.visitTop10GetAPI();
+    _reviewTop10GetAPI = await viewModel.reviewTop10GetAPI();
+    setState(() {
+    });
+  }
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
