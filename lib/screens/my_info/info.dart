@@ -41,12 +41,6 @@ class _MyPageState extends State<MyPage> {
     getUserProfile();
   }
 
-  @override
-  void dispose() {
-    nicknameController.dispose();  // TextEditingController 해제
-    super.dispose();  // 부모 클래스의 dispose 호출
-  }
-
   void getUserProfile() async {
     _userProfile = await viewModel.userProfileGetAPI();
     setState(() {
