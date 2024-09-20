@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class CommunityTop10Page extends StatefulWidget {
   final Top10TitleData top10TitleData;
 
-  const CommunityTop10Page({required this.top10TitleData});
+  const CommunityTop10Page({super.key, required this.top10TitleData});
 
   @override
   State<CommunityTop10Page> createState() => CommunityTop10PageState();
@@ -68,34 +68,30 @@ class CommunityTop10PageState extends State<CommunityTop10Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF4F4F4),
+      backgroundColor: const Color(0xFFF4F4F4),
       appBar: AppBar(
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: Text(
           widget.top10TitleData.top10Title,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600
-          ),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context); //뒤로가기
-          },
-          icon: Icon(
-            Icons.chevron_left,
-            size: 24,
-            color: Color(0xFF767676),
-          )
-        ),
+            onPressed: () {
+              Navigator.pop(context); //뒤로가기
+            },
+            icon: const Icon(
+              Icons.chevron_left,
+              size: 24,
+              color: Color(0xFF767676),
+            )),
       ),
-
       body: ListView.builder(
         itemCount: top10Items.length,
-        itemBuilder: (context, index){
+        itemBuilder: (context, index) {
           return Container(
-            margin: EdgeInsets.only(left: 24, top: 12, bottom: 12, right: 24),
+            margin:
+                const EdgeInsets.only(left: 24, top: 12, bottom: 12, right: 24),
             child: Top10CardWidget(top10Items[index], index),
           );
         },
@@ -108,27 +104,27 @@ class Top10CardWidget extends StatelessWidget {
   final Top10Data top10Data;
   final int index;
 
-  Top10CardWidget(this.top10Data, this.index);
+  const Top10CardWidget(this.top10Data, this.index, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      color: Color(0xFFFFFFFF),
+      color: const Color(0xFFFFFFFF),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0),
       ),
       child: SizedBox(
         height: 80, // 세로 크기 80
         child: Padding(
-          padding: EdgeInsets.only(top: 16, bottom: 16),
+          padding: const EdgeInsets.only(top: 16, bottom: 16),
           child: Row(
             children: [
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 24),
+                margin: const EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
                   '${index + 1}등',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.w600,
                   ),
@@ -138,34 +134,35 @@ class Top10CardWidget extends StatelessWidget {
                 radius: 24,
                 backgroundImage: AssetImage(top10Data.memberProfile),
               ),
-              SizedBox(width: 16.0),
+              const SizedBox(width: 16.0),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 1),
                       decoration: BoxDecoration(
-                        color: Color(0xFFF5E0D9),
+                        color: const Color(0xFFF5E0D9),
                         borderRadius: BorderRadius.circular(12.0),
                         border: Border.all(
-                          color: Color(0xFFF5E0D9), // 테두리 색상
+                          color: const Color(0xFFF5E0D9), // 테두리 색상
                         ),
                       ),
                       child: Text(
                         top10Data.memberTitle,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFFF15A2B), // 텍스트 색상 유지
                         ),
                       ),
                     ),
-                    SizedBox(height: 2.0),
+                    const SizedBox(height: 2.0),
                     Text(
                       top10Data.member,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -180,7 +177,6 @@ class Top10CardWidget extends StatelessWidget {
     );
   }
 }
-
 
 // DTO
 class Top10Data {

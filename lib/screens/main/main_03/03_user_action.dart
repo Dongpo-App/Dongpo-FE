@@ -18,13 +18,13 @@ class _UserActionState extends State<UserAction> {
       children: [
         IconButton(
           onPressed: () {},
-          icon: Icon(Icons.chat),
+          icon: const Icon(Icons.chat),
         ),
-        Text("A"),
-        SizedBox(
+        const Text("A"),
+        const SizedBox(
           width: 10,
         ),
-        Text("|", style: TextStyle(fontSize: 21)),
+        const Text("|", style: TextStyle(fontSize: 21)),
         //북마크 추가를 기존에 했었다면
         _selected
             ? IconButton(
@@ -33,9 +33,9 @@ class _UserActionState extends State<UserAction> {
                     _selected = false;
                   });
                 },
-                icon: Icon(Icons.bookmark_added),
+                icon: const Icon(Icons.bookmark_added),
                 style: ButtonStyle(
-                    iconColor: MaterialStateColor.resolveWith(
+                    iconColor: WidgetStateColor.resolveWith(
                         (states) => Colors.orange)),
               )
             : IconButton(
@@ -44,9 +44,9 @@ class _UserActionState extends State<UserAction> {
                     _selected = true;
                   });
                 },
-                icon: Icon(Icons.bookmark),
+                icon: const Icon(Icons.bookmark),
               ),
-        Text("A"),
+        const Text("A"),
       ],
     );
   }

@@ -8,7 +8,7 @@ import '../../main.dart';
 
 class MyPageViewModel {
   // secure storage
-  static final storage = FlutterSecureStorage();
+  static const storage = FlutterSecureStorage();
 
   Future<UserProfile> userProfileGetAPI() async {
     // secure storage token read
@@ -24,27 +24,26 @@ class MyPageViewModel {
       if (response.statusCode == 200) {
         final jsonData = json.decode(utf8.decode(response.bodyBytes));
         final userProfileJson = jsonData['data'];
-
-        logger.d("userData : ${userProfileJson}");
+        logger.d("userData : $userProfileJson");
 
         return UserProfile.fromJson(userProfileJson);
       } else {
         // 실패
         throw UserProfileException(
-            "Fail to load. status code: ${response.statusCode}"
-        );
+            "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
-      logger.d("error : ${e}");
+      logger.d("error : $e");
       throw UserProfileException("Error occurred: $e");
     }
   }
 
-  Future<bool> userProfileUpdateAPI(dynamic? pic, String nickname, String newMainTitle) async {
+  Future<bool> userProfileUpdateAPI(
+      dynamic pic, String nickname, String newMainTitle) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    logger.d("userProfileUpdate : ${pic}, ${nickname}");
+    logger.d("userProfileUpdate : $pic, $nickname");
 
     // 사용자 프로필 사진 업로드 API
     String? userPicURL;
@@ -57,7 +56,7 @@ class MyPageViewModel {
     final data = {
       "nickname": nickname,
       "profilePic": userPicURL,
-      "newMainTitle" : newMainTitle,
+      "newMainTitle": newMainTitle,
     };
     final url = Uri.parse('https://ysw123.xyz/api/my-page');
     final headers = {
@@ -72,11 +71,11 @@ class MyPageViewModel {
         return true;
       } else {
         // 실패
-        logger.d("Fail to load ${data}. status code : ${response.statusCode}");
+        logger.d("Fail to load $data. status code : ${response.statusCode}");
         return false;
       }
     } catch (e) {
-      logger.d("error : ${e}");
+      logger.d("error : $e");
       return false;
     }
   }
@@ -85,12 +84,12 @@ class MyPageViewModel {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    var dio = new Dio();
+    var dio = Dio();
 
     var formData =
         FormData.fromMap({'image': await MultipartFile.fromFile(pic)});
 
-    final url = 'https://ysw123.xyz/api/file-upload';
+    const url = 'https://ysw123.xyz/api/file-upload';
 
     try {
       dio.options.contentType = 'multipart/form-data';
@@ -102,17 +101,17 @@ class MyPageViewModel {
 
         List<dynamic> dataList = jsonData['data'];
         String imageUrl = dataList[0]['imageUrl'];
-        
+
         return imageUrl;
       } else {
         // 실패
         logger.d(
-            "Fail to upload ${formData}. status code : ${response.statusCode}");
+            "Fail to upload $formData. status code : ${response.statusCode}");
 
         return null;
       }
     } catch (e) {
-      logger.d("error : ${e}");
+      logger.d("error : $e");
       return null;
     }
   }

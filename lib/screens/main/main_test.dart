@@ -64,6 +64,8 @@ Future<List<Shop>> fetchShops() async {
 }
 
 class ShopListScreen extends StatefulWidget {
+  const ShopListScreen({super.key});
+
   @override
   _ShopListScreenState createState() => _ShopListScreenState();
 }
@@ -82,20 +84,20 @@ class _ShopListScreenState extends State<ShopListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Shop List'),
+        title: const Text('Shop List'),
       ),
       body: FutureBuilder<List<Shop>>(
         future: futureShops,
         builder: (context, snapshot) {
           // 데이터가 로드되는 동안 로딩 스피너를 표시
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           // 데이터 로드가 완료된 경우
           else if (snapshot.hasData) {
             // 데이터가 없는 경우
             if (snapshot.data!.isEmpty) {
-              return Center(child: Text('No shops available'));
+              return const Center(child: Text('No shops available'));
             }
             // 데이터가 있는 경우 리스트뷰로 표시
             else {
@@ -118,7 +120,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
           }
           // 기타 경우
           else {
-            return Center(child: Text('Unexpected error'));
+            return const Center(child: Text('Unexpected error'));
           }
         },
       ),
@@ -127,7 +129,7 @@ class _ShopListScreenState extends State<ShopListScreen> {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: ShopListScreen(),
   ));
 }

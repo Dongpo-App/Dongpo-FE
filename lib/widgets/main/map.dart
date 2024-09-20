@@ -14,18 +14,18 @@ class NaverMapApp extends StatefulWidget {
 
 class NaverMapAppState extends State<NaverMapApp> {
   late NaverMapController _mapController;
-  String _currentAddress = "";
+  final String _currentAddress = "";
 
   @override
   Widget build(BuildContext context) {
     List<NLatLng> NList = [
-      NLatLng(37.49993604717163, 126.86768245932946),
-      NLatLng(37.49993604717164, 126.86768245932941),
-      NLatLng(37.49993604717165, 126.86768245932942),
-      NLatLng(37.49993604717166, 126.86768245932943),
-      NLatLng(37.49993604717167, 126.86768245932944),
-      NLatLng(37.49993604717168, 126.86768245932945),
-      NLatLng(37.49993604717169, 126.86768245932946),
+      const NLatLng(37.49993604717163, 126.86768245932946),
+      const NLatLng(37.49993604717164, 126.86768245932941),
+      const NLatLng(37.49993604717165, 126.86768245932942),
+      const NLatLng(37.49993604717166, 126.86768245932943),
+      const NLatLng(37.49993604717167, 126.86768245932944),
+      const NLatLng(37.49993604717168, 126.86768245932945),
+      const NLatLng(37.49993604717169, 126.86768245932946),
     ];
 
     return Scaffold(
@@ -51,7 +51,7 @@ class NaverMapAppState extends State<NaverMapApp> {
             ),
             onMapReady: (controller) async {
               log("onMapReady", name: "onMapReady");
-              final NLatLng test =
+              const NLatLng test =
                   NLatLng(37.49993604717163, 126.86768245932946); //테스트 위도 경도
 
               final NMarker marker = NMarker(
@@ -59,12 +59,12 @@ class NaverMapAppState extends State<NaverMapApp> {
                 position: test,
               ); //테스트 마커
               //커스텀 마커 생성
-              var customMarker =
-                  NOverlayImage.fromAssetImage("assets/images/rakoon.png");
+              var customMarker = const NOverlayImage.fromAssetImage(
+                  "assets/images/rakoon.png");
               //마커 아이콘 변경
               marker.setIcon(customMarker);
               //마커 크기 조절
-              var defaultMarkerSize = Size(40, 50);
+              var defaultMarkerSize = const Size(40, 50);
               marker.setSize(defaultMarkerSize);
 
               marker.setOnTapListener((overlay) => print("마커눌렸다"));

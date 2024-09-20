@@ -11,7 +11,7 @@ class KakaoNaverLogin implements SocialLogin {
     try {
       // 카카오톡 실행 가능 여부 확인
       bool isInstalled = await isKakaoTalkInstalled();
-      if (await isInstalled) {
+      if (isInstalled) {
         try {
           // 카카오톡으로 로그인
           final oauthToken = await UserApi.instance.loginWithKakaoTalk();
@@ -21,7 +21,7 @@ class KakaoNaverLogin implements SocialLogin {
         } catch (e) {
           logger.d("kakaoTalk login errer : $e");
           if (e is PlatformException && e.code == "CANCELED") {
-            logger.d("e : ${e}");
+            logger.d("e : $e");
             return null;
           }
           try {
@@ -30,7 +30,7 @@ class KakaoNaverLogin implements SocialLogin {
                 "kakaoAccount login accessToken : ${kakaoToken.accessToken}");
             return kakaoToken.accessToken.toString();
           } catch (e) {
-            logger.d("e : ${e}");
+            logger.d("e : $e");
             return null;
           }
         }
@@ -42,12 +42,12 @@ class KakaoNaverLogin implements SocialLogin {
               .d("kakaoAccount login accessToken : ${kakaoToken.accessToken}");
           return kakaoToken.accessToken.toString();
         } catch (e) {
-          logger.d("e : ${e}");
+          logger.d("e : $e");
           return null;
         }
       }
     } catch (e) {
-      logger.d("e : ${e}");
+      logger.d("e : $e");
       return null;
     }
   }
@@ -65,7 +65,7 @@ class KakaoNaverLogin implements SocialLogin {
       logger.d("naver login accessToken : ${token.accessToken}");
       return token.accessToken.toString();
     } catch (e) {
-      logger.d("naver login error : ${e}");
+      logger.d("naver login error : $e");
       return null;
     } finally {
       logger.d('finally 실행됐다.');
@@ -79,19 +79,19 @@ class KakaoNaverLogin implements SocialLogin {
         try {
           // logout 실행 코드. SDK에서 토큰 삭제
           await UserApi.instance.unlink();
-          logger.d("${loginPlatform} : logout");
+          logger.d("$loginPlatform : logout");
           return true;
         } catch (e) {
-          logger.d("kakao logout error : ${e}");
+          logger.d("kakao logout error : $e");
           return false;
         }
       case LoginPlatform.naver:
         try {
           await FlutterNaverLogin.logOut();
-          logger.d("${loginPlatform} : logout");
+          logger.d("$loginPlatform : logout");
           return true;
         } catch (e) {
-          logger.d("naver logout error : ${e}");
+          logger.d("naver logout error : $e");
           return false;
         }
 

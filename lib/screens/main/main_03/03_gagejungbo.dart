@@ -9,25 +9,25 @@ class GageJungbo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(4.0),
+      margin: const EdgeInsets.all(4.0),
       child: Column(
         children: [
-          Row(
+          const Row(
             children: [
               Text('가게 정보'),
               Text('A 님이 등록하셨어요.'),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Container(
             height: 160,
-            padding: EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(8.0)),
-            child: Column(
+            child: const Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Row(
@@ -78,21 +78,21 @@ class GageJungbo extends StatelessWidget {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(top: 30),
+            margin: const EdgeInsets.only(top: 30),
             child: ElevatedButton(
               onPressed: () {
                 //가게 정보 수정하기
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return GagaeUpdate();
+                  return const GagaeUpdate();
                 }));
               },
               style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 45),
-                shape: RoundedRectangleBorder(
+                minimumSize: const Size(double.infinity, 45),
+                shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10))),
-                backgroundColor: Color(0xffF15A2B),
+                backgroundColor: const Color(0xffF15A2B),
               ),
-              child: Text(
+              child: const Text(
                 "가게정보 수정하기",
                 style:
                     TextStyle(fontWeight: FontWeight.bold, color: Colors.white),

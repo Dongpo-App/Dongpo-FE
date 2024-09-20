@@ -6,8 +6,8 @@ import 'package:dongpo_test/main.dart';
 
 late NaverMapController _mapController;
 void main() async {
-  await reset_map();
-  runApp(MyApp());
+  await resetMap();
+  runApp(const MyApp());
 }
 
 int okValue = 0;
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: Scaffold(
         body: SecondPage(),
       ),
@@ -32,7 +32,7 @@ class BangMoon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(
+      const Text(
         '방문에 성공하셨나요?',
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
@@ -41,25 +41,22 @@ class BangMoon extends StatelessWidget {
         children: [
           //방문 성공 컨테이너
           Container(
-            padding: EdgeInsets.all(10.0),
-            margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
+            padding: const EdgeInsets.all(10.0),
+            margin: const EdgeInsets.fromLTRB(10, 20, 10, 10),
             decoration: BoxDecoration(
                 color: Colors.green[200],
                 borderRadius: BorderRadius.circular(10.0)),
             child: Row(
               children: [
                 Icon(color: Colors.green[700], Icons.sentiment_satisfied_alt),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
-                Text(
+                const Text(
                   '방문 성공 A명',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold
-                  ),
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 )
               ],
@@ -67,8 +64,8 @@ class BangMoon extends StatelessWidget {
           ),
           //방문 실패 컨테이너
           Container(
-            padding: EdgeInsets.all(10.0),
-            margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
+            padding: const EdgeInsets.all(10.0),
+            margin: const EdgeInsets.fromLTRB(10, 20, 10, 10),
             decoration: BoxDecoration(
                 color: Colors.red[200],
                 borderRadius: BorderRadius.circular(10.0)),
@@ -78,11 +75,13 @@ class BangMoon extends StatelessWidget {
                   color: Colors.red[800],
                   Icons.sentiment_dissatisfied_outlined,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
-                Text('방문 실패 A명', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                SizedBox(
+                const Text('방문 실패 A명',
+                    style:
+                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                const SizedBox(
                   width: 20,
                 )
               ],
@@ -91,24 +90,24 @@ class BangMoon extends StatelessWidget {
         ],
       ),
       Container(
-        padding: EdgeInsets.all(10.0),
-        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+        padding: const EdgeInsets.all(10.0),
+        margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: ElevatedButton(
           onPressed: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => SecondPage()));
+                    builder: (BuildContext context) => const SecondPage()));
           },
-          child: Text(
+          style: ElevatedButton.styleFrom(
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10))),
+            minimumSize: const Size(double.infinity, 40),
+            backgroundColor: const Color(0xffF15A2B),
+          ),
+          child: const Text(
             '방문 인증 하러가기',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10))),
-            minimumSize: Size(double.infinity, 40),
-            backgroundColor: Color(0xffF15A2B),
           ),
         ),
       )
@@ -136,7 +135,7 @@ class _SecondPageState extends State<SecondPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('가게 방문 인증 '),
+        title: const Text('가게 방문 인증 '),
         centerTitle: true,
       ),
       body: Column(
@@ -147,7 +146,7 @@ class _SecondPageState extends State<SecondPage> {
               onMapReady: (controller) {
                 _onMapReady(controller);
               },
-              options: NaverMapViewOptions(
+              options: const NaverMapViewOptions(
                 zoomGesturesEnable: false,
                 minZoom: 16,
                 scrollGesturesEnable: false,
@@ -157,13 +156,13 @@ class _SecondPageState extends State<SecondPage> {
           Expanded(
             flex: 1,
             child: Container(
-              margin: EdgeInsets.all(20),
-              decoration: BoxDecoration(),
+              margin: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  const Row(
                     children: [
                       SizedBox(
                         width: 23,
@@ -187,8 +186,8 @@ class _SecondPageState extends State<SecondPage> {
                           });
                         },
                         child: Container(
-                          padding: EdgeInsets.all(10.0),
-                          margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
+                          padding: const EdgeInsets.all(10.0),
+                          margin: const EdgeInsets.fromLTRB(10, 20, 10, 10),
                           decoration: BoxDecoration(
                               color: okValue == 1
                                   ? Colors.green[200]
@@ -201,16 +200,17 @@ class _SecondPageState extends State<SecondPage> {
                                       ? Colors.green[700]
                                       : Colors.grey,
                                   Icons.sentiment_satisfied_alt),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text(
                                 '방문 성공',
                                 style: okValue == 1
-                                    ? TextStyle(fontWeight: FontWeight.bold)
+                                    ? const TextStyle(
+                                        fontWeight: FontWeight.bold)
                                     : null,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 20,
                               )
                             ],
@@ -226,8 +226,8 @@ class _SecondPageState extends State<SecondPage> {
                           });
                         },
                         child: Container(
-                          padding: EdgeInsets.all(10.0),
-                          margin: EdgeInsets.fromLTRB(10, 20, 10, 10),
+                          padding: const EdgeInsets.all(10.0),
+                          margin: const EdgeInsets.fromLTRB(10, 20, 10, 10),
                           decoration: BoxDecoration(
                               color: noValue == 1
                                   ? Colors.red[200]
@@ -241,14 +241,15 @@ class _SecondPageState extends State<SecondPage> {
                                     : Colors.grey,
                                 Icons.sentiment_dissatisfied_outlined,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Text('방문 실패',
                                   style: noValue == 1
-                                      ? TextStyle(fontWeight: FontWeight.bold)
+                                      ? const TextStyle(
+                                          fontWeight: FontWeight.bold)
                                       : null),
-                              SizedBox(
+                              const SizedBox(
                                 width: 20,
                               )
                             ],
@@ -258,8 +259,8 @@ class _SecondPageState extends State<SecondPage> {
                     ],
                   ),
                   Container(
-                    padding: EdgeInsets.all(10.0),
-                    margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                    padding: const EdgeInsets.all(10.0),
+                    margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                     child: ElevatedButton(
                       onPressed: () {
                         (okValue == 1 || noValue == 1)
@@ -268,6 +269,18 @@ class _SecondPageState extends State<SecondPage> {
 
                         //방문 인증 메서드 구현
                       },
+                      style: ElevatedButton.styleFrom(
+                        splashFactory: (okValue == 0 && noValue == 0)
+                            ? NoSplash.splashFactory
+                            : InkSplash.splashFactory,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        minimumSize: const Size(double.infinity, 40),
+                        backgroundColor: (okValue == 1 || noValue == 1)
+                            ? const Color(0xffF15A2B)
+                            : Colors.grey[100],
+                      ),
                       child: Text(
                         '방문인증',
                         style: TextStyle(
@@ -275,18 +288,6 @@ class _SecondPageState extends State<SecondPage> {
                                 ? Colors.white
                                 : Colors.grey,
                             fontWeight: FontWeight.bold),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        splashFactory: (okValue == 0 && noValue == 0)
-                            ? NoSplash.splashFactory
-                            : InkSplash.splashFactory,
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        minimumSize: Size(double.infinity, 40),
-                        backgroundColor: (okValue == 1 || noValue == 1)
-                            ? Color(0xffF15A2B)
-                            : Colors.grey[100],
                       ),
                     ),
                   )
@@ -310,7 +311,7 @@ Future<void> _moveToCurrentLocation() async {
         desiredAccuracy: LocationAccuracy.high);
     final myLocation = NLatLng(position.latitude, position.longitude);
 
-    final myLocationIcon =
+    const myLocationIcon =
         NOverlayImage.fromAssetImage('assets/images/myLocation.png');
 
     NMarker myLocationMarker = NMarker(
@@ -319,7 +320,7 @@ Future<void> _moveToCurrentLocation() async {
       icon: myLocationIcon,
     );
 
-    myLocationMarker.setSize(Size(40, 50));
+    myLocationMarker.setSize(const Size(40, 50));
     _mapController.addOverlay(myLocationMarker);
 
     _mapController.updateCamera(
@@ -339,7 +340,7 @@ Future<void> _moveToCurrentLocation() async {
 showAlertDialog(BuildContext context, int okValue, int noValue) {
   // set up the button
   Widget okButton = TextButton(
-    child: Text("OK"),
+    child: const Text("OK"),
     onPressed: () {
       logger.d('하이');
       Navigator.pop(context);
@@ -349,8 +350,8 @@ showAlertDialog(BuildContext context, int okValue, int noValue) {
 
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
-    title: Text("방문 인증"),
-    content: Text("방문 인증이 완료되었습니다. "),
+    title: const Text("방문 인증"),
+    content: const Text("방문 인증이 완료되었습니다. "),
     actions: [
       okButton,
     ],
