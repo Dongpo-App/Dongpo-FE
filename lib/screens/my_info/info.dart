@@ -33,10 +33,18 @@ class _MyPageState extends State<MyPage> {
   late UserProfile _userProfile = UserProfile(nickname: "", profilePic: "", mainTitle: UserTitle(title: "", description: ""),
       titles: [], registerCount: 0, titleCount: 0, presentCount: 0);
 
+  late final TextEditingController nicknameController;
+
   @override
   void initState() {
     super.initState();
     getUserProfile();
+  }
+
+  @override
+  void dispose() {
+    nicknameController.dispose();  // TextEditingController 해제
+    super.dispose();  // 부모 클래스의 dispose 호출
   }
 
   void getUserProfile() async {
@@ -63,330 +71,335 @@ class _MyPageState extends State<MyPage> {
           ),
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.only(top: 48, left: 24, right: 24),
-            color:  Color(0xFFFFFF),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // 프로필 사진
-                CircleAvatar(
-                  radius: 48,
-                  backgroundImage: (_userProfile.profilePic != null && _userProfile.profilePic!.isNotEmpty)
-                      ? NetworkImage(_userProfile.profilePic!)
-                          as ImageProvider
-                      : AssetImage('assets/images/profile.jpg'),
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height, // 전체 화면 높이 설정
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.only(top: 48, left: 24, right: 24),
+                color:  Color(0xFFFFFF),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // 프로필 사진
+                    CircleAvatar(
+                      radius: 48,
+                      backgroundImage: (_userProfile.profilePic != null && _userProfile.profilePic!.isNotEmpty)
+                          ? NetworkImage(_userProfile.profilePic!)
+                              as ImageProvider
+                          : AssetImage('assets/images/profile.jpg'),
+                    ),
+                    SizedBox(width: 16), // 간격 조정
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
+                        children: [
+                          // 칭호
+                          Container(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFF5E0D9),
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(
+                                color: Color(0xFFF5E0D9), // 테두리 색상
+                              ),
+                            ),
+                            child: Text(
+                              _userProfile.mainTitle.description,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFFF15A2B),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8), // 간격 조정
+                          // 닉네임
+                          Text(
+                            _userProfile.nickname,
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(width: 16), // 간격 조정
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
-                    children: [
-                      // 칭호
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: Color(0xFFF5E0D9),
-                          borderRadius: BorderRadius.circular(12.0),
-                          border: Border.all(
-                            color: Color(0xFFF5E0D9), // 테두리 색상
+              ),
+              SizedBox(height: 40), // 간격 조정
+              Container(
+                height: 44,
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                // 프로필 편집 버튼
+                child: OutlinedButton(
+                  onPressed: () {
+                    showEditProfileBottomSheet(context);
+                  },
+                  style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                    Radius.circular(12),
+                  ))),
+                  child: Text(
+                    '프로필 편집',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF767676),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 24), // 간격 조정
+              // 등록한 가게, 칭호, 선물함
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    // 등록한 가게
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _userProfile.registerCount.toString(),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF767676),
                           ),
                         ),
-                        child: Text(
-                          _userProfile.mainTitle.description,
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Text(
+                          '등록한 가게',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFFF15A2B),
+                            color: Color(0xFF767676),
+                          ),
+                        ),
+                      ],
+                    ),
+                    // 칭호
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _userProfile.titleCount.toString(),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF767676),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Text(
+                          '칭호',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF767676),
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Spacer(),
+                    // 선물함
+                    // Column(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Text(
+                    //       _userProfile.presentCount.toString(),
+                    //       style: TextStyle(
+                    //         fontSize: 16,
+                    //         fontWeight: FontWeight.w400,
+                    //         color: Color(0xFF767676),
+                    //       ),
+                    //     ),
+                    //     SizedBox(
+                    //       height: 8,
+                    //     ),
+                    //     Text(
+                    //       '선물함',
+                    //       style: TextStyle(
+                    //         fontSize: 16,
+                    //         fontWeight: FontWeight.w600,
+                    //         color: Color(0xFF767676),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 24,
+                width: double.infinity,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF4F4F4),
+                  ),
+                ),
+              ),
+              // 내 칭호, 내가 쓴 리뷰, 북마크한 가게, 선물함
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: ListTile(
+                  title: Text(
+                    '내 칭호',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF767676)),
+                  ),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {
+                    // 내 칭호 버튼이 클릭되었을 때의 액션
+                  },
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: ListTile(
+                  title: Text(
+                    '내가 쓴 리뷰',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF767676)),
+                  ),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {
+                    // 내가 쓴 리뷰 버튼이 클릭되었을 때의 액션
+                  },
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                child: ListTile(
+                  title: Text(
+                    '북마크한 가게',
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF767676)),
+                  ),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {
+                    // 북마크한 가게 버튼이 클릭되었을 때의 액션
+                  },
+                ),
+              ),
+              // Container(
+              //   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              //   child: ListTile(
+              //     title: Text(
+              //       '선물함',
+              //       style: TextStyle(
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.w400,
+              //           color: Color(0xFF767676)),
+              //     ),
+              //     trailing: Icon(Icons.keyboard_arrow_right),
+              //     onTap: () {
+              //       // 선물함 버튼이 클릭되었을 때의 액션
+              //     },
+              //   ),
+              // ),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(24),
+                  color: Color(0xFFF4F4F4),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          String? loginPlatform =
+                              await storage.read(key: 'loginPlatform');
+                          if (loginPlatform == null) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              (route) => false, // 모든 이전 페이지 제거
+                            );
+                          }
+                          isLogouted = await loginViewModel.logout(loginPlatform);
+                          if (isLogouted) {
+                            // FlutterSecureStorage에 있는 token 삭제
+                            await storage.delete(key: 'accessToken');
+                            await storage.delete(key: 'refreshToken');
+                            await storage.delete(key: 'loginPlatform');
+
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              (route) => false, // 모든 이전 페이지 제거
+                            );
+                          }
+                        },
+                        child: Text(
+                          '로그아웃',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            color: Color(0xFF767676),
                           ),
                         ),
                       ),
-                      SizedBox(height: 8), // 간격 조정
-                      // 닉네임
-                      Text(
-                        _userProfile.nickname,
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w600,
+                      Spacer(),
+                      GestureDetector(
+                        onTap: () async {
+                          String? loginPlatform =
+                              await storage.read(key: 'loginPlatform');
+                          if (loginPlatform == null) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              (route) => false, // 모든 이전 페이지 제거
+                            );
+                          }
+                          isLogouted = await loginViewModel.logout(loginPlatform);
+                          if (isLogouted) {
+                            // FlutterSecureStorage에 있는 token 삭제
+                            await storage.delete(key: 'accessToken');
+                            await storage.delete(key: 'refreshToken');
+                            await storage.delete(key: 'loginPlatform');
+                            Map<String, String> allData = await storage.readAll();
+                            logger.d("logout token : ${allData}");
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              (route) => false, // 모든 이전 페이지 제거
+                            );
+                          }
+                        },
+                        child: Text(
+                          '탈퇴',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            color: Color(0xFF767676),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-          SizedBox(height: 40), // 간격 조정
-          Container(
-            height: 44,
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            // 프로필 편집 버튼
-            child: OutlinedButton(
-              onPressed: () {
-                showEditProfileBottomSheet(context);
-              },
-              style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                Radius.circular(12),
-              ))),
-              child: Text(
-                '프로필 편집',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF767676),
-                ),
               ),
-            ),
+            ],
           ),
-          SizedBox(height: 24), // 간격 조정
-          // 등록한 가게, 칭호, 선물함
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                // 등록한 가게
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _userProfile.registerCount.toString(),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF767676),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      '등록한 가게',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF767676),
-                      ),
-                    ),
-                  ],
-                ),
-                // 칭호
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _userProfile.titleCount.toString(),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF767676),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      '칭호',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF767676),
-                      ),
-                    ),
-                  ],
-                ),
-                // Spacer(),
-                // 선물함
-                // Column(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: [
-                //     Text(
-                //       _userProfile.presentCount.toString(),
-                //       style: TextStyle(
-                //         fontSize: 16,
-                //         fontWeight: FontWeight.w400,
-                //         color: Color(0xFF767676),
-                //       ),
-                //     ),
-                //     SizedBox(
-                //       height: 8,
-                //     ),
-                //     Text(
-                //       '선물함',
-                //       style: TextStyle(
-                //         fontSize: 16,
-                //         fontWeight: FontWeight.w600,
-                //         color: Color(0xFF767676),
-                //       ),
-                //     ),
-                //   ],
-                // ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 24,
-            width: double.infinity,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Color(0xFFF4F4F4),
-              ),
-            ),
-          ),
-          // 내 칭호, 내가 쓴 리뷰, 북마크한 가게, 선물함
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            child: ListTile(
-              title: Text(
-                '내 칭호',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF767676)),
-              ),
-              trailing: Icon(Icons.keyboard_arrow_right),
-              onTap: () {
-                // 내 칭호 버튼이 클릭되었을 때의 액션
-              },
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            child: ListTile(
-              title: Text(
-                '내가 쓴 리뷰',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF767676)),
-              ),
-              trailing: Icon(Icons.keyboard_arrow_right),
-              onTap: () {
-                // 내가 쓴 리뷰 버튼이 클릭되었을 때의 액션
-              },
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            child: ListTile(
-              title: Text(
-                '북마크한 가게',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xFF767676)),
-              ),
-              trailing: Icon(Icons.keyboard_arrow_right),
-              onTap: () {
-                // 북마크한 가게 버튼이 클릭되었을 때의 액션
-              },
-            ),
-          ),
-          // Container(
-          //   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          //   child: ListTile(
-          //     title: Text(
-          //       '선물함',
-          //       style: TextStyle(
-          //           fontSize: 16,
-          //           fontWeight: FontWeight.w400,
-          //           color: Color(0xFF767676)),
-          //     ),
-          //     trailing: Icon(Icons.keyboard_arrow_right),
-          //     onTap: () {
-          //       // 선물함 버튼이 클릭되었을 때의 액션
-          //     },
-          //   ),
-          // ),
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(24),
-              color: Color(0xFFF4F4F4),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      String? loginPlatform =
-                          await storage.read(key: 'loginPlatform');
-                      if (loginPlatform == null) {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                          (route) => false, // 모든 이전 페이지 제거
-                        );
-                      }
-                      isLogouted = await loginViewModel.logout(loginPlatform);
-                      if (isLogouted) {
-                        // FlutterSecureStorage에 있는 token 삭제
-                        await storage.delete(key: 'accessToken');
-                        await storage.delete(key: 'refreshToken');
-                        await storage.delete(key: 'loginPlatform');
-
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                          (route) => false, // 모든 이전 페이지 제거
-                        );
-                      }
-                    },
-                    child: Text(
-                      '로그아웃',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        color: Color(0xFF767676),
-                      ),
-                    ),
-                  ),
-                  Spacer(),
-                  GestureDetector(
-                    onTap: () async {
-                      String? loginPlatform =
-                          await storage.read(key: 'loginPlatform');
-                      if (loginPlatform == null) {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                          (route) => false, // 모든 이전 페이지 제거
-                        );
-                      }
-                      isLogouted = await loginViewModel.logout(loginPlatform);
-                      if (isLogouted) {
-                        // FlutterSecureStorage에 있는 token 삭제
-                        await storage.delete(key: 'accessToken');
-                        await storage.delete(key: 'refreshToken');
-                        await storage.delete(key: 'loginPlatform');
-                        Map<String, String> allData = await storage.readAll();
-                        logger.d("logout token : ${allData}");
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                          (route) => false, // 모든 이전 페이지 제거
-                        );
-                      }
-                    },
-                    child: Text(
-                      '탈퇴',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        color: Color(0xFF767676),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -396,8 +409,7 @@ class _MyPageState extends State<MyPage> {
     final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 50%
 
     // TextEditingController를 사용하여 초기값 설정
-    final TextEditingController nicknameController =
-        TextEditingController(text: _userProfile.nickname);
+    nicknameController = TextEditingController(text: _userProfile.nickname);
     String nickname = nicknameController.text;
 
     // 사용자가 닉네임 수정 입력을 완료하면 호출
@@ -630,19 +642,22 @@ class _MyPageState extends State<MyPage> {
                               ),
                               onPressed: () async {
                                 // 프로필 수정
-                                (updateValue == 0)
-                                  ? null
-                                  : userProfileUpdate = await viewModel.userProfileUpdateAPI(sendData, nickname, mainTitle);
+                                if (updateValue == 0) return;
+                                userProfileUpdate = await viewModel.userProfileUpdateAPI(sendData, nickname, mainTitle);
                                 logger.d("profile update : ${userProfileUpdate}");
                                 // 프로필 수정에 성공할 경우 바텀시트 내리고 화면 새로고침
                                 if (userProfileUpdate) {
-                                  updateValue = 0;
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => MyAppPage(initialIndex: 3)),
-                                      (route) => false, // 모든 이전 페이지 제거
-                                  ).then((value) {
-                                    setState(() {}); // 페이지 새로고침
+                                  setState(() {
+                                    updateValue = 0; // 상태 업데이트
+                                    nicknameController.clear();
+                                  });
+                                  // setState가 완료된 후에 Navigator 호출
+                                  Future.delayed(Duration.zero, () {
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => MyAppPage(initialIndex: 3)),
+                                          (route) => false,
+                                    );
                                   });
                                 }
                               },
