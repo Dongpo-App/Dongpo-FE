@@ -31,9 +31,7 @@ class LoginViewModel {
   }
 
   Future<bool> naverLogin() async {
-    logger.d('naverLogin() 진입했다');
     socialToken = await _socialLogin.isNaverLogin();
-    logger.d('_socialLogin.isNaverLogin() 성공했다.');
     if (socialToken != null) {
       // 네이버 로그인 성공함
       loginPlatform = LoginPlatform.naver;

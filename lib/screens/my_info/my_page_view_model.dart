@@ -32,7 +32,8 @@ class MyPageViewModel {
       } else {
         // 실패
         throw UserProfileException(
-            "Fail to load. status code: ${response.statusCode}");
+            "Fail to load. status code: ${response.statusCode}"
+        );
       }
     } catch (e) {
       logger.d("error : ${e}");
@@ -69,6 +70,7 @@ class MyPageViewModel {
     try {
       final response = await http.patch(url, headers: headers, body: body);
       if (response.statusCode == 200) {
+        logger.d("user update : ${response.body}");
         return true;
       } else {
         // 실패
