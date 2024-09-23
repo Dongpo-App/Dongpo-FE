@@ -32,7 +32,7 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
   // 디바운스 적용 검색 함수
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 200), () {
+    _debounce = Timer(const Duration(milliseconds: 250), () {
       // 딜레이 시간 설정
       if (query.isNotEmpty) {
         _searchKeyword(query); // 디바운스 적용할 함수
