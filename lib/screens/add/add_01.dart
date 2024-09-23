@@ -48,13 +48,6 @@ class _AddPageState extends State<AddPage> {
   }
 
   @override
-  void dispose() {
-    // ValueNotifier 메모리 해제를 위해 dispose 호출
-    _addressNotifier.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

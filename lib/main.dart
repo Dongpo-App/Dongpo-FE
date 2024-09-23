@@ -28,7 +28,6 @@ void main() async {
   // 스플래시 화면 초기화 및 유지
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
   await resetMap();
 
   // 앱 실행
