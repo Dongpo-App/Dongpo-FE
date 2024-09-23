@@ -109,7 +109,7 @@ class _MyPageState extends State<MyPage> {
                       radius: 48,
                       backgroundImage: (_userProfile.profilePic != null && _userProfile.profilePic!.isNotEmpty)
                           ? NetworkImage(_userProfile.profilePic!)
-                              as ImageProvider
+                      as ImageProvider
                           : AssetImage('assets/images/profile.jpg'),
                     ),
                     SizedBox(width: 16), // 간격 조정
@@ -120,7 +120,7 @@ class _MyPageState extends State<MyPage> {
                           // 칭호
                           Container(
                             padding:
-                                EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                            EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                             decoration: BoxDecoration(
                               color: Color(0xFFF5E0D9),
                               borderRadius: BorderRadius.circular(12.0),
@@ -165,8 +165,8 @@ class _MyPageState extends State<MyPage> {
                   style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(
-                    Radius.circular(12),
-                  ))),
+                            Radius.circular(12),
+                          ))),
                   child: Text(
                     '프로필 편집',
                     style: TextStyle(
@@ -348,12 +348,12 @@ class _MyPageState extends State<MyPage> {
                       GestureDetector(
                         onTap: () async {
                           String? loginPlatform =
-                              await storage.read(key: 'loginPlatform');
+                          await storage.read(key: 'loginPlatform');
                           if (loginPlatform == null) {
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (context) => LoginPage()),
-                              (route) => false, // 모든 이전 페이지 제거
+                                  (route) => false, // 모든 이전 페이지 제거
                             );
                           }
                           isLogouted = await loginViewModel.logout(loginPlatform);
@@ -366,7 +366,7 @@ class _MyPageState extends State<MyPage> {
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (context) => LoginPage()),
-                              (route) => false, // 모든 이전 페이지 제거
+                                  (route) => false, // 모든 이전 페이지 제거
                             );
                           }
                         },
@@ -383,12 +383,12 @@ class _MyPageState extends State<MyPage> {
                       GestureDetector(
                         onTap: () async {
                           String? loginPlatform =
-                              await storage.read(key: 'loginPlatform');
+                          await storage.read(key: 'loginPlatform');
                           if (loginPlatform == null) {
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (context) => LoginPage()),
-                              (route) => false, // 모든 이전 페이지 제거
+                                  (route) => false, // 모든 이전 페이지 제거
                             );
                           }
                           isLogouted = await loginViewModel.logout(loginPlatform);
@@ -402,7 +402,7 @@ class _MyPageState extends State<MyPage> {
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (context) => LoginPage()),
-                              (route) => false, // 모든 이전 페이지 제거
+                                  (route) => false, // 모든 이전 페이지 제거
                             );
                           }
                         },
@@ -526,8 +526,8 @@ class _MyPageState extends State<MyPage> {
                                 CircleAvatar(
                                   radius: 40, // 80 / 2
                                   backgroundImage: (pickedFile != null && pickedFile!.path.isNotEmpty)
-                                    ? FileImage(File(pickedFile!.path))
-                                    : (_userProfile.profilePic != null)
+                                      ? FileImage(File(pickedFile!.path))
+                                      : (_userProfile.profilePic != null)
                                       ? NetworkImage(userPic) as ImageProvider
                                       : AssetImage(userPic),
                                 ),
@@ -559,7 +559,7 @@ class _MyPageState extends State<MyPage> {
                             child: TextField(
                               textAlignVertical: TextAlignVertical.center,
                               controller:
-                                  nicknameController, // TextEditingController를 연결
+                              nicknameController, // TextEditingController를 연결
                               onChanged: (text) {
                                 if (mounted) {
                                   setState(() {
@@ -586,56 +586,56 @@ class _MyPageState extends State<MyPage> {
                                   color: Color(0xFF767676),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderRadius:
+                                    borderRadius:
                                     BorderRadius.all(Radius.circular(12)),
-                                  borderSide: BorderSide(
-                                    width: 1,
-                                    color: Color(0xFF767676),
-                                  )),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Color(0xFF767676),
+                                    )),
                                 border: OutlineInputBorder(
-                                  borderRadius:
+                                    borderRadius:
                                     BorderRadius.all(Radius.circular(12)),
-                                  borderSide: BorderSide(
-                                    width: 1,
-                                    color: Color(0xFF767676),
-                                  )
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Color(0xFF767676),
+                                    )
                                 ),
                               ),
                             ),
                           ),
                           SizedBox(height: 24),
                           SizedBox(
-                            width: double.infinity,
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<UserTitle>(
-                                value: _userProfile.titles.firstWhere((title) => title.title == mainTitle), // 현재 선택된 항목
-                                items: _userProfile.titles.map<DropdownMenuItem<UserTitle>>((UserTitle title) {
-                                  return DropdownMenuItem<UserTitle>(
-                                    value: title, // UserTitle 객체를 value로 사용
-                                    child: Text(title.description), // description을 보여줌
-                                  );
-                                }).toList(),
-                                onChanged: (UserTitle? selectedTitle) {
-                                  if (selectedTitle != null && mounted) {
-                                    setState(() {
-                                      dropDownValue = selectedTitle!
-                                          .description; // dropDownValue에 description 저장
-                                      mainTitle = selectedTitle
-                                          .title; // mainTitle에 title 저장
-                                      updateValue = 1;
-                                      logger.d("userTitle : ${mainTitle}");
-                                      logger.d(
-                                          "userTitleDescription : ${dropDownValue}");
-                                    });
-                                  }
-                                },
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xFF767676),
+                              width: double.infinity,
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<UserTitle>(
+                                  value: _userProfile.titles.firstWhere((title) => title.title == mainTitle), // 현재 선택된 항목
+                                  items: _userProfile.titles.map<DropdownMenuItem<UserTitle>>((UserTitle title) {
+                                    return DropdownMenuItem<UserTitle>(
+                                      value: title, // UserTitle 객체를 value로 사용
+                                      child: Text(title.description), // description을 보여줌
+                                    );
+                                  }).toList(),
+                                  onChanged: (UserTitle? selectedTitle) {
+                                    if (selectedTitle != null && mounted) {
+                                      setState(() {
+                                        dropDownValue = selectedTitle!
+                                            .description; // dropDownValue에 description 저장
+                                        mainTitle = selectedTitle
+                                            .title; // mainTitle에 title 저장
+                                        updateValue = 1;
+                                        logger.d("userTitle : ${mainTitle}");
+                                        logger.d(
+                                            "userTitleDescription : ${dropDownValue}");
+                                      });
+                                    }
+                                  },
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFF767676),
+                                  ),
                                 ),
-                              ),
-                            )
+                              )
                           ),
                           SizedBox(height: 24),
                           SizedBox(
@@ -643,19 +643,19 @@ class _MyPageState extends State<MyPage> {
                             width: double.infinity,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                elevation: 0, // 그림자 제거
-                                splashFactory: (updateValue == 0)
-                                  ? NoSplash.splashFactory
-                                  : InkSplash.splashFactory,
-                                // 수정이 있을 경우 버튼 활성화
-                                backgroundColor: (updateValue == 1)
-                                  ? Color(0xffF15A2B)
-                                  : Color(0xFFF4F4F4),
-                                minimumSize: Size(double.infinity, 40),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(12))
-                                )
+                                  elevation: 0, // 그림자 제거
+                                  splashFactory: (updateValue == 0)
+                                      ? NoSplash.splashFactory
+                                      : InkSplash.splashFactory,
+                                  // 수정이 있을 경우 버튼 활성화
+                                  backgroundColor: (updateValue == 1)
+                                      ? Color(0xffF15A2B)
+                                      : Color(0xFFF4F4F4),
+                                  minimumSize: Size(double.infinity, 40),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(12))
+                                  )
                               ),
                               onPressed: () async {
                                 if (updateValue == 0) return;
@@ -676,11 +676,11 @@ class _MyPageState extends State<MyPage> {
                               child: Text(
                                 '저장',
                                 style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                  color: (updateValue == 1)
-                                    ? Colors.white
-                                    : Color(0xFF767676)
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                    color: (updateValue == 1)
+                                        ? Colors.white
+                                        : Color(0xFF767676)
                                 ),
                               ),
                             ),

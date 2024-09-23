@@ -12,12 +12,12 @@ ElevatedButton _standardBtn() {
       //버튼 등록 로직
     },
     style: ElevatedButton.styleFrom(
-      minimumSize: Size(double.infinity, 50),
-      shape: RoundedRectangleBorder(
+      minimumSize: const Size(double.infinity, 50),
+      shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
-      backgroundColor: Color(0xffF15A2B),
+      backgroundColor: const Color(0xffF15A2B),
     ),
-    child: Text(
+    child: const Text(
       "버튼 텍스트",
       style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
     ),
@@ -27,9 +27,9 @@ ElevatedButton _standardBtn() {
 ButtonStyle _btnStyle() {
   return ButtonStyle(
     // 버튼의 가로 크기를 최대로 설정
-    minimumSize: MaterialStateProperty.all(Size.fromWidth(double.infinity)),
+    minimumSize: WidgetStateProperty.all(const Size.fromWidth(double.infinity)),
     // 테두리 모서리를 둥글게 설정
-    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
       RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
       ),

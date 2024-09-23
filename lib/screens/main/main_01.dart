@@ -21,20 +21,21 @@ import 'package:dongpo_test/screens/add/add_01.dart';
 
 /*
 메인페이지 맨처음 보여줄 때 
- 1)내위치로 카메라 옮기기 => init 초기화할때 함수 사용
- 2) 마커 여러개 표시 => 냅둬 
- 3) 등록한 가게 전체조회해서 마커 추가 => get 리스트에 담고 마커 여러개 출력 
+1)내위치로 카메라 옮기기 => init 초기화할때 함수 사용
+2) 마커 여러개 표시 => 냅둬 
+3) 등록한 가게 전체조회해서 마커 추가 => get 리스트에 담고 마커 여러개 출력 
 */
 
 //여러개 띄울 마커 받아놓을 마커리스트
 List<NMarker> _markers = [];
 List<MyData> myDataList = [];
 
-//바텀시트에 표시되는 주소
+// 바텀시트에 표시되는 주소
 String bsAddress = '';
+// 검색창에 표시
 
 // 지도 초기화하기
-Future<void> reset_map() async {
+Future<void> resetMap() async {
   // splash 화면 종료
   FlutterNativeSplash.remove();
 
@@ -45,7 +46,7 @@ Future<void> reset_map() async {
 }
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -53,7 +54,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
-  static final storage = FlutterSecureStorage();
+  static const storage = FlutterSecureStorage();
 
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
   late NaverMapController _mapController;
@@ -120,6 +121,7 @@ class _MainPageState extends State<MainPage>
   }
 
   // UI 여기부터 시작
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<String>(
@@ -127,7 +129,7 @@ class _MainPageState extends State<MainPage>
         builder: (context, snapshot) {
           if (!snapshot.hasData &&
               snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -138,7 +140,7 @@ class _MainPageState extends State<MainPage>
                 NaverMap(
                   onMapReady: (controller) async {
                     _onMapReady(controller);
-                    _moveToCurrentLocation();
+                    _moveCamera();
                   },
 
                   //렉 유발 하는 듯 setstate로 인한 지도 재호출
@@ -150,7 +152,7 @@ class _MainPageState extends State<MainPage>
                       });
                     }
                   },
-                  options: NaverMapViewOptions(
+                  options: const NaverMapViewOptions(
                     locationButtonEnable: false, // 위치 버튼 표시 여부 설정
                     minZoom: 15, //쵀대 줄일 수 있는 크기?
                     maxZoom: 18, //최대 당길 수 있는 크기
@@ -168,18 +170,29 @@ class _MainPageState extends State<MainPage>
                   right: 16.0,
                   //상단 검색바
                   child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
+                    onTap: () async {
+                      // 검색에서 선택한 결과를 기다림
+                      final searchResult = await Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
-                        return AddressSearchPage();
+                        return const AddressSearchPage();
                       }));
+                      logger.d("search result is $searchResult");
+                      // 검색 결과가 있는 경우 해당 위치로 이동
+                      if (searchResult != null) {
+                        await _moveCamera(
+                          lat: searchResult['lat'],
+                          lng: searchResult['lng'],
+                        );
+                        await _reSearchCurrentLocation();
+                      }
                     },
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 16.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
+                        borderRadius: BorderRadius.circular(12.0),
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black26,
                             blurRadius: 5.0,
@@ -190,7 +203,7 @@ class _MainPageState extends State<MainPage>
                       //검색바 안에 주소
                       child: Row(
                         children: <Widget>[
-                          SizedBox(width: 8.0),
+                          const SizedBox(width: 8.0),
                           Text(
                             _currentAddress.length > 28
                                 ? '${_currentAddress.substring(0, 28)}...'
@@ -198,23 +211,23 @@ class _MainPageState extends State<MainPage>
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey[400]),
                           ),
-                          Spacer(),
-                          Icon(Icons.search),
+                          const Spacer(),
+                          const Icon(Icons.search),
                         ],
                       ),
                     ),
                   ),
                 ),
-
+                // 바텀 슬라이드
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: SlideTransition(
                     position: _offsetAnimation, // 슬라이더 애니메이션 적용
                     child: Container(
-                      padding: EdgeInsets.all(25),
+                      padding: const EdgeInsets.all(25),
                       height: 200, // 튀어나오는 부분을 포함한 전체 높이
                       width: 500,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Colors.white,
                       ),
                       child: Column(
@@ -222,11 +235,11 @@ class _MainPageState extends State<MainPage>
                           children: [
                             Text(
                               bsAddress,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.bold),
                             ),
                             Container(
-                              margin: EdgeInsets.only(top: 10),
+                              margin: const EdgeInsets.only(top: 10),
                               height: 90,
                               child: ListView.builder(
                                   shrinkWrap: true,
@@ -240,11 +253,11 @@ class _MainPageState extends State<MainPage>
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
-                                              return StoreInfo(); //터치하면 해당 가게 상세보기로
+                                              return const StoreInfo(); //터치하면 해당 가게 상세보기로
                                             }));
                                           },
                                           child: Container(
-                                            padding: EdgeInsets.fromLTRB(
+                                            padding: const EdgeInsets.fromLTRB(
                                                 10, 20, 20, 20),
                                             decoration: BoxDecoration(
                                                 color: Colors.grey[200],
@@ -254,7 +267,7 @@ class _MainPageState extends State<MainPage>
                                             child: Row(
                                               children: [
                                                 //CircleAvatar 컨테이너
-                                                Container(
+                                                const SizedBox(
                                                   height: 30,
                                                   width: 40,
                                                   child: CircleAvatar(
@@ -269,14 +282,14 @@ class _MainPageState extends State<MainPage>
                                                   children: [
                                                     Text(
                                                       '${myDataList[idx].name}',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold),
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       height: 10,
                                                     ),
-                                                    Row(
+                                                    const Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
                                                               .start,
@@ -304,7 +317,7 @@ class _MainPageState extends State<MainPage>
                                             ),
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 20,
                                         )
                                       ],
@@ -318,8 +331,8 @@ class _MainPageState extends State<MainPage>
 
                 //위치 재검색 버튼
                 AnimatedPositioned(
-                  duration: Duration(milliseconds: 300),
-                  top: _showReSearchButton ? 110.0 : -40.0,
+                  duration: const Duration(milliseconds: 300),
+                  top: _showReSearchButton ? 120.0 : -40.0,
                   left: MediaQuery.of(context).size.width / 3.5,
                   right: MediaQuery.of(context).size.width / 3.5,
                   child: GestureDetector(
@@ -330,12 +343,12 @@ class _MainPageState extends State<MainPage>
                       });
                     },
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 16.0),
                       decoration: BoxDecoration(
-                        color: Color(0xffF15A2B),
+                        color: const Color(0xffF15A2B),
                         borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black26,
                             blurRadius: 5.0,
@@ -343,7 +356,7 @@ class _MainPageState extends State<MainPage>
                           ),
                         ],
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
@@ -363,16 +376,16 @@ class _MainPageState extends State<MainPage>
                     builder: (context, child) {
                       return Positioned(
                         bottom: _locationBtn.value,
-                        left: 16.0,
+                        left: 10.0,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              shape: CircleBorder(),
-                              padding: EdgeInsets.all(12),
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(12),
                               foregroundColor: Colors.blue,
-                              backgroundColor: MaterialStateColor.resolveWith(
+                              backgroundColor: WidgetStateColor.resolveWith(
                                   (states) => Colors.white)),
-                          onPressed: _moveToCurrentLocation,
-                          child: Icon(Icons.my_location),
+                          onPressed: _moveCamera,
+                          child: const Icon(Icons.my_location),
                         ),
                       );
                     }),
@@ -392,7 +405,7 @@ class _MainPageState extends State<MainPage>
                               //현재 위치 위도경도 기준으로해서 리스트 받아온거 기본정보 띄우는 함수 만들어야함
                               //ex)) 게시판의 제목
                             },
-                            icon: Icon(Icons.menu)),
+                            icon: const Icon(Icons.menu)),
                       ),
                     );
                   },
@@ -417,9 +430,9 @@ class _MainPageState extends State<MainPage>
   }
 
   //마커 관련
-// 기존 마커 삭제 함수
+  // 기존 마커 삭제 함수
   Future<void> _clearMarkers() async {
-    logger.d('마커가 정상적으로 들어왔음 ${_markers}');
+    logger.d('마커가 정상적으로 들어왔음 $_markers');
     // for (int i =0 ; i >= _markers.length; i++) {
     //   _mapController
     //       .deleteOverlay(NOverlayInfo(type: NOverlayType.marker, id:  )); // 마커 제거
@@ -429,14 +442,14 @@ class _MainPageState extends State<MainPage>
     logger.d('마커삭제 테스트 $_markers');
   }
 
-// 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
+  // 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
   void _addMarkers(List<MyData> dataList) async {
     //여러개 마커 담는 리스트
     try {
-      var defaultMarkerSize = Size(40, 50);
+      var defaultMarkerSize = const Size(40, 50);
       await _clearMarkers(); // 기존 마커 제거
       for (var data in dataList) {
-        var markerIcon = await NOverlayImage.fromAssetImage(
+        var markerIcon = const NOverlayImage.fromAssetImage(
             'assets/images/defalutMarker.png');
 
         NMarker marker = NMarker(
@@ -461,8 +474,8 @@ class _MainPageState extends State<MainPage>
   //마커 클릭 이벤트 함수
   void _onMarkerTapped(NMarker marker, MyData data) {
     try {
-      marker.setIcon(
-          NOverlayImage.fromAssetImage('assets/images/clickedMarker.png'));
+      marker.setIcon(const NOverlayImage.fromAssetImage(
+          'assets/images/clickedMarker.png'));
       //해당 위치로 이동
 
       _mapController.updateCamera(
@@ -505,14 +518,13 @@ class _MainPageState extends State<MainPage>
     bsAddress = getAddress;
   }
 
-  //내위치 기반으로 근처 가게 검색
+  // 카메라 위치 기반으로 근처 가게 검색
   Future<List<MyData>> _researchFromMe() async {
     //해당 카메라 기준 위도경도 가져옴
-
     final cameraPosition = await _mapController.getCameraPosition();
     final latitude = cameraPosition.target.latitude;
     final longitude = cameraPosition.target.longitude;
-
+    logger.d("researchFromME:$cameraPosition");
     final accessToken = await storage.read(key: 'accessToken');
 
     final url = Uri.parse(
@@ -538,37 +550,47 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  //내위치로 이동
-  Future<void> _moveToCurrentLocation() async {
+  // 위치 정보를 받아 해당 위치로 이동
+  // 내 위치로 또는 특정 위치로 이동
+  Future<void> _moveCamera({String? lat, String? lng}) async {
+    late NLatLng target;
+
     try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      final myLocation = NLatLng(position.latitude, position.longitude);
+      if (lat == null || lng == null) {
+        // 매개변수가 없으면 현재 위치로 이동
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        target = NLatLng(position.latitude, position.longitude);
+        // 사용자 위치 아이콘 에셋 지정
+        const myLocationIcon =
+            NOverlayImage.fromAssetImage('assets/images/myLocation.png');
+        // 마커 객체 생성
+        NMarker myLocationMarker = NMarker(
+          id: "my_location_marker",
+          position: target,
+          icon: myLocationIcon,
+        );
+        // 마커 사이즈 지정 및 지도에 추가
+        myLocationMarker.setSize(const Size(40, 50));
+        _mapController.addOverlay(myLocationMarker);
+      } else {
+        // 매개변수를 받는 경우 해당 위치로 이동
+        target = NLatLng(double.parse(lat), double.parse(lng));
+      }
 
-      final myLocationIcon =
-          NOverlayImage.fromAssetImage('assets/images/myLocation.png');
-
-      NMarker myLocationMarker = NMarker(
-        id: "my_location_marker",
-        position: myLocation,
-        icon: myLocationIcon,
-      );
-
-      myLocationMarker.setSize(Size(40, 50));
-      _mapController.addOverlay(myLocationMarker);
-
+      // 카메라 이동
       _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
           NCameraPosition(
-            target: myLocation,
+            target: target,
             zoom: 16,
           ),
         ),
       );
-      _updateAddress(position.latitude, position.longitude);
+      // 검색창에 주소 표시
+      _updateAddress(target.latitude, target.longitude);
     } catch (e) {
-      // 에러 발생 시 로그 출력
-      logger.d("Error in _moveToCurrentLocation: $e");
+      logger.e("Error in _moveToCurrentLocation: $e");
     }
   }
 
@@ -619,11 +641,11 @@ class _MainPageState extends State<MainPage>
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('위치 권한 필요!'),
-            content: Text('이 앱은 위치 권한이 필요합니다. 권한을 허용해주세요.'),
+            title: const Text('위치 권한 필요!'),
+            content: const Text('이 앱은 위치 권한이 필요합니다. 권한을 허용해주세요.'),
             actions: <Widget>[
               TextButton(
-                child: Text('앱 종료'),
+                child: const Text('앱 종료'),
                 onPressed: () {
                   SystemNavigator.pop(); // 앱 종료
                   logger.d('앱 종료');
@@ -634,7 +656,7 @@ class _MainPageState extends State<MainPage>
                     logger.d('설정으로 이동');
                     openAppSettings();
                   },
-                  child: Text("설정으로 이동"))
+                  child: const Text("설정으로 이동"))
             ],
           );
         },
@@ -651,7 +673,7 @@ class _MainPageState extends State<MainPage>
       'KA': 'sdk/1.0 os/flutter origin/localhost'
     });
 
-    late String _address;
+    late String address;
 
     logger.d('statusCode : ${response.statusCode}');
     if (response.statusCode == 200) {
@@ -663,9 +685,9 @@ class _MainPageState extends State<MainPage>
               sendAddress: data['documents'][0]['road_address']['address_name'],
               sendLatitude: latLng.latitude,
               sendLongitude: latLng.longitude);
-          _address =
+          address =
               "${data['documents'][0]['road_address']['region_2depth_name']} ${data['documents'][0]['road_address']['road_name']}";
-          return _address;
+          return address;
         }
         // 도로명 주소가 없는 경우 지번 주소 반환
         else if (data['documents'][0]['address'] != null) {
@@ -673,9 +695,9 @@ class _MainPageState extends State<MainPage>
               sendAddress: data['documents'][0]['address']['address_name'],
               sendLatitude: latLng.latitude,
               sendLongitude: latLng.longitude);
-          _address =
+          address =
               "${data['documents'][0]['address']['region_2depth_name']} ${data['documents'][0]['address']['region_3depth_name']}  ";
-          return _address;
+          return address;
         }
       }
     }
@@ -690,26 +712,26 @@ class _MainPageState extends State<MainPage>
       isScrollControlled: true,
       builder: (BuildContext context) {
         return Container(
-          margin: EdgeInsets.only(left: 15, right: 15),
+          margin: const EdgeInsets.only(left: 15, right: 15),
           height: MediaQuery.of(context).size.height * 0.36,
-          decoration: BoxDecoration(),
+          decoration: const BoxDecoration(),
           child: Column(
             children: [
               TextButton(
                 onPressed: () => Navigator.push(context,
                     MaterialPageRoute(builder: (context) {
-                  return StoreInfo();
+                  return const StoreInfo();
                 })),
-                child: Icon(Icons.menu),
+                child: const Icon(Icons.menu),
               ),
               //제목, 영업가능성, 거리
-              MainTitle(),
+              const MainTitle(),
               //사진
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               MainPhoto(),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
             ],

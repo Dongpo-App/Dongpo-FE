@@ -39,18 +39,18 @@ class MyData {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['latitude'] = this.latitude;
-    data['longitude'] = this.longitude;
-    data['openTime'] = this.openTime;
-    data['closeTime'] = this.closeTime;
-    data['memberId'] = this.memberId;
-    data['status'] = this.status;
-    data['operatingDays'] = this.operatingDays;
-    data['payMethods'] = this.payMethods;
-    data['toiletValid'] = this.toiletValid;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['latitude'] = latitude;
+    data['longitude'] = longitude;
+    data['openTime'] = openTime;
+    data['closeTime'] = closeTime;
+    data['memberId'] = memberId;
+    data['status'] = status;
+    data['operatingDays'] = operatingDays;
+    data['payMethods'] = payMethods;
+    data['toiletValid'] = toiletValid;
     return data;
   }
 }

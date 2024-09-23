@@ -5,12 +5,12 @@ class MainPhoto extends StatelessWidget {
   MainPhoto({super.key});
 
   final List<Image> imageList = [
-    Image(image: AssetImage('assets/images/rakoon.png')),
-    Image(image: AssetImage('assets/images/rakoon.png')),
-    Image(image: AssetImage('assets/images/rakoon.png')),
-    Image(image: AssetImage('assets/images/rakoon.png')),
-    Image(image: AssetImage('assets/images/rakoon.png')),
-    Image(image: AssetImage('assets/images/rakoon.png')),
+    const Image(image: AssetImage('assets/images/rakoon.png')),
+    const Image(image: AssetImage('assets/images/rakoon.png')),
+    const Image(image: AssetImage('assets/images/rakoon.png')),
+    const Image(image: AssetImage('assets/images/rakoon.png')),
+    const Image(image: AssetImage('assets/images/rakoon.png')),
+    const Image(image: AssetImage('assets/images/rakoon.png')),
   ];
 
   @override
@@ -28,7 +28,8 @@ class MainPhoto extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             return Container(
               width: 200,
-              margin: EdgeInsets.fromLTRB(20, 0, 10, 10), // 이미지 사이의 간격을 조정
+              margin:
+                  const EdgeInsets.fromLTRB(20, 0, 10, 10), // 이미지 사이의 간격을 조정
               child: imageList[index], // 이미지 리스트에서 이미지를 가져옴
             );
           },

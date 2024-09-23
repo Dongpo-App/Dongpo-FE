@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:dongpo_test/main.dart';
 
 // 데이터 모델 클래스
 class Post {

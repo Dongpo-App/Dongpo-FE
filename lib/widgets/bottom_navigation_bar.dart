@@ -1,10 +1,8 @@
-import 'package:dongpo_test/main.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/add/add_01.dart';
 import 'package:dongpo_test/screens/community/community.dart';
 import 'package:dongpo_test/screens/my_info/info.dart';
-import 'package:geolocator/geolocator.dart';
 
 class MyAppPage extends StatefulWidget {
   final int initialIndex;
@@ -28,7 +26,6 @@ class MyAppPageState extends State<MyAppPage> {
   void initState() {
     super.initState();
     selectedIndex = widget.initialIndex;
-    logger.d("selectedIndex : ${selectedIndex}");
   }
 
   void onItemTapped(int index) {

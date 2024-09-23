@@ -15,7 +15,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // FlutterSecureStorage 초기화 및 토큰 삭제
-  final storage = FlutterSecureStorage();
+  const storage = FlutterSecureStorage();
   await storage.delete(key: 'accessToken');
   await storage.delete(key: 'refreshToken');
   await storage.delete(key: 'loginPlatform');
@@ -28,8 +28,7 @@ void main() async {
   // 스플래시 화면 초기화 및 유지
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
-  await reset_map();
+  await resetMap();
 
   // 앱 실행
   runApp(const MyApp());
