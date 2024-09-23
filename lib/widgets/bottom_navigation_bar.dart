@@ -28,6 +28,7 @@ class MyAppPageState extends State<MyAppPage> {
   void initState() {
     super.initState();
     selectedIndex = widget.initialIndex;
+    logger.d("selectedIndex : ${selectedIndex}");
   }
 
   void onItemTapped(int index) {

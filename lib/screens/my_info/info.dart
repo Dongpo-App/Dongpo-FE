@@ -23,6 +23,8 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
+  late TextEditingController nicknameController;
+
   // 로그아웃 관련
   final loginViewModel = LoginViewModel(KakaoNaverLogin());
   static final storage = FlutterSecureStorage();
@@ -30,21 +32,44 @@ class _MyPageState extends State<MyPage> {
 
   // 사용자 정보 관련
   MyPageViewModel viewModel = MyPageViewModel();
-  late UserProfile _userProfile = UserProfile(nickname: "", profilePic: "", mainTitle: UserTitle(title: "", description: ""),
-      titles: [], registerCount: 0, titleCount: 0, presentCount: 0);
+  late UserProfile _userProfile = UserProfile(nickname: "", profilePic: "", mainTitle: UserTitle(title: "", description: ""), titles: [], registerCount: 0, titleCount: 0, presentCount: 0);
 
-  late final TextEditingController nicknameController;
+  BuildContext? ancestorContext; // 조상 컨텍스트를 저장할 변수
 
   @override
   void initState() {
     super.initState();
+    nicknameController = TextEditingController();
     getUserProfile();
   }
 
-  void getUserProfile() async {
-    _userProfile = await viewModel.userProfileGetAPI();
-    setState(() {
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    ancestorContext = context; // 조상 컨텍스트 저장
+  }
+
+  @override
+  void dispose() {
+    nicknameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> getUserProfile() async {
+    final _userProfileGet = await viewModel.userProfileGetAPI();
+    if (mounted) {
+      setState(() {
+        _userProfile = _userProfileGet;
+        logger.d("userProfileCheck : ${_userProfile.nickname}");
+        logger.d("userProfileCheck : ${_userProfile.titles}");
+        logger.d("userProfileCheck : ${_userProfile.presentCount}");
+        logger.d("userProfileCheck : ${_userProfile.mainTitle}");
+        logger.d("userProfileCheck : ${_userProfile.titleCount}");
+        logger.d("userProfileCheck : ${_userProfile.registerCount}");
+        logger.d("userProfileCheck : ${_userProfile.profilePic}");
+        nicknameController.text = _userProfile.nickname;
+      });
+    }
   }
 
   // 프로필 사진 수정 관련
@@ -52,6 +77,8 @@ class _MyPageState extends State<MyPage> {
 
   @override
   Widget build(BuildContext context) {
+    double bodyHeight = (MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).viewInsets.bottom) * 0.9;
+
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0,
@@ -67,12 +94,12 @@ class _MyPageState extends State<MyPage> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          height: MediaQuery.of(context).size.height, // 전체 화면 높이 설정
+          height: bodyHeight, // 전체 화면 높이 설정
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.only(top: 48, left: 24, right: 24),
+                padding: EdgeInsets.only(top: 24, left: 24, right: 24),
                 color:  Color(0xFFFFFF),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -316,6 +343,7 @@ class _MyPageState extends State<MyPage> {
                   padding: EdgeInsets.all(24),
                   color: Color(0xFFF4F4F4),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GestureDetector(
                         onTap: () async {
@@ -403,15 +431,8 @@ class _MyPageState extends State<MyPage> {
     final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 50%
 
     // TextEditingController를 사용하여 초기값 설정
-    nicknameController = TextEditingController(text: _userProfile.nickname);
     String nickname = nicknameController.text;
 
-    // 사용자가 닉네임 수정 입력을 완료하면 호출
-    void _onEditingComplete() {
-      setState(() {
-        nickname = nicknameController.text;
-      });
-    }
 
     // userProfileUpdate 초기값 설정
     String userPic = (_userProfile.profilePic != null) ? _userProfile.profilePic! : 'assets/images/profile.jpg';
@@ -491,7 +512,7 @@ class _MyPageState extends State<MyPage> {
                                 source: ImageSource.gallery,
                                 imageQuality: 30,
                               );
-                              if (pickedFile != null) {
+                              if (pickedFile != null && mounted) {
                                 setState(() {
                                   updateValue = 1;
                                   // 서버에 보낼 이미지 경로 XFile? image;
@@ -540,10 +561,12 @@ class _MyPageState extends State<MyPage> {
                               controller:
                                   nicknameController, // TextEditingController를 연결
                               onChanged: (text) {
-                                setState(() {
-                                  nickname = text;
-                                  updateValue = 1;
-                                });
+                                if (mounted) {
+                                  setState(() {
+                                    nickname = text;
+                                    updateValue = 1;
+                                  });
+                                }
                               },
                               style: TextStyle(
                                 fontWeight: FontWeight.w400,
@@ -593,7 +616,7 @@ class _MyPageState extends State<MyPage> {
                                   );
                                 }).toList(),
                                 onChanged: (UserTitle? selectedTitle) {
-                                  if (selectedTitle != null) {
+                                  if (selectedTitle != null && mounted) {
                                     setState(() {
                                       dropDownValue = selectedTitle!
                                           .description; // dropDownValue에 description 저장
@@ -635,26 +658,21 @@ class _MyPageState extends State<MyPage> {
                                 )
                               ),
                               onPressed: () async {
-                                // 프로필 수정
                                 if (updateValue == 0) return;
+
                                 userProfileUpdate = await viewModel.userProfileUpdateAPI(sendData, nickname, mainTitle);
                                 logger.d("profile update : ${userProfileUpdate}");
-                                // 프로필 수정에 성공할 경우 바텀시트 내리고 화면 새로고침
+
                                 if (userProfileUpdate) {
-                                  setState(() {
-                                    updateValue = 0; // 상태 업데이트
-                                    nicknameController.clear();
-                                  });
-                                  // setState가 완료된 후에 Navigator 호출
-                                  Future.delayed(Duration.zero, () {
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => MyAppPage(initialIndex: 3)),
-                                          (route) => false,
-                                    );
-                                  });
+                                  // 상태 업데이트를 제거하고 바로 네비게이션 수행
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => MyAppPage(initialIndex: 3)),
+                                        (route) => false,
+                                  );
                                 }
                               },
+
                               child: Text(
                                 '저장',
                                 style: TextStyle(
