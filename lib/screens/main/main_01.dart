@@ -210,6 +210,10 @@ class _MainPageState extends State<MainPage>
                   onMapReady: (controller) async {
                     _onMapReady(controller);
                     _moveCamera();
+                    List<MyData> storeList = await _researchFromMe();
+                    logger.d(
+                        "초기 마커 생성 sample : ${storeList.isEmpty ? "no sample" : storeList[0]}");
+                    _addMarkers(storeList);
                     //   //여러 좌표를 받아서 마커 생성
                     //   final NLatLng test = NLatLng(
                     //       37.49993604717163, 126.86768245932946); //테스트 위도 경도
@@ -281,10 +285,9 @@ class _MainPageState extends State<MainPage>
                           lng: searchResult['lng'],
                         );
                         List<MyData> storeList = await _researchFromMe();
-                        logger.d("storeList is empty? : ${storeList.isEmpty}");
-                        setState(() {
-                          _addMarkers(storeList);
-                        });
+                        logger.d(
+                            "검색 이후 마커 생성 : sample ${storeList.isEmpty ? "no sample" : storeList[0]}");
+                        _addMarkers(storeList);
                       }
                     },
                     child: Container(
@@ -672,7 +675,7 @@ class _MainPageState extends State<MainPage>
       }
 
       // 카메라 이동
-      _mapController.updateCamera(
+      await _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
           NCameraPosition(
             target: target,
@@ -682,7 +685,6 @@ class _MainPageState extends State<MainPage>
       );
       // 검색창에 주소 표시
       _updateAddress(target.latitude, target.longitude);
-      await _reSearchCurrentLocation();
     } catch (e) {
       logger.e("Error in _moveToCurrentLocation: $e");
     }
