@@ -141,6 +141,38 @@ class _MainPageState extends State<MainPage>
                   onMapReady: (controller) async {
                     _onMapReady(controller);
                     _moveCamera();
+                    List<MyData> storeList = await _researchFromMe();
+                    logger.d(
+                        "초기 마커 생성 sample : ${storeList.isEmpty ? "no sample" : storeList[0]}");
+                    _addMarkers(storeList);
+                    //   //여러 좌표를 받아서 마커 생성
+                    //   final NLatLng test = NLatLng(
+                    //       37.49993604717163, 126.86768245932946); //테스트 위도 경도
+
+                    //   NMarker marker = NMarker(
+                    //     id: "test_Maker",
+                    //     position: test,
+                    //   );
+
+                    //   // 커스텀 마커를 비동기로 로드하여 메인 스레드의 부담을 줄입니다.
+                    //   var customMarker = await NOverlayImage.fromAssetImage(
+                    //       "assets/images/rakoon.png");
+
+                    //   var clickedMaker = await NOverlayImage.fromAssetImage(
+                    //       "assets/images/profile_img1.jpg");
+
+                    //   marker.setIcon(customMarker);
+
+                    //   //마커 클릭시 이벤트
+                    //   marker.setOnTapListener((overlay) {});
+
+                    //   // 마커 크기 조절을 통해 성능 최적화
+                    //   var defaultMarkerSize = Size(40, 50);
+                    //   marker.setSize(defaultMarkerSize);
+
+                    //   // 마커 표시
+                    //   controller.addOverlay(marker);
+                    //
                   },
 
                   //렉 유발 하는 듯 setstate로 인한 지도 재호출
@@ -183,7 +215,10 @@ class _MainPageState extends State<MainPage>
                           lat: searchResult['lat'],
                           lng: searchResult['lng'],
                         );
-                        await _reSearchCurrentLocation();
+                        List<MyData> storeList = await _researchFromMe();
+                        logger.d(
+                            "검색 이후 마커 생성 : sample ${storeList.isEmpty ? "no sample" : storeList[0]}");
+                        _addMarkers(storeList);
                       }
                     },
                     child: Container(
@@ -579,7 +614,7 @@ class _MainPageState extends State<MainPage>
       }
 
       // 카메라 이동
-      _mapController.updateCamera(
+      await _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
           NCameraPosition(
             target: target,
