@@ -12,8 +12,9 @@ import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../widgets/bottom_navigation_bar.dart';
-import '../../models/title.dart';
+import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
+import 'package:dongpo_test/models/title.dart';
+import 'info_detail/bookmark.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -273,22 +274,22 @@ class _MyPageState extends State<MyPage> {
                 ),
               ),
               // 내 칭호, 내가 쓴 리뷰, 북마크한 가게, 선물함
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                child: ListTile(
-                  title: Text(
-                    '내 칭호',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF767676)),
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {
-                    // 내 칭호 버튼이 클릭되었을 때의 액션
-                  },
-                ),
-              ),
+              // Container(
+              //   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              //   child: ListTile(
+              //     title: Text(
+              //       '내 칭호',
+              //       style: TextStyle(
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.w400,
+              //           color: Color(0xFF767676)),
+              //     ),
+              //     trailing: Icon(Icons.keyboard_arrow_right),
+              //     onTap: () {
+              //       // 내 칭호 버튼이 클릭되었을 때의 액션
+              //     },
+              //   ),
+              // ),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: ListTile(
@@ -309,7 +310,7 @@ class _MyPageState extends State<MyPage> {
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: ListTile(
                   title: Text(
-                    '북마크한 가게',
+                    '북마크 한 가게',
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
@@ -318,6 +319,11 @@ class _MyPageState extends State<MyPage> {
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {
                     // 북마크한 가게 버튼이 클릭되었을 때의 액션
+                    Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                        return BookmarkPage();
+                      }
+                    ));
                   },
                 ),
               ),

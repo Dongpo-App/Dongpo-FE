@@ -14,11 +14,11 @@ void main() async {
   // Flutter SDK 초기화 보장
   WidgetsFlutterBinding.ensureInitialized();
 
-  // FlutterSecureStorage 초기화 및 토큰 삭제
+  // FlutterSecureStorage 초기화
   const storage = FlutterSecureStorage();
-  await storage.delete(key: 'accessToken');
-  await storage.delete(key: 'refreshToken');
-  await storage.delete(key: 'loginPlatform');
+  // await storage.delete(key: 'accessToken');
+  // await storage.delete(key: 'refreshToken');
+  // await storage.delete(key: 'loginPlatform');
 
   // Kakao SDK 초기화
   KakaoSdk.init(

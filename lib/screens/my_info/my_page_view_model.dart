@@ -39,7 +39,7 @@ class MyPageViewModel {
   }
 
   Future<bool> userProfileUpdateAPI(
-      dynamic pic, String nickname, String newMainTitle) async {
+    dynamic pic, String nickname, String newMainTitle) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
