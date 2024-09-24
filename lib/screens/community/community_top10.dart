@@ -2,69 +2,23 @@ import 'package:dongpo_test/screens/community/community.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/community_rack.dart';
+
 class CommunityTop10Page extends StatefulWidget {
   final Top10TitleData top10TitleData;
+  final List<CommunityRank> top10List;
 
-  const CommunityTop10Page({super.key, required this.top10TitleData});
+  const CommunityTop10Page({
+    super.key,
+    required this.top10TitleData,
+    required this.top10List,
+  });
 
   @override
   State<CommunityTop10Page> createState() => CommunityTop10PageState();
 }
 
 class CommunityTop10PageState extends State<CommunityTop10Page> {
-  List<Top10Data> top10Items = [
-    Top10Data(
-      member: '도도한 고양이',
-      memberTitle: '난 한 가게만 패',
-      memberProfile: 'assets/images/profile_img1.jpg',
-    ),
-    Top10Data(
-      member: '도도한 고양이',
-      memberTitle: '난 한 가게만 패',
-      memberProfile: 'assets/images/profile_img1.jpg',
-    ),
-    Top10Data(
-      member: '도도한 고양이',
-      memberTitle: '난 한 가게만 패',
-      memberProfile: 'assets/images/profile_img1.jpg',
-    ),
-    Top10Data(
-      member: '도도한 고양이',
-      memberTitle: '난 한 가게만 패',
-      memberProfile: 'assets/images/profile_img1.jpg',
-    ),
-    Top10Data(
-      member: '도도한 고양이',
-      memberTitle: '난 한 가게만 패',
-      memberProfile: 'assets/images/profile_img1.jpg',
-    ),
-    Top10Data(
-      member: '도도한 고양이',
-      memberTitle: '난 한 가게만 패',
-      memberProfile: 'assets/images/profile_img1.jpg',
-    ),
-    Top10Data(
-      member: '도도한 고양이',
-      memberTitle: '난 한 가게만 패',
-      memberProfile: 'assets/images/profile_img1.jpg',
-    ),
-    Top10Data(
-      member: '도도한 고양이',
-      memberTitle: '난 한 가게만 패',
-      memberProfile: 'assets/images/profile_img1.jpg',
-    ),
-    Top10Data(
-      member: '도도한 고양이',
-      memberTitle: '난 한 가게만 패',
-      memberProfile: 'assets/images/profile_img1.jpg',
-    ),
-    Top10Data(
-      member: '도도한 고양이',
-      memberTitle: '난 한 가게만 패',
-      memberProfile: 'assets/images/profile_img1.jpg',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,12 +41,18 @@ class CommunityTop10PageState extends State<CommunityTop10Page> {
             )),
       ),
       body: ListView.builder(
-        itemCount: top10Items.length,
+        itemCount: widget.top10List.length,
         itemBuilder: (context, index) {
           return Container(
-            margin:
-                const EdgeInsets.only(left: 24, top: 12, bottom: 12, right: 24),
-            child: Top10CardWidget(top10Items[index], index),
+            margin: const EdgeInsets.only(left: 24, top: 12, bottom: 12, right: 24),
+            child: Top10CardWidget(
+              top10Data: Top10Data(
+                member: widget.top10List[index].nickname,
+                memberTitle: widget.top10List[index].title,
+                memberProfile: widget.top10List[index].pic,
+              ),
+              index: index,
+            ),
           );
         },
       ),
@@ -104,7 +64,7 @@ class Top10CardWidget extends StatelessWidget {
   final Top10Data top10Data;
   final int index;
 
-  const Top10CardWidget(this.top10Data, this.index, {super.key});
+  const Top10CardWidget({super.key, required this.top10Data, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +92,9 @@ class Top10CardWidget extends StatelessWidget {
               ),
               CircleAvatar(
                 radius: 24,
-                backgroundImage: AssetImage(top10Data.memberProfile),
+                backgroundImage: (top10Data.memberProfile != null && top10Data.memberProfile!.isNotEmpty)
+                    ? NetworkImage(top10Data.memberProfile!) as ImageProvider
+                    : const AssetImage('assets/images/profile.jpg'),
               ),
               const SizedBox(width: 16.0),
               Expanded(
@@ -182,7 +144,7 @@ class Top10CardWidget extends StatelessWidget {
 class Top10Data {
   final String member;
   final String memberTitle;
-  final String memberProfile;
+  final String? memberProfile;
 
   Top10Data({
     required this.member,

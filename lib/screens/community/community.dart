@@ -2,7 +2,6 @@ import 'package:dongpo_test/models/community_rack.dart';
 import 'package:dongpo_test/screens/community/community_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dongpo_test/models/title.dart';
 import 'community_top10.dart';
 
 class CommunityPage extends StatefulWidget {
@@ -80,23 +79,26 @@ class CommunityPageState extends State<CommunityPage> {
                 const SizedBox(width: 24.0), // 왼쪽 24 margin
                 _buildCard(
                   top10Title: '방문 인증 횟수 top 10',
-                  member: '도도한 고양이',
-                  memberTitle: '난 한 가게만 패',
-                  memberProfile: 'assets/images/profile_img1.jpg',
+                  member: _visitTop10GetAPI.first.nickname,
+                  memberTitle: _visitTop10GetAPI.first.title,
+                  memberProfile: _visitTop10GetAPI.first.pic,
+                  top10List: _visitTop10GetAPI,
                 ),
                 const SizedBox(width: 24.0), // 카드 사이의 거리
                 _buildCard(
                   top10Title: '가게 등록 횟수 top 10',
-                  member: '친절한 강아지',
-                  memberTitle: '포장마차 러버',
-                  memberProfile: 'assets/images/profile_img2.jpg',
+                  member: _storeTop10GetAPI.first.nickname,
+                  memberTitle: _storeTop10GetAPI.first.title,
+                  memberProfile: _storeTop10GetAPI.first.pic,
+                  top10List : _storeTop10GetAPI,
                 ),
                 const SizedBox(width: 24.0),
                 _buildCard(
                   top10Title: '가게 리뷰 횟수 top 10',
-                  member: '행복한 참새',
-                  memberTitle: '애미야 국이 짜다',
-                  memberProfile: 'assets/images/profile_img3.jpg',
+                  member: _reviewTop10GetAPI.first.nickname,
+                  memberTitle: _reviewTop10GetAPI.first.title,
+                  memberProfile: _reviewTop10GetAPI.first.pic,
+                  top10List : _reviewTop10GetAPI,
                 ),
                 const SizedBox(width: 24.0),
               ],
@@ -121,11 +123,14 @@ class CommunityPageState extends State<CommunityPage> {
   }
 
   // 조건 Top 10 카드 슬라이드 3개
-  Widget _buildCard(
-      {required String top10Title,
-      required String member,
-      required String memberTitle,
-      required String memberProfile}) {
+  Widget _buildCard({
+    required String top10Title,
+    required String member,
+    required String memberTitle,
+    required String? memberProfile,
+    required List<CommunityRank> top10List,
+  })
+  {
     final top10TitleData = Top10TitleData(
       top10Title: top10Title,
     );
@@ -133,9 +138,13 @@ class CommunityPageState extends State<CommunityPage> {
     return GestureDetector(
         onTap: () {
           Navigator.push(context,
-              MaterialPageRoute(builder: (BuildContext context) {
-            return CommunityTop10Page(top10TitleData: top10TitleData);
-          }));
+            MaterialPageRoute(builder: (BuildContext context) {
+              return CommunityTop10Page(
+                top10TitleData: top10TitleData,
+                top10List: top10List,
+              );
+            }
+          ));
         },
         child: Container(
           //
@@ -162,7 +171,9 @@ class CommunityPageState extends State<CommunityPage> {
                 padding: const EdgeInsets.only(top: 29),
                 child: CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(memberProfile),
+                  backgroundImage: (memberProfile != null && memberProfile.isNotEmpty )
+                      ? NetworkImage(memberProfile) as ImageProvider
+                      : AssetImage('assets/images/profile.jpg'),
                 ),
               ),
               Padding(

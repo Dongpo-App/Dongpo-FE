@@ -563,8 +563,12 @@ class _MyPageState extends State<MyPage> {
                               onChanged: (text) {
                                 if (mounted) {
                                   setState(() {
-                                    nickname = text;
-                                    updateValue = 1;
+                                    if (text.length <= 7 && text.length > 0) {
+                                      nickname = text;
+                                      updateValue = 1;
+                                    } else {
+                                      updateValue = 0;
+                                    }
                                   });
                                 }
                               },
