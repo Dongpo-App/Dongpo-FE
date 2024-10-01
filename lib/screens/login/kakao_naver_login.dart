@@ -60,7 +60,8 @@ class KakaoNaverLogin implements SocialLogin {
       logger.d('try 들어왔다.');
       // 네이버 로그인 시도
       result = await FlutterNaverLogin.logIn();
-      logger.d('LogIn() 성공');
+      logger.d('LogIn() 성공 ${result.errorMessage}');
+
       NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
       logger.d("naver login accessToken : ${token.accessToken}");
       return token.accessToken.toString();

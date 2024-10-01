@@ -170,23 +170,9 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                       Map data = {
                         'lat': item['y'],
                         'lng': item['x'],
+                        'place_name': item['place_name'],
                       };
                       Navigator.pop(context, data);
-                      // showDialog(
-                      //   context: context,
-                      //   builder: (context) => AlertDialog(
-                      //     title: const Text('위치 정보'),
-                      //     content: Text('위도: $lat\n경도: $lng'),
-                      //     actions: [
-                      //       TextButton(
-                      //         onPressed: () {
-                      //           Navigator.of(context).pop();
-                      //         },
-                      //         child: const Text('확인'),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // );
                     },
                   );
                 },
