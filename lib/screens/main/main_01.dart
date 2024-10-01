@@ -58,8 +58,9 @@ class _MainPageState extends State<MainPage>
 
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
   late NaverMapController _mapController;
-  String _currentAddress = "";
-  bool _showReSearchButton = false;
+  String _searchBarInnerText = "구, 동, 도로명, 장소명으로 검색";
+  bool _showReSearchButton = false; // 재검색 버튼 표시 여부
+  late NMarker _userMarker;
   late AnimationController _controller; // 애니메이션 컨트롤러 선언
   late Animation<Offset> _offsetAnimation; // 슬라이더 애니메이션 선언
   late Animation<double> _buttonAnimation; // 버튼 애니메이션 선언
@@ -140,39 +141,13 @@ class _MainPageState extends State<MainPage>
                 NaverMap(
                   onMapReady: (controller) async {
                     _onMapReady(controller);
-                    _moveCamera();
                     List<MyData> storeList = await _researchFromMe();
                     logger.d(
                         "초기 마커 생성 sample : ${storeList.isEmpty ? "no sample" : storeList[0]}");
+                    await _initUserMarker();
+                    bsAddress = await _reverseGeocode(_userMarker.position);
                     _addMarkers(storeList);
-                    //   //여러 좌표를 받아서 마커 생성
-                    //   final NLatLng test = NLatLng(
-                    //       37.49993604717163, 126.86768245932946); //테스트 위도 경도
-
-                    //   NMarker marker = NMarker(
-                    //     id: "test_Maker",
-                    //     position: test,
-                    //   );
-
-                    //   // 커스텀 마커를 비동기로 로드하여 메인 스레드의 부담을 줄입니다.
-                    //   var customMarker = await NOverlayImage.fromAssetImage(
-                    //       "assets/images/rakoon.png");
-
-                    //   var clickedMaker = await NOverlayImage.fromAssetImage(
-                    //       "assets/images/profile_img1.jpg");
-
-                    //   marker.setIcon(customMarker);
-
-                    //   //마커 클릭시 이벤트
-                    //   marker.setOnTapListener((overlay) {});
-
-                    //   // 마커 크기 조절을 통해 성능 최적화
-                    //   var defaultMarkerSize = Size(40, 50);
-                    //   marker.setSize(defaultMarkerSize);
-
-                    //   // 마커 표시
-                    //   controller.addOverlay(marker);
-                    //
+                    _moveCamera(_userMarker.position);
                   },
 
                   //렉 유발 하는 듯 setstate로 인한 지도 재호출
@@ -211,10 +186,13 @@ class _MainPageState extends State<MainPage>
                       logger.d("search result is $searchResult");
                       // 검색 결과가 있는 경우 해당 위치로 이동
                       if (searchResult != null) {
-                        await _moveCamera(
-                          lat: searchResult['lat'],
-                          lng: searchResult['lng'],
+                        NLatLng target = NLatLng(
+                          double.parse(searchResult['lat']),
+                          double.parse(searchResult['lng']),
                         );
+                        _searchBarInnerText = searchResult['place_name'];
+                        logger.d("검색창에 표시할 데이터 : $_searchBarInnerText");
+                        await _moveCamera(target);
                         List<MyData> storeList = await _researchFromMe();
                         logger.d(
                             "검색 이후 마커 생성 : sample ${storeList.isEmpty ? "no sample" : storeList[0]}");
@@ -240,9 +218,7 @@ class _MainPageState extends State<MainPage>
                         children: <Widget>[
                           const SizedBox(width: 8.0),
                           Text(
-                            _currentAddress.length > 28
-                                ? '${_currentAddress.substring(0, 28)}...'
-                                : _currentAddress,
+                            _searchBarInnerText,
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey[400]),
                           ),
@@ -372,7 +348,8 @@ class _MainPageState extends State<MainPage>
                   right: MediaQuery.of(context).size.width / 3.5,
                   child: GestureDetector(
                     onTap: () async {
-                      await _reSearchCurrentLocation();
+                      //await _reSearchCurrentLocation();
+
                       setState(() {
                         _showReSearchButton = false;
                       });
@@ -419,7 +396,11 @@ class _MainPageState extends State<MainPage>
                               foregroundColor: Colors.blue,
                               backgroundColor: WidgetStateColor.resolveWith(
                                   (states) => Colors.white)),
-                          onPressed: _moveCamera,
+                          onPressed: () async {
+                            NLatLng target = await _getCurrentNLatLng();
+                            _userMarker.setPosition(target);
+                            _moveCamera(target);
+                          },
                           child: const Icon(Icons.my_location),
                         ),
                       );
@@ -506,7 +487,7 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  //마커 클릭 이벤트 함수
+  // 마커 클릭 이벤트 함수
   void _onMarkerTapped(NMarker marker, MyData data) {
     try {
       marker.setIcon(const NOverlayImage.fromAssetImage(
@@ -529,28 +510,21 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  //해당 위치로 재검색
-  Future<void> _reSearchCurrentLocation() async {
-    //서버에 위도경도 보내서 데이터 더미로 받아와야함
-    List<MyData> myList = await _researchFromMe();
-
-    //받아온 데이터 myDataList에 넣기
-    myDataList = myList;
-    _addMarkers(myList);
-    late String getAddress;
-    //하단 주소 업뎃
-    try {
-      final position = await _mapController.getCameraPosition();
-      final latLng = position.target;
-      final myLocation = NLatLng(latLng.latitude, latLng.longitude);
-      getAddress = await _reverseGeocode(myLocation);
-      logger.d("안에 든 내용 : $getAddress");
-    } on Exception catch (e) {
-      // TODO
-      logger.w("Error! 내용: $e 위치: _reSearchCurrentLocation() ");
-    }
-
-    bsAddress = getAddress;
+  // 사용자 마커 초기화
+  Future<void> _initUserMarker() async {
+    NLatLng position = await _getCurrentNLatLng();
+    // 사용자 위치 아이콘 에셋 지정
+    const myLocationIcon =
+        NOverlayImage.fromAssetImage('assets/images/myLocation.png');
+    // 마커 객체 생성
+    _userMarker = NMarker(
+      id: "my_location_marker",
+      position: position,
+      icon: myLocationIcon,
+    );
+    // 마커 사이즈 지정 및 지도에 추가
+    _userMarker.setSize(const Size(40, 50));
+    _mapController.addOverlay(_userMarker);
   }
 
   // 카메라 위치 기반으로 근처 가게 검색
@@ -585,65 +559,31 @@ class _MainPageState extends State<MainPage>
     }
   }
 
+  // 현재 위치를 NLatLng 으로 받기
+  Future<NLatLng> _getCurrentNLatLng() async {
+    Position position = await Geolocator.getCurrentPosition();
+    return NLatLng(position.latitude, position.longitude);
+  }
+
   // 위치 정보를 받아 해당 위치로 이동
   // 내 위치로 또는 특정 위치로 이동
-  Future<void> _moveCamera({String? lat, String? lng}) async {
-    late NLatLng target;
-
+  Future<void> _moveCamera(NLatLng position) async {
     try {
-      if (lat == null || lng == null) {
-        // 매개변수가 없으면 현재 위치로 이동
-        Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
-        target = NLatLng(position.latitude, position.longitude);
-        // 사용자 위치 아이콘 에셋 지정
-        const myLocationIcon =
-            NOverlayImage.fromAssetImage('assets/images/myLocation.png');
-        // 마커 객체 생성
-        NMarker myLocationMarker = NMarker(
-          id: "my_location_marker",
-          position: target,
-          icon: myLocationIcon,
-        );
-        // 마커 사이즈 지정 및 지도에 추가
-        myLocationMarker.setSize(const Size(40, 50));
-        _mapController.addOverlay(myLocationMarker);
-      } else {
-        // 매개변수를 받는 경우 해당 위치로 이동
-        target = NLatLng(double.parse(lat), double.parse(lng));
-      }
-
       // 카메라 이동
       await _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
           NCameraPosition(
-            target: target,
+            target: position,
             zoom: 16,
           ),
         ),
       );
-      // 검색창에 주소 표시
-      _updateAddress(target.latitude, target.longitude);
     } catch (e) {
       logger.e("Error in _moveToCurrentLocation: $e");
     }
   }
 
-  // 주소 띄우기
-  Future<void> _updateAddress(double latitude, double longitude) async {
-    try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude);
-      Placemark place = placemarks[0];
-      setState(() {
-        _currentAddress = '${place.locality} ' '${place.street} ';
-      });
-    } catch (e) {
-      logger.d('주소 찾지못함');
-    }
-  }
-
-  //위치권한
+  // 위치권한
   Future<String> checkPermission() async {
     final isLocationEnabled = await Geolocator.isLocationServiceEnabled();
 
@@ -774,5 +714,53 @@ class _MainPageState extends State<MainPage>
         );
       },
     );
+  }
+
+  //해당 위치로 재검색
+  Future<void> _reSearchCurrentLocation() async {
+    //서버에 위도경도 보내서 데이터 더미로 받아와야함
+    List<MyData> myList = await _researchFromMe();
+
+    //받아온 데이터 myDataList에 넣기
+    myDataList = myList;
+    _addMarkers(myList);
+    late String getAddress;
+    //하단 주소 업뎃
+    try {
+      final position = await _mapController.getCameraPosition();
+      final latLng = position.target;
+      final myLocation = NLatLng(latLng.latitude, latLng.longitude);
+      getAddress = await _reverseGeocode(myLocation);
+      logger.d("안에 든 내용 : $getAddress");
+    } on Exception catch (e) {
+      // TODO
+      logger.w("Error! 내용: $e 위치: _reSearchCurrentLocation() ");
+    }
+
+    bsAddress = getAddress;
+  }
+
+  Future<void> _searchCurrentLocation({String? lat, String? lng}) async {
+    late NLatLng userLocation;
+    String method;
+    // 이동 위치 확정
+    // 카메라 이동 현재위치시 null 특정 위치시 값 입력
+    if (lat == null || lng == null) {
+      method = "current";
+      userLocation = await _getCurrentNLatLng();
+    } else {
+      method = "other";
+      userLocation = NLatLng(
+        double.parse(lat),
+        double.parse(lng),
+      );
+    }
+    await _moveCamera(userLocation);
+    // 해당 지역 매장 검색 //
+    myDataList = await _researchFromMe();
+    // 마커 생성
+    _addMarkers(myDataList);
+    // 다른 요소 갱신
+    bsAddress = _reverseGeocode(userLocation).toString();
   }
 }

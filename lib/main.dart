@@ -16,9 +16,9 @@ void main() async {
 
   // FlutterSecureStorage 초기화
   const storage = FlutterSecureStorage();
-  // await storage.delete(key: 'accessToken');
-  // await storage.delete(key: 'refreshToken');
-  // await storage.delete(key: 'loginPlatform');
+  await storage.delete(key: 'accessToken');
+  await storage.delete(key: 'refreshToken');
+  await storage.delete(key: 'loginPlatform');
 
   // Kakao SDK 초기화
   KakaoSdk.init(
