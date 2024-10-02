@@ -87,6 +87,7 @@ class KakaoNaverLogin implements SocialLogin {
         }
       case LoginPlatform.naver:
         try {
+          // logout 실행 코드. SDK에서 토큰 삭제
           await FlutterNaverLogin.logOut();
           logger.d("$loginPlatform : logout");
           return true;
@@ -94,7 +95,16 @@ class KakaoNaverLogin implements SocialLogin {
           logger.d("naver logout error : $e");
           return false;
         }
-
+      case LoginPlatform.apple:
+        try {
+          // logout 실행 코드.
+          // Apple은 logout이 없다.
+          logger.d("$loginPlatform : logout");
+          return true;
+        } catch (e) {
+          logger.d("kakao logout error : $e");
+          return false;
+        }
       case LoginPlatform.none:
         logger.d("login Platform none!");
         return true;

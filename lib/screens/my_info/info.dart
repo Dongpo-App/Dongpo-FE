@@ -1,19 +1,17 @@
 import 'dart:io';
-
 import 'package:dongpo_test/models/user_profile.dart';
 import 'package:dongpo_test/screens/my_info/my_page_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/models/title.dart';
+import 'info_detail/add_store.dart';
 import 'info_detail/bookmark.dart';
 
 class MyPage extends StatefulWidget {
@@ -28,7 +26,6 @@ class _MyPageState extends State<MyPage> {
 
   // 로그아웃 관련
   final loginViewModel = LoginViewModel(KakaoNaverLogin());
-  static final storage = FlutterSecureStorage();
   bool isLogouted = false;
 
   // 사용자 정보 관련
@@ -57,20 +54,14 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> getUserProfile() async {
-    final _userProfileGet = await viewModel.userProfileGetAPI();
+    final _userProfileGet = await viewModel.userProfileGetAPI(context);
     if (mounted) {
       setState(() {
         _userProfile = _userProfileGet;
-        logger.d("userProfileCheck : ${_userProfile.nickname}");
-        logger.d("userProfileCheck : ${_userProfile.titles}");
-        logger.d("userProfileCheck : ${_userProfile.presentCount}");
-        logger.d("userProfileCheck : ${_userProfile.mainTitle}");
-        logger.d("userProfileCheck : ${_userProfile.titleCount}");
-        logger.d("userProfileCheck : ${_userProfile.registerCount}");
-        logger.d("userProfileCheck : ${_userProfile.profilePic}");
         nicknameController.text = _userProfile.nickname;
       });
     }
+
   }
 
   // 프로필 사진 수정 관련
@@ -186,54 +177,64 @@ class _MyPageState extends State<MyPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     // 등록한 가게
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _userProfile.registerCount.toString(),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF767676),
+                    GestureDetector(
+                      onTap: () {
+
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _userProfile.registerCount.toString(),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF767676),
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Text(
-                          '등록한 가게',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF767676),
+                          SizedBox(
+                            height: 8,
                           ),
-                        ),
-                      ],
+                          Text(
+                            '등록한 가게',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF767676),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     // 칭호
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _userProfile.titleCount.toString(),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF767676),
+                    GestureDetector(
+                      onTap: () {
+
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _userProfile.titleCount.toString(),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF767676),
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Text(
-                          '칭호',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF767676),
+                          SizedBox(
+                            height: 8,
                           ),
-                        ),
-                      ],
+                          Text(
+                            '칭호',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF767676),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     // Spacer(),
                     // 선물함
@@ -670,7 +671,7 @@ class _MyPageState extends State<MyPage> {
                               onPressed: () async {
                                 if (updateValue == 0) return;
 
-                                userProfileUpdate = await viewModel.userProfileUpdateAPI(sendData, nickname, mainTitle);
+                                userProfileUpdate = await viewModel.userProfileUpdateAPI(context, sendData, nickname, mainTitle);
                                 logger.d("profile update : ${userProfileUpdate}");
 
                                 if (userProfileUpdate) {

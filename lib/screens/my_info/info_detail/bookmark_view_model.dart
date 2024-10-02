@@ -2,18 +2,16 @@ import 'dart:convert';
 
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import '../../login/login_view_model.dart';
 
 class BookmarkViewModel{
-  // secure storage
-  static const storage = FlutterSecureStorage();
-
-  Future<List<UserBookmark>> userBookmarkGetAPI() async {
+  Future<List<UserBookmark>> userBookmarkGetAPI(BuildContext context) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('https://ysw123.xyz/api/bookmark');
+    final url = Uri.parse(serverUrl + '/api/bookmark');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -27,6 +25,10 @@ class BookmarkViewModel{
         logger.d("userBookmark : $userBookmarkJson");
 
         return userBookmarkJson.map((item) => UserBookmark.fromJson(item)).toList();
+      } else if (response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return userBookmarkGetAPI(context);
       } else {
         // 실패
         throw UserBookmarkException(
@@ -38,11 +40,11 @@ class BookmarkViewModel{
     }
   }
 
-  Future<bool> userBookmarkDeleteAPI(int bookmarkId) async {
+  Future<bool> userBookmarkDeleteAPI(BuildContext context, int bookmarkId) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('https://ysw123.xyz/api/bookmark/${bookmarkId}');
+    final url = Uri.parse(serverUrl + '/api/bookmark/${bookmarkId}');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -51,6 +53,10 @@ class BookmarkViewModel{
       final response = await http.delete(url, headers: headers);
       if (response.statusCode == 200) {
         return true;
+      } else if(response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return userBookmarkDeleteAPI(context, bookmarkId);
       } else {
         // 실패
         throw UserBookmarkException(

@@ -46,9 +46,9 @@ class CommunityPageState extends State<CommunityPage> {
   }
 
   void getTop10() async {
-    _storeTop10GetAPI = await viewModel.storeTop10GetAPI();
-    _visitTop10GetAPI = await viewModel.visitTop10GetAPI();
-    _reviewTop10GetAPI = await viewModel.reviewTop10GetAPI();
+    _storeTop10GetAPI = await viewModel.storeTop10GetAPI(context);
+    _visitTop10GetAPI = await viewModel.visitTop10GetAPI(context);
+    _reviewTop10GetAPI = await viewModel.reviewTop10GetAPI(context);
     setState(() {});
   }
 

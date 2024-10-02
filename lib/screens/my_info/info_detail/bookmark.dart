@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
+import 'package:dongpo_test/main.dart';
 import 'bookmark_view_model.dart';
 
 class BookmarkPage extends StatefulWidget {
@@ -12,12 +13,8 @@ class BookmarkPage extends StatefulWidget {
 
 class BookmarkPageState extends State<BookmarkPage> {
   BookmarkViewModel viewModel = BookmarkViewModel();
-  late List<UserBookmark> _userBookmarkGetAPI = [
-    UserBookmark(
-      id: 0,
-      storeName: "",
-      storeId: 0,
-    ),
+
+  late List<UserBookmark> _userBookmark = [
   ];
 
   @override
@@ -26,7 +23,7 @@ class BookmarkPageState extends State<BookmarkPage> {
     getUserBookmark();
   }
   void getUserBookmark() async {
-    _userBookmarkGetAPI = await viewModel.userBookmarkGetAPI();
+    _userBookmark = await viewModel.userBookmarkGetAPI(context);
     setState(() {});
   }
 
@@ -51,23 +48,71 @@ class BookmarkPageState extends State<BookmarkPage> {
               color: Color(0xFF767676),
             )),
       ),
-      body: ListView.builder(
-        itemCount: _userBookmarkGetAPI.length,
-        itemBuilder: (context, index) {
-          var bookmark = _userBookmarkGetAPI[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-            child: ListTile(
-              title: Text(bookmark.storeName),
-              subtitle: Text('Store ID: ${bookmark.storeId}'),
-              trailing: const Icon(Icons.arrow_forward),
-              onTap: () {
-                // 아이템 클릭 시 동작할 코드
+      body: _userBookmark.isEmpty
+        ? const Center(
+            child: Text(
+              "",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+            ),
+          )
+        : Padding(
+            padding: const EdgeInsets.only(top: 24),
+            child: ListView.builder(
+              itemCount: _userBookmark.length,
+              itemBuilder: (context, index) {
+                var bookmark = _userBookmark[index];
+                return Card(
+                  elevation: 0,
+                  color: const Color(0xFFFFFFFF),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 12, horizontal: 24
+                  ),
+                  child: SizedBox(
+                    height: 80,
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundImage: AssetImage(
+                              'assets/images/icon.png'
+                            ),
+                          ),
+                          SizedBox( // 테스트용
+                            width: 30,
+                          ),
+                          Text(
+                            _userBookmark[index].storeName,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(// 테스트용
+                            width: 30,
+                          ),
+                          IconButton(
+                            onPressed: (){
+                              // 버튼이 눌리면 북마크 취소됨
+                            },
+                            icon: Icon(
+                              Icons.bookmark_rounded,
+                              size: 24,
+                              color: Color(0xFFF15A2B),
+                            )
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
               },
             ),
-          );
-        },
-      ),
+        ),
     );
   }
 }

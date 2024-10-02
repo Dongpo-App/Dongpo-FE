@@ -2,19 +2,18 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:dongpo_test/models/user_profile.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../../main.dart';
+import 'package:dongpo_test/main.dart';
+import '../login/login_view_model.dart';
 
 class MyPageViewModel {
-  // secure storage
-  static const storage = FlutterSecureStorage();
 
-  Future<UserProfile> userProfileGetAPI() async {
+  Future<UserProfile> userProfileGetAPI(BuildContext context) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('https://ysw123.xyz/api/my-page');
+    final url = Uri.parse(serverUrl + '/api/my-page');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -27,7 +26,12 @@ class MyPageViewModel {
         logger.d("userData : $userProfileJson");
 
         return UserProfile.fromJson(userProfileJson);
+      } else if(response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return userProfileGetAPI(context);
       } else {
+        logger.d("Fail to load. status code : ${response.statusCode}");
         // 실패
         throw UserProfileException(
             "Fail to load. status code: ${response.statusCode}");
@@ -39,7 +43,7 @@ class MyPageViewModel {
   }
 
   Future<bool> userProfileUpdateAPI(
-    dynamic pic, String nickname, String newMainTitle) async {
+    BuildContext context, dynamic pic, String nickname, String newMainTitle) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
@@ -48,7 +52,7 @@ class MyPageViewModel {
     // 사용자 프로필 사진 업로드 API
     String? userPicURL;
     if (pic != null) {
-      userPicURL = await userPicUploadAPI(pic);
+      userPicURL = await userPicUploadAPI(context, pic);
     } else {
       userPicURL = null;
     }
@@ -58,7 +62,7 @@ class MyPageViewModel {
       "profilePic": userPicURL,
       "newMainTitle": newMainTitle,
     };
-    final url = Uri.parse('https://ysw123.xyz/api/my-page');
+    final url = Uri.parse(serverUrl + '/api/my-page');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -69,18 +73,23 @@ class MyPageViewModel {
       final response = await http.patch(url, headers: headers, body: body);
       if (response.statusCode == 200) {
         return true;
+      } else if(response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return userProfileUpdateAPI(context, pic, nickname, newMainTitle);
       } else {
         // 실패
         logger.d("Fail to load $data. status code : ${response.statusCode}");
-        return false;
+        throw UserProfileException(
+            "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
       logger.d("error : $e");
-      return false;
+      throw UserProfileException("Error occurred: $e");
     }
   }
 
-  Future<String?> userPicUploadAPI(dynamic pic) async {
+  Future<String?> userPicUploadAPI(BuildContext context, dynamic pic) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
@@ -89,7 +98,7 @@ class MyPageViewModel {
     var formData =
         FormData.fromMap({'image': await MultipartFile.fromFile(pic)});
 
-    const url = 'https://ysw123.xyz/api/file-upload';
+    const url = serverUrl + '/api/file-upload';
 
     try {
       dio.options.contentType = 'multipart/form-data';
@@ -103,16 +112,19 @@ class MyPageViewModel {
         String imageUrl = dataList[0]['imageUrl'];
 
         return imageUrl;
+      } else if(response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return userPicUploadAPI(context, pic);
       } else {
         // 실패
-        logger.d(
-            "Fail to upload $formData. status code : ${response.statusCode}");
-
-        return null;
+        logger.d("Fail to upload $formData. status code : ${response.statusCode}");
+        throw UserProfileException(
+            "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
       logger.d("error : $e");
-      return null;
+      throw UserProfileException("Error occurred: $e");
     }
   }
 }

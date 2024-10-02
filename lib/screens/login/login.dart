@@ -19,10 +19,6 @@ class _LoginPageState extends State<LoginPage> {
   bool isLogined = false;
   bool isLogouted = false;
 
-  // FlutterSecureStorage
-  static const storage =
-      FlutterSecureStorage(); //flutter_secure_storage 사용을 위한 초기화 작업
-
   @override
   void initState() {
     super.initState();
@@ -40,10 +36,8 @@ class _LoginPageState extends State<LoginPage> {
     // token 데이터가 있다면 메인페이지로 이동
     if (accessToken != null && refreshToken != null) {
       logger.d("secure storage read 1 : $allData");
-      Navigator.pushAndRemoveUntil(
-        context,
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const MyAppPage()),
-        (route) => false, // 모든 이전 페이지 제거
       );
     }
   }
@@ -78,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  isLogined = await loginViewModel.naverLogin();
+                  isLogined = await loginViewModel.naverLogin(context);
                   if (isLogined) {
                     // 로그인플랫폼 & 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
                     await storage.write(
@@ -91,12 +85,8 @@ class _LoginPageState extends State<LoginPage> {
                         value: loginViewModel.loginPlatform.name);
                     Map<String, String> allData = await storage.readAll();
                     logger.d("secure storage naver read : $allData");
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const MyAppPage()), // bottom_navigation_bar.dart
-                      (route) => false, // 모든 이전 페이지 제거
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const MyAppPage()),
                     );
                   }
                 },
@@ -119,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  isLogined = await loginViewModel.kakaoLogin();
+                  isLogined = await loginViewModel.kakaoLogin(context);
                   if (isLogined) {
                     // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
                     await storage.write(
@@ -133,12 +123,8 @@ class _LoginPageState extends State<LoginPage> {
                     Map<String, String> allData = await storage.readAll();
                     logger.d("secure storage kakao read : $allData");
                     // 메인페이지로 이동
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const MyAppPage()), // bottom_navigation_bar.dart
-                      (route) => false, // 모든 이전 페이지 제거
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const MyAppPage()),
                     );
                   }
                 },

@@ -1,14 +1,12 @@
 import 'dart:convert';
 import 'package:dongpo_test/models/community_rack.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dongpo_test/main.dart';
+import '../login/login_view_model.dart';
 
 class CommunityViewModel {
-  // secure storage
-  static final storage = FlutterSecureStorage();
-
-  Future<List<CommunityRank>> storeTop10GetAPI() async {
+  Future<List<CommunityRank>> storeTop10GetAPI(BuildContext context) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
@@ -26,6 +24,10 @@ class CommunityViewModel {
         logger.d("communityData - store : ${storeTop10Json}");
 
         return storeTop10Json.map((item) => CommunityRank.fromJson(item)).toList();
+      } else if (response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return storeTop10GetAPI(context);
       } else {
         // 실패
         throw CommunityRankException(
@@ -38,7 +40,7 @@ class CommunityViewModel {
     }
   }
 
-  Future<List<CommunityRank>> visitTop10GetAPI() async {
+  Future<List<CommunityRank>> visitTop10GetAPI(BuildContext context) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
@@ -56,6 +58,10 @@ class CommunityViewModel {
         logger.d("communityData - visit : ${visitTop10Json}");
 
         return visitTop10Json.map((item) => CommunityRank.fromJson(item)).toList();
+      } else if (response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return visitTop10GetAPI(context);
       } else {
         // 실패
         throw CommunityRankException(
@@ -68,7 +74,7 @@ class CommunityViewModel {
     }
   }
 
-  Future<List<CommunityRank>> reviewTop10GetAPI() async {
+  Future<List<CommunityRank>> reviewTop10GetAPI(BuildContext context) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
@@ -86,6 +92,10 @@ class CommunityViewModel {
         logger.d("communityData - review : ${reviewTop10GetAPI}");
 
         return reviewTop10GetAPI.map((item) => CommunityRank.fromJson(item)).toList();
+      } else if (response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return reviewTop10GetAPI(context);
       } else {
         // 실패
         throw CommunityRankException(
