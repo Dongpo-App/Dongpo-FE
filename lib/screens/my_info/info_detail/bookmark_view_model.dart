@@ -11,7 +11,7 @@ class BookmarkViewModel{
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(serverUrl + '/api/bookmark');
+    final url = Uri.parse(serverUrl + '/api/my-page/bookmarks');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',

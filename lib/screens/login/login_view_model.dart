@@ -15,6 +15,13 @@ final FlutterSecureStorage storage = FlutterSecureStorage();
 // Token refresh : /auth/reissue - 재발급 후에 로그아웃 처리.
 Future<void> reissue(BuildContext context) async {
   final refreshToken  = await storage.read(key: 'refreshToken');
+  if (refreshToken == null) {
+    logger.d("refreshToken is null. Redirecting to login.");
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+    return;
+  }
   final url = Uri.parse(serverUrl + '/auth/reissue');
   final headers = {'Content-Type': 'application/json'};
   final data = {

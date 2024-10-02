@@ -92,9 +92,7 @@ class BookmarkPageState extends State<BookmarkPage> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(// 테스트용
-                            width: 30,
-                          ),
+                          Spacer(),
                           IconButton(
                             onPressed: (){
                               // 버튼이 눌리면 북마크 취소됨

@@ -1,27 +1,27 @@
+import 'package:dongpo_test/screens/my_info/info_detail/info_title_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dongpo_test/models/user_review.dart';
-import 'info_review_view_model.dart';
+import '../../../models/info_user_title.dart';
 
-class InfoReviewPage extends StatefulWidget {
-  const InfoReviewPage({super.key});
+class InfoTitlePage extends StatefulWidget {
+  const InfoTitlePage({super.key});
 
   @override
-  State<InfoReviewPage> createState() => InfoReviewPageState();
+  State<InfoTitlePage> createState() => InfoTitlePageState();
 }
 
-class InfoReviewPageState extends State<InfoReviewPage> {
-  InfoReviewViewModel viewModel = InfoReviewViewModel();
+class InfoTitlePageState extends State<InfoTitlePage> {
+  InfoTitleViewModel viewModel = InfoTitleViewModel();
 
-  late List<UserReview> _userReview = [];
+  late List<InfoUserTitle> _userTitle = [];
 
   @override
   void initState(){
     super.initState();
-    getUserReview();
+    getUserTitle();
   }
-  void getUserReview() async {
-    _userReview = await viewModel.userReviewGetAPI(context);
+  void getUserTitle() async {
+    _userTitle = await viewModel.infoUserTitleGetAPI(context);
     setState(() {});
   }
 
@@ -33,7 +33,7 @@ class InfoReviewPageState extends State<InfoReviewPage> {
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: Text(
-          "내가 쓴 리뷰",
+          "칭호",
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
@@ -46,7 +46,7 @@ class InfoReviewPageState extends State<InfoReviewPage> {
               color: Color(0xFF767676),
             )),
       ),
-      body: _userReview.isEmpty
+      body: _userTitle.isEmpty
           ? const Center(
         child: Text(
           "",
@@ -56,9 +56,9 @@ class InfoReviewPageState extends State<InfoReviewPage> {
           : Padding(
         padding: const EdgeInsets.only(top: 24),
         child: ListView.builder(
-          itemCount: _userReview.length,
+          itemCount: _userTitle.length,
           itemBuilder: (context, index) {
-            var review = _userReview[index];
+            var titles = _userTitle[index];
             return Card(
               elevation: 0,
               color: const Color(0xFFFFFFFF),
@@ -84,7 +84,7 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                         width: 30,
                       ),
                       Text(
-                        _userReview[index].text,
+                        _userTitle[index].description,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

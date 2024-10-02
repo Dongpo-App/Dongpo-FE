@@ -13,6 +13,8 @@ import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/models/title.dart';
 import 'info_detail/add_store.dart';
 import 'info_detail/bookmark.dart';
+import 'info_detail/info_review.dart';
+import 'info_detail/info_title.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -209,7 +211,11 @@ class _MyPageState extends State<MyPage> {
                     // 칭호
                     GestureDetector(
                       onTap: () {
-
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return InfoTitlePage();
+                          }
+                        ));
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -304,6 +310,11 @@ class _MyPageState extends State<MyPage> {
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {
                     // 내가 쓴 리뷰 버튼이 클릭되었을 때의 액션
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                          return InfoReviewPage();
+                        }
+                    ));
                   },
                 ),
               ),
