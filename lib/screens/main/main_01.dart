@@ -141,18 +141,21 @@ class _MainPageState extends State<MainPage>
                 NaverMap(
                   onMapReady: (controller) async {
                     _onMapReady(controller);
+                    await _initUserMarker();
+                    await _moveCamera(_userMarker.position);
                     List<MyData> storeList = await _researchFromMe();
                     logger.d(
                         "초기 마커 생성 sample : ${storeList.isEmpty ? "no sample" : storeList[0]}");
-                    await _initUserMarker();
                     bsAddress = await _reverseGeocode(_userMarker.position);
                     _addMarkers(storeList);
-                    _moveCamera(_userMarker.position);
+                    setState(() {});
                   },
 
                   //렉 유발 하는 듯 setstate로 인한 지도 재호출
                   // 카메라 변경 이벤트 시 상태 업데이트 최소화
                   onCameraChange: (reason, animated) {
+                    final position = _mapController.getCameraPosition();
+                    //bsAddress = await _reverseGeocode(position.target);
                     if (!_showReSearchButton) {
                       setState(() {
                         _showReSearchButton = true;
@@ -196,6 +199,7 @@ class _MainPageState extends State<MainPage>
                         List<MyData> storeList = await _researchFromMe();
                         logger.d(
                             "검색 이후 마커 생성 : sample ${storeList.isEmpty ? "no sample" : storeList[0]}");
+                        bsAddress = await _reverseGeocode(target);
                         _addMarkers(storeList);
                       }
                     },
@@ -349,7 +353,10 @@ class _MainPageState extends State<MainPage>
                   child: GestureDetector(
                     onTap: () async {
                       //await _reSearchCurrentLocation();
-
+                      final position = await _mapController.getCameraPosition();
+                      List<MyData> storeList = await _researchFromMe();
+                      bsAddress = await _reverseGeocode(position.target);
+                      _addMarkers(storeList);
                       setState(() {
                         _showReSearchButton = false;
                       });
@@ -448,12 +455,12 @@ class _MainPageState extends State<MainPage>
   //마커 관련
   // 기존 마커 삭제 함수
   Future<void> _clearMarkers() async {
-    logger.d('마커가 정상적으로 들어왔음 $_markers');
-    // for (int i =0 ; i >= _markers.length; i++) {
-    //   _mapController
-    //       .deleteOverlay(NOverlayInfo(type: NOverlayType.marker, id:  )); // 마커 제거
-    // }
-    _mapController.clearOverlays();
+    logger.d('마커가 정상적으로 들어왔음 ${_markers.length}');
+    for (int i = 0; i < _markers.length; i++) {
+      _mapController.deleteOverlay(NOverlayInfo(
+          type: NOverlayType.marker, id: _markers[i].info.id)); // 마커 제거
+    }
+    // _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
     _markers.clear(); // 리스트 초기화
     logger.d('마커삭제 테스트 $_markers');
   }
@@ -714,53 +721,5 @@ class _MainPageState extends State<MainPage>
         );
       },
     );
-  }
-
-  //해당 위치로 재검색
-  Future<void> _reSearchCurrentLocation() async {
-    //서버에 위도경도 보내서 데이터 더미로 받아와야함
-    List<MyData> myList = await _researchFromMe();
-
-    //받아온 데이터 myDataList에 넣기
-    myDataList = myList;
-    _addMarkers(myList);
-    late String getAddress;
-    //하단 주소 업뎃
-    try {
-      final position = await _mapController.getCameraPosition();
-      final latLng = position.target;
-      final myLocation = NLatLng(latLng.latitude, latLng.longitude);
-      getAddress = await _reverseGeocode(myLocation);
-      logger.d("안에 든 내용 : $getAddress");
-    } on Exception catch (e) {
-      // TODO
-      logger.w("Error! 내용: $e 위치: _reSearchCurrentLocation() ");
-    }
-
-    bsAddress = getAddress;
-  }
-
-  Future<void> _searchCurrentLocation({String? lat, String? lng}) async {
-    late NLatLng userLocation;
-    String method;
-    // 이동 위치 확정
-    // 카메라 이동 현재위치시 null 특정 위치시 값 입력
-    if (lat == null || lng == null) {
-      method = "current";
-      userLocation = await _getCurrentNLatLng();
-    } else {
-      method = "other";
-      userLocation = NLatLng(
-        double.parse(lat),
-        double.parse(lng),
-      );
-    }
-    await _moveCamera(userLocation);
-    // 해당 지역 매장 검색 //
-    myDataList = await _researchFromMe();
-    // 마커 생성
-    _addMarkers(myDataList);
-    // 다른 요소 갱신
-    bsAddress = _reverseGeocode(userLocation).toString();
   }
 }
