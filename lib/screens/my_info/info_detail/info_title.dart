@@ -48,57 +48,69 @@ class InfoTitlePageState extends State<InfoTitlePage> {
       ),
       body: _userTitle.isEmpty
           ? const Center(
-        child: Text(
-          "",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-        ),
-      )
+              child: Text(
+                "",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+              ),
+            )
           : Padding(
-        padding: const EdgeInsets.only(top: 24),
-        child: ListView.builder(
-          itemCount: _userTitle.length,
-          itemBuilder: (context, index) {
-            var titles = _userTitle[index];
-            return Card(
-              elevation: 0,
-              color: const Color(0xFFFFFFFF),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
-              ),
-              margin: const EdgeInsets.symmetric(
-                  vertical: 12, horizontal: 24
-              ),
-              child: SizedBox(
-                height: 80,
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundImage: AssetImage(
-                            'assets/images/icon.png'
-                        ),
-                      ),
-                      SizedBox( // 테스트용
-                        width: 30,
-                      ),
-                      Text(
-                        _userTitle[index].description,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(// 테스트용
-                        width: 30,
-                      ),
-                    ],
+              padding: const EdgeInsets.only(top: 24),
+              child: ListView.builder(
+              itemCount: _userTitle.length,
+              itemBuilder: (context, index) {
+                var titles = _userTitle[index];
+                return Card(
+                  elevation: 0,
+                  color: const Color(0xFFFFFFFF),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 12, horizontal: 24
+                  ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundImage: AssetImage(
+                                'assets/images/icon.png'
+                            ),
+                          ),
+                          SizedBox( // 테스트용
+                            width: 30,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _userTitle[index].description,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(width: 30,),
+                              Text(
+                                _userTitle[index].achieveCondition,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                        SizedBox(// 테스트용
+                          width: 30,
+                        ),
+                      ],
+                    ),
                 ),
-              ),
-            );
-          },
+              );
+            },
         ),
       ),
     );

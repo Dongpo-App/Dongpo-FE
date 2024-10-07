@@ -48,9 +48,11 @@ Future<void> reissue(BuildContext context) async {
 
     } else if (response.statusCode == 401) {
       logger.d("Unauthorized refresh. Redirecting to login.");
+
       // FlutterSecureStorage에 있는 token 삭제
       await storage.delete(key: 'accessToken');
       await storage.delete(key: 'refreshToken');
+      await storage.delete(key: 'loginPlatform');
 
       // 로그인 페이지로 전환
       Navigator.of(context).pushReplacement(

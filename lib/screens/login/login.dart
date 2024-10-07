@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loadAuthToken() async {
-    // key값에 맞는 데이터 값 불러옴 데이터가 없을 때는 null을 반환
+    // key값에 맞는 데이터 값 불러옴. key에 맞는 데이터가 없을 때는 null을 반환
     final accessToken = await storage.read(key: 'accessToken');
     final refreshToken = await storage.read(key: 'refreshToken');
     Map<String, String> allData = await storage.readAll();
