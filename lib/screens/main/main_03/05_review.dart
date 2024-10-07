@@ -8,7 +8,8 @@ import 'package:image_picker/image_picker.dart';
 int value = 0;
 
 class ShowReview extends StatefulWidget {
-  const ShowReview({super.key});
+  final int idx;
+  const ShowReview({super.key, required this.idx});
 
   @override
   State<ShowReview> createState() => _ShowReviewState();

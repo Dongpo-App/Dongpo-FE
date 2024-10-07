@@ -1,16 +1,30 @@
+import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:dongpo_test/main.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:convert';
+import 'package:dongpo_test/screens/my_info/info_detail/bookmark_view_model.dart';
+
+//북마크, 리뷰 댓글
+//만약 내가 북마크를 해놓은 상태라면
+//북마크 추가 아이콘 + 버튼 누를시 해지
+//아니라면
+//북마크 아이콘 + 버튼 누를시 추가
 
 class UserAction extends StatefulWidget {
-  const UserAction({super.key});
+  final int idx;
+  const UserAction({super.key, required this.idx});
 
   @override
   State<UserAction> createState() => _UserActionState();
+  //북마크 추가
 }
 
 class _UserActionState extends State<UserAction> {
   bool _selected = true;
-
+  static const storage = FlutterSecureStorage();
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -20,7 +34,7 @@ class _UserActionState extends State<UserAction> {
           onPressed: () {},
           icon: const Icon(Icons.chat),
         ),
-        const Text("A"),
+        const Text("리뷰"),
         const SizedBox(
           width: 10,
         ),
@@ -32,6 +46,7 @@ class _UserActionState extends State<UserAction> {
                   setState(() {
                     _selected = false;
                   });
+                  removeBookMark();
                 },
                 icon: const Icon(Icons.bookmark_added),
                 style: ButtonStyle(
@@ -43,12 +58,82 @@ class _UserActionState extends State<UserAction> {
                   setState(() {
                     _selected = true;
                   });
+                  addBookMark();
                 },
                 icon: const Icon(Icons.bookmark),
               ),
-        const Text("A"),
+        const Text("북마크 추가"),
       ],
     );
   }
+
+  void checkBookMarkSelected() async {
+    final url = Uri.parse('$serverUrl/api/my-page/bookmarks');
+
+    final accessToken = await storage.read(key: 'accessToken');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+
+    try {
+      final response = await http.get(
+        url,
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+      } else {
+        logger.e(
+            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
+      }
+    } catch (e) {
+      logger.e("에러!! 에러내용 : $e");
+    }
+  }
+
+  void addBookMark() async {
+    final data = {'storeId': myDataList[widget.idx].id};
+    final url = Uri.parse('$serverUrl/api/bookmark');
+    final accessToken = await storage.read(key: 'accessToken');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final body = jsonEncode(data);
+
+    final response = await http.post(url, headers: headers, body: body);
+    final responseData = json.decode(utf8.decode(response.bodyBytes));
+    if (response.statusCode == 200) {
+      logger.d("북마크 동작 성공");
+      // 여기서 응답의 ID를 확인하고 다음 요청에 사용
+
+      logger.d('북마크 추가된 ID: ${responseData['id']}');
+    } else {
+      logger.e(
+          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responseData}');
+      throw Exception('HTTP ERROR !!! ${response.body}');
+    }
+  }
+
+  void removeBookMark() async {
+    final url =
+        Uri.parse('$serverUrl/api/bookmark/${myDataList[widget.idx].id}');
+    final accessToken = await storage.read(key: 'accessToken');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+
+    final response = await http.delete(url, headers: headers);
+
+    final data = json.decode(utf8.decode(response.bodyBytes)); // UTF-8 디코딩
+
+    if (response.statusCode == 200) {
+      logger.d("북마크 삭제 완료");
+    } else {
+      logger.e('HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${data}');
+      throw Exception('HTTP ERROR !!! $data');
+    }
+  }
 }
-//24

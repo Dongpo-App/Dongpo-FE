@@ -1,135 +1,131 @@
-import 'dart:convert';
+import 'package:dongpo_test/api_key.dart';
+import 'package:dongpo_test/screens/login/login.dart';
 import 'package:flutter/material.dart';
+import 'package:dongpo_test/screens/main/main_01.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:logger/logger.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:dongpo_test/models/gaGeSangSe.dart';
+import 'package:dongpo_test/models/pocha.dart';
+import 'package:dongpo_test/screens/main/main_03/main_03.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'main_02.dart';
+import 'package:dongpo_test/api_key.dart';
+import 'dart:developer';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:dongpo_test/screens/main/main_03/03_title.dart';
+import 'package:dongpo_test/screens/main/main_03/02_photo_List.dart';
+import 'package:dongpo_test/main.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:dongpo_test/screens/add/add_01.dart';
 
-// 모델 클래스
-class Shop {
-  final int id;
-  final String name;
-  final double latitude;
-  final double longitude;
-  final String openTime;
-  final String closeTime;
-  final int memberId;
-  final String status;
-  final List<String> operatingDays;
-  final List<String> payMethods;
-  final bool toiletValid;
+const serverUrl = "https://ysw123.xyz";
+const storage = FlutterSecureStorage();
+//메인 함수
+void main() async {
+  // Flutter SDK 초기화 보장
+  WidgetsFlutterBinding.ensureInitialized();
 
-  Shop({
-    required this.id,
-    required this.name,
-    required this.latitude,
-    required this.longitude,
-    required this.openTime,
-    required this.closeTime,
-    required this.memberId,
-    required this.status,
-    required this.operatingDays,
-    required this.payMethods,
-    required this.toiletValid,
-  });
+  // FlutterSecureStorage 초기화 및 토큰 삭제
+  const storage = FlutterSecureStorage();
+  await storage.delete(key: 'accessToken');
+  await storage.delete(key: 'refreshToken');
+  await storage.delete(key: 'loginPlatform');
 
-  // JSON 데이터를 모델 클래스로 변환하는 팩토리 메서드
-  factory Shop.fromJson(Map<String, dynamic> json) {
-    return Shop(
-      id: json['id'],
-      name: json['name'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      openTime: json['openTime'],
-      closeTime: json['closeTime'],
-      memberId: json['memberId'],
-      status: json['status'],
-      operatingDays: List<String>.from(json['operatingDays']),
-      payMethods: List<String>.from(json['payMethods']),
-      toiletValid: json['toiletValid'],
-    );
-  }
+  // Kakao SDK 초기화
+  KakaoSdk.init(
+    nativeAppKey: nativeAppKey,
+  );
+
+  // 스플래시 화면 초기화 및 유지
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await resetMap();
+  // 앱 실행
+  runApp(const MyApp());
 }
 
-// GET 요청을 통해 데이터를 받아오는 함수
-Future<List<Shop>> fetchShops() async {
-  final response = await http.get(Uri.parse('https://example.com/api/shops'));
-
-  // 응답이 성공적인 경우
-  if (response.statusCode == 200) {
-    // JSON 데이터를 파싱하여 Shop 객체 리스트로 변환
-    final List<dynamic> data = jsonDecode(response.body)['data'];
-    return data.map((json) => Shop.fromJson(json)).toList();
-  } else {
-    // 요청이 실패한 경우 예외를 던짐
-    throw Exception('Failed to load shops');
-  }
-}
-
-class ShopListScreen extends StatefulWidget {
-  const ShopListScreen({super.key});
-
-  @override
-  _ShopListScreenState createState() => _ShopListScreenState();
-}
-
-class _ShopListScreenState extends State<ShopListScreen> {
-  late Future<List<Shop>> futureShops;
-
-  @override
-  void initState() {
-    super.initState();
-    // 페이지가 로드될 때 fetchShops 함수를 호출하여 데이터를 불러옴
-    futureShops = fetchShops();
-  }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Shop List'),
-      ),
-      body: FutureBuilder<List<Shop>>(
-        future: futureShops,
-        builder: (context, snapshot) {
-          // 데이터가 로드되는 동안 로딩 스피너를 표시
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          // 데이터 로드가 완료된 경우
-          else if (snapshot.hasData) {
-            // 데이터가 없는 경우
-            if (snapshot.data!.isEmpty) {
-              return const Center(child: Text('No shops available'));
-            }
-            // 데이터가 있는 경우 리스트뷰로 표시
-            else {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  final shop = snapshot.data![index];
-                  return ListTile(
-                    title: Text(shop.name),
-                    subtitle: Text(
-                        'Open: ${shop.openTime}, Close: ${shop.closeTime}'),
-                  );
-                },
-              );
-            }
-          }
-          // 데이터 로드 중 오류가 발생한 경우
-          else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          // 기타 경우
-          else {
-            return const Center(child: Text('Unexpected error'));
-          }
-        },
-      ),
-    );
+    return MaterialApp(
+        title: '동포',
+        debugShowCheckedModeBanner: false, // 우측 상단 debug 표시 제거
+        theme: ThemeData(
+          fontFamily: 'Pretendard',
+          splashColor: Colors.transparent, // splash 효과 없애기
+          highlightColor: Colors.transparent, // splash 효과 없애기
+        ),
+        home: Scaffold(
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    _testAPI();
+                  },
+                  child: Text('버튼'))
+            ],
+          ),
+        ));
   }
 }
 
-void main() {
-  runApp(const MaterialApp(
-    home: ShopListScreen(),
-  ));
+void _testAPI() async {
+  final accessToken = await storage.read(key: 'accessToken');
+  logger.d("test함수 들어옴");
+  final url = Uri.parse('$serverUrl/api/store/1');
+
+  final headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $accessToken',
+  };
+
+  final response = await http.get(url, headers: headers);
+  logger.d('$response');
+  if (response.statusCode == 200) {
+    logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
+  } else {
+    logger.e(
+        'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
+    throw Exception('HTTP ERROR !!! ${response.body}');
+  }
 }
+
+var logger = Logger(
+  printer: PrettyPrinter(),
+);
+
+var loggerNoStack = Logger(
+  printer: PrettyPrinter(methodCount: 0),
+);
+
+
+/* 
+로거 사용법 
+
+  logger.d('Log message with 2 methods');
+
+  loggerNoStack.i('Info message');
+
+  loggerNoStack.w('Just a warning!');
+
+  logger.e('Error! Something bad happened', 'Test Error');
+
+  loggerNoStack.v({'key': 5, 'value': 'something'});
+
+  Logger(printer: SimplePrinter(colors: true)).v('boom');
+
+*/

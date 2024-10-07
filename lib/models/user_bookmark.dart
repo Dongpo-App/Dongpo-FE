@@ -26,14 +26,16 @@ class UserBookmark {
   int getId() {
     return id;
   }
-  String getStoreName(){
+
+  String getStoreName() {
     return storeName;
   }
-  int getStoreId(){
+
+  int getStoreId() {
     return storeId;
   }
-  DateTime getBookmarkDate(){
+
+  DateTime getBookmarkDate() {
     return bookmarkDate;
   }
 }
-

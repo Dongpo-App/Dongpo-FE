@@ -1,3 +1,4 @@
+import 'package:dongpo_test/models/gaGeSangSe.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 
@@ -11,8 +12,8 @@ import 'package:dongpo_test/api_key.dart';
 import 'dart:developer';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:dongpo_test/screens/main/main_03/03_title.dart';
-import 'package:dongpo_test/screens/main/main_03/03_photo_List.dart';
+import 'package:dongpo_test/screens/main/main_03/01_title.dart';
+import 'package:dongpo_test/screens/main/main_03/02_photo_List.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -27,8 +28,12 @@ import 'package:dongpo_test/screens/add/add_01.dart';
 */
 
 //여러개 띄울 마커 받아놓을 마커리스트
-List<NMarker> _markers = [];
-List<MyData> myDataList = [];
+
+StoreSangse? storeData; // storeData를 nullable로 변경
+
+List<NMarker> _clickedMarkers = [];
+List<NMarker> _markers = []; //마커 담는 리스트
+List<MyData> myDataList = []; //가게 기본정보 담는 리스트
 
 // 바텀시트에 표시되는 주소
 String bsAddress = '';
@@ -69,6 +74,8 @@ class _MainPageState extends State<MainPage>
   //초기화
   void initState() {
     super.initState();
+
+    _initSetting();
     // 애니메이션 컨트롤러 초기화 (300ms 동안 애니메이션 실행)
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -109,6 +116,16 @@ class _MainPageState extends State<MainPage>
     super.dispose();
   }
 
+  // 비동기 메서드로 가게 정보를 가져옴
+  Future<void> _initSetting() async {
+    try {
+      await _reSearchCurrentLocation(); // 비동기 호출
+      setState(() {});
+    } catch (e) {
+      logger.e('Error fetching store details: $e'); // 에러 처리
+    }
+  }
+
   // 슬라이더 토글 함수
   void _toggleBottomSheet() {
     setState(() {
@@ -144,35 +161,7 @@ class _MainPageState extends State<MainPage>
                     List<MyData> storeList = await _researchFromMe();
                     logger.d(
                         "초기 마커 생성 sample : ${storeList.isEmpty ? "no sample" : storeList[0]}");
-                    _addMarkers(storeList);
-                    //   //여러 좌표를 받아서 마커 생성
-                    //   final NLatLng test = NLatLng(
-                    //       37.49993604717163, 126.86768245932946); //테스트 위도 경도
-
-                    //   NMarker marker = NMarker(
-                    //     id: "test_Maker",
-                    //     position: test,
-                    //   );
-
-                    //   // 커스텀 마커를 비동기로 로드하여 메인 스레드의 부담을 줄입니다.
-                    //   var customMarker = await NOverlayImage.fromAssetImage(
-                    //       "assets/images/rakoon.png");
-
-                    //   var clickedMaker = await NOverlayImage.fromAssetImage(
-                    //       "assets/images/profile_img1.jpg");
-
-                    //   marker.setIcon(customMarker);
-
-                    //   //마커 클릭시 이벤트
-                    //   marker.setOnTapListener((overlay) {});
-
-                    //   // 마커 크기 조절을 통해 성능 최적화
-                    //   var defaultMarkerSize = Size(40, 50);
-                    //   marker.setSize(defaultMarkerSize);
-
-                    //   // 마커 표시
-                    //   controller.addOverlay(marker);
-                    //
+                    _reSearchCurrentLocation();
                   },
 
                   //렉 유발 하는 듯 setstate로 인한 지도 재호출
@@ -288,7 +277,9 @@ class _MainPageState extends State<MainPage>
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
-                                              return const StoreInfo(); //터치하면 해당 가게 상세보기로
+                                              return StoreInfo(
+                                                  idx: idx +
+                                                      1); //터치하면 해당 가게 상세보기로
                                             }));
                                           },
                                           child: Container(
@@ -486,12 +477,12 @@ class _MainPageState extends State<MainPage>
       for (var data in dataList) {
         var markerIcon = const NOverlayImage.fromAssetImage(
             'assets/images/defalutMarker.png');
-
         NMarker marker = NMarker(
           id: data.id.toString(),
           position: NLatLng(data.latitude!, data.longitude!),
           icon: markerIcon,
         );
+        _clickedMarkers.add(marker);
         //마커 사이즈 조절
         marker.setSize(defaultMarkerSize);
         marker.setOnTapListener((overlay) {
@@ -512,7 +503,7 @@ class _MainPageState extends State<MainPage>
       marker.setIcon(const NOverlayImage.fromAssetImage(
           'assets/images/clickedMarker.png'));
       //해당 위치로 이동
-
+      logger.d("클릭된 마커 id =  ${marker.info.id}");
       _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
           NCameraPosition(
@@ -755,12 +746,14 @@ class _MainPageState extends State<MainPage>
               TextButton(
                 onPressed: () => Navigator.push(context,
                     MaterialPageRoute(builder: (context) {
-                  return const StoreInfo();
+                  return StoreInfo(
+                      idx: int.parse(
+                          _clickedMarkers[1].info.id)); //클릭된 마커 id 넣어야함
                 })),
                 child: const Icon(Icons.menu),
               ),
               //제목, 영업가능성, 거리
-              const MainTitle(),
+              const MainTitle(idx: 1), //변경해야함
               //사진
               const SizedBox(
                 height: 30,
