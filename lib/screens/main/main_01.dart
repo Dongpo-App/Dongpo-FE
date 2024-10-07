@@ -528,20 +528,18 @@ class _MainPageState extends State<MainPage>
     //받아온 데이터 myDataList에 넣기
     myDataList = myList;
     _addMarkers(myList);
-    late String getAddress;
+
     //하단 주소 업뎃
     try {
       final position = await _mapController.getCameraPosition();
       final latLng = position.target;
       final myLocation = NLatLng(latLng.latitude, latLng.longitude);
-      getAddress = await _reverseGeocode(myLocation);
-      logger.d("안에 든 내용 : $getAddress");
+      bsAddress = await _reverseGeocode(myLocation);
+      logger.d("안에 든 내용 : $bsAddress");
     } on Exception catch (e) {
       // TODO
       logger.w("Error! 내용: $e 위치: _reSearchCurrentLocation() ");
     }
-
-    bsAddress = getAddress;
   }
 
   // 카메라 위치 기반으로 근처 가게 검색
