@@ -86,7 +86,8 @@ class _LoginPageState extends State<LoginPage> {
                     Map<String, String> allData = await storage.readAll();
                     logger.d("secure storage naver read : $allData");
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const MyAppPage()),
+                      MaterialPageRoute(
+                          builder: (context) => const MyAppPage()),
                     );
                   }
                 },
@@ -124,7 +125,8 @@ class _LoginPageState extends State<LoginPage> {
                     logger.d("secure storage kakao read : $allData");
                     // 메인페이지로 이동
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const MyAppPage()),
+                      MaterialPageRoute(
+                          builder: (context) => const MyAppPage()),
                     );
                   }
                 },

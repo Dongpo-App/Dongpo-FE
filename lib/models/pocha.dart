@@ -1,8 +1,8 @@
 class MyData {
   late int id;
   String? name;
-  double? latitude;
-  double? longitude;
+  late double latitude;
+  late double longitude;
   String? openTime;
   String? closeTime;
   int? memberId;
@@ -14,8 +14,8 @@ class MyData {
   MyData(
       {required this.id,
       this.name,
-      this.latitude,
-      this.longitude,
+      required this.latitude,
+      required this.longitude,
       this.openTime,
       this.closeTime,
       this.memberId,
