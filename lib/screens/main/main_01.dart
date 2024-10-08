@@ -145,6 +145,7 @@ class _MainPageState extends State<MainPage>
                     _onMapReady(controller);
                     await _initUserMarker();
                     await _moveCamera(_userMarker.position);
+                    myDataList.clear();
                     myDataList = await _researchFromMe();
                     logger.d(
                         "초기 마커 생성 sample : ${myDataList.isEmpty ? "no sample" : myDataList[0]}");
@@ -153,15 +154,16 @@ class _MainPageState extends State<MainPage>
                     setState(() {});
                   },
                   onMapTapped: (point, latLng) {
-                    setState(() {
-                      if (_selectedMarker != null) {
+                    if (_selectedMarker != null) {
+                      setState(() {
+                        Navigator.pop(context);
                         _selectedMarker!.setIcon(
                             const NOverlayImage.fromAssetImage(
                                 'assets/images/defaultMarker.png'));
                         _selectedMarker = null;
                         // 추가로 바텀 시트도 닫히게 해야함
-                      }
-                    });
+                      });
+                    }
                   },
                   //렉 유발 하는 듯 setstate로 인한 지도 재호출
                   // 카메라 변경 이벤트 시 상태 업데이트 최소화
@@ -206,6 +208,7 @@ class _MainPageState extends State<MainPage>
                         _searchBarInnerText = searchResult['place_name'];
                         logger.d("검색창에 표시할 데이터 : $_searchBarInnerText");
                         await _moveCamera(target);
+                        myDataList.clear();
                         myDataList = await _researchFromMe();
                         logger.d(
                             "검색 이후 마커 생성 : sample ${myDataList.isEmpty ? "no sample" : myDataList[0]}");
@@ -361,6 +364,7 @@ class _MainPageState extends State<MainPage>
                   child: GestureDetector(
                     onTap: () async {
                       final position = await _mapController.getCameraPosition();
+                      myDataList.clear();
                       myDataList = await _researchFromMe();
                       bsAddress = await _reverseGeocode(position.target);
                       _addMarkers(myDataList);
@@ -414,6 +418,7 @@ class _MainPageState extends State<MainPage>
                             NLatLng target = await _getCurrentNLatLng();
                             _userMarker.setPosition(target);
                             await _moveCamera(target);
+                            myDataList.clear();
                             myDataList = await _researchFromMe();
                             _addMarkers(myDataList);
                             bsAddress = await _reverseGeocode(target);
@@ -571,9 +576,7 @@ class _MainPageState extends State<MainPage>
     if (response.statusCode == 200) {
       logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
       List jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
-      final List<MyData> myDataList =
-          jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
-      return myDataList;
+      return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
     } else if (response.statusCode == 401) {
       logger.d('token expired! status code : ${response.statusCode}');
       await reissue(context);
@@ -713,10 +716,9 @@ class _MainPageState extends State<MainPage>
         return DraggableScrollableSheet(
           expand: false,
           initialChildSize: 0.35,
-          minChildSize: 0.1,
-          shouldCloseOnMinExtent: true,
+          minChildSize: 0.35,
+          shouldCloseOnMinExtent: false,
           snap: true,
-          snapSizes: const [0.35],
           snapAnimationDuration: const Duration(milliseconds: 300),
           builder: (context, scrollController) {
             return SingleChildScrollView(

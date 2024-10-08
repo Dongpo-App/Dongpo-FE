@@ -32,6 +32,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   // FlutterSecureStorage 초기화
   static const storage = FlutterSecureStorage();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,20 +46,6 @@ class MyApp extends StatelessWidget {
       home: const LoginPage(), // 로그인 페이지 이동
     );
   }
-
-//   Future<bool> autoLogin() async {
-//     // 토큰 읽기
-//     String? accessToken = await storage.read(key: "accessToken");
-//     String? refreshToken = await storage.read(key: "refreshToken");
-//     String? loginPlatform = await storage.read(key: "loginPlatform");
-
-//     // 토큰의 존재 여부
-//     if(accessToken == null || refreshToken == null) return false;
-
-//     // 토큰 유효 여부 확인
-//     bool isValid = true; // 서버에 토큰 확인 받을 예정
-
-//   }
 }
 
 var logger = Logger(
