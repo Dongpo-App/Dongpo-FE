@@ -23,7 +23,13 @@ class UserAction extends StatefulWidget {
 }
 
 class _UserActionState extends State<UserAction> {
-  bool _selected = true;
+  @override
+  void initState() {
+    super.initState();
+    checkBookMark();
+  }
+
+  bool _selected = false;
   static const storage = FlutterSecureStorage();
   @override
   Widget build(BuildContext context) {
@@ -92,33 +98,43 @@ class _UserActionState extends State<UserAction> {
     }
   }
 
-  void addBookMark() async {
-    final data = {'storeId': myDataList[widget.idx].id};
-    final url = Uri.parse('$serverUrl/api/bookmark');
+  void checkedBookMark() async {
+    final url = Uri.parse('$serverUrl/api/my-page/bookmarks');
     final accessToken = await storage.read(key: 'accessToken');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
     };
-    final body = jsonEncode(data);
 
-    final response = await http.post(url, headers: headers, body: body);
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      logger.d('ck 완료');
+    }
+  }
+
+  void addBookMark() async {
+    final url = Uri.parse('$serverUrl/api/bookmark/${widget.idx}');
+    final accessToken = await storage.read(key: 'accessToken');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+
+    final response = await http.post(url, headers: headers);
     final responseData = json.decode(utf8.decode(response.bodyBytes));
     if (response.statusCode == 200) {
       logger.d("북마크 동작 성공");
-      // 여기서 응답의 ID를 확인하고 다음 요청에 사용
-
       logger.d('북마크 추가된 ID: ${responseData['id']}');
     } else {
       logger.e(
           'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responseData}');
-      throw Exception('HTTP ERROR !!! ${response.body}');
+      throw Exception('HTTP ERROR !!! ${responseData}');
     }
   }
 
   void removeBookMark() async {
-    final url =
-        Uri.parse('$serverUrl/api/bookmark/${myDataList[widget.idx].id}');
+    final url = Uri.parse('$serverUrl/api/bookmark/${storeData?.id}');
     final accessToken = await storage.read(key: 'accessToken');
     final headers = {
       'Content-Type': 'application/json',
@@ -135,5 +151,16 @@ class _UserActionState extends State<UserAction> {
       logger.e('HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${data}');
       throw Exception('HTTP ERROR !!! $data');
     }
+  }
+
+  void checkBookMark() {
+    for (int i = 0; i >= userBookmark.length; i++) {
+      if (userBookmark[i].storeId == widget.idx) {
+        _selected == true;
+        logger.d('북마크한 가게');
+      }
+    }
+    logger.d('북마크 체크 완료');
+    setState(() {});
   }
 }

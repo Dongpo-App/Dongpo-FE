@@ -1,5 +1,6 @@
 import 'package:dongpo_test/models/gaGeSangSe.dart';
 import 'package:dongpo_test/models/pocha.dart';
+import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ StoreSangse? storeData; // storeData를 nullable로 변경
 List<NMarker> _clickedMarkers = [];
 List<NMarker> _markers = []; //마커 담는 리스트
 List<MyData> myDataList = []; //가게 기본정보 담는 리스트
+List<UserBookmark> userBookmark = []; //북마크 체크를 위한 클래스
 
 // 바텀시트에 표시되는 주소
 String bsAddress = '';
