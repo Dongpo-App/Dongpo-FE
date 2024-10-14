@@ -26,6 +26,10 @@ class BookmarkPageState extends State<BookmarkPage> {
     _userBookmark = await viewModel.userBookmarkGetAPI(context);
     setState(() {});
   }
+  void deleteUserBookmark(int bookmarkId) async {
+    bool isBookmarkDeleted = await viewModel.userBookmarkDeleteAPI(context, bookmarkId);
+    if (isBookmarkDeleted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +79,7 @@ class BookmarkPageState extends State<BookmarkPage> {
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           CircleAvatar(
                             radius: 18,
@@ -86,7 +91,7 @@ class BookmarkPageState extends State<BookmarkPage> {
                             width: 30,
                           ),
                           Text(
-                            _userBookmark[index].storeName,
+                            bookmark.storeName,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -96,6 +101,7 @@ class BookmarkPageState extends State<BookmarkPage> {
                           IconButton(
                             onPressed: (){
                               // 버튼이 눌리면 북마크 취소됨
+                              deleteUserBookmark(bookmark.id);
                             },
                             icon: Icon(
                               Icons.bookmark_rounded,

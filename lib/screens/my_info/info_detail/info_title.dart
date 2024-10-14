@@ -71,7 +71,7 @@ class InfoTitlePageState extends State<InfoTitlePage> {
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
                       child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           CircleAvatar(
                             radius: 18,
@@ -92,7 +92,7 @@ class InfoTitlePageState extends State<InfoTitlePage> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              SizedBox(width: 30,),
+                              SizedBox(height: 4,),
                               Text(
                                 _userTitle[index].achieveCondition,
                                 style: TextStyle(

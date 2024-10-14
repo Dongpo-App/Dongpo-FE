@@ -52,6 +52,7 @@ class BookmarkViewModel{
     try {
       final response = await http.delete(url, headers: headers);
       if (response.statusCode == 200) {
+        logger.d("bookmark Delete : ${bookmarkId}");
         return true;
       } else if(response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
@@ -63,7 +64,7 @@ class BookmarkViewModel{
             "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
-      logger.d("error : $e");
+      logger.d("error : $e / bookmarkId : ${bookmarkId}");
       throw UserBookmarkException("Error occurred: $e");
     }
   }

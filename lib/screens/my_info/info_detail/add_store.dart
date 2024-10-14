@@ -50,8 +50,7 @@ class AddStorePageState extends State<AddStorePage> {
       body: _userAddStore.isEmpty
       ? const Center(
           child: Text(
-            "테스트 페이지",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+            "",
           ),
         )
       : Padding(
@@ -72,29 +71,38 @@ class AddStorePageState extends State<AddStorePage> {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    CircleAvatar(
+                      radius: 18,
+                      backgroundImage: AssetImage(
+                          'assets/images/icon.png'
+                      ),
+                    ),
+                    SizedBox( // 테스트용
+                      width: 30,
+                    ),
                     Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _userAddStore[index].name,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _userAddStore[index].name,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
-                          SizedBox(// 테스트용
-                            width: 30,
+                        ),
+                        SizedBox(// 테스트용
+                          height: 4,
+                        ),
+                        Text(
+                          _userAddStore[index].address,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
                           ),
-                          Text(
-                            _userAddStore[index].address,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ]
+                        ),
+                      ]
                     )
                   ],
                 ),

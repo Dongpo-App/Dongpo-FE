@@ -309,7 +309,7 @@ class _MyPageState extends State<MyPage> {
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF767676)),
+                        color: Colors.black),
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {
@@ -330,7 +330,7 @@ class _MyPageState extends State<MyPage> {
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
-                        color: Color(0xFF767676)),
+                        color: Colors.black),
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {
