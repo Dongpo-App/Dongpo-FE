@@ -39,6 +39,34 @@ class InfoReviewViewModel{
       throw InfoReviewViewException("Error occurred: $e");
     }
   }
+  Future<bool> userReviewDeleteAPI(BuildContext context, int reviewId) async {
+    // secure storage token read
+    final accessToken = await storage.read(key: 'accessToken');
+
+    final url = Uri.parse(serverUrl + '/api/store/review/${reviewId}');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+    try {
+      final response = await http.delete(url, headers: headers);
+      if (response.statusCode == 200) {
+        logger.d("review Delete : ${reviewId}");
+        return true;
+      } else if(response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return userReviewDeleteAPI(context, reviewId);
+      } else {
+        // 실패
+        throw InfoReviewViewException(
+            "Fail to load. status code: ${response.statusCode} / ${utf8.decode(response.bodyBytes)}");
+      }
+    } catch (e) {
+      logger.d("error : $e / reviewId : ${reviewId}");
+      throw InfoReviewViewException("Error occurred: $e");
+    }
+  }
 }
 
 // user 예외 클래스 정의

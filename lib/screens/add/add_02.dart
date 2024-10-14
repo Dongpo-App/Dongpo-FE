@@ -7,8 +7,9 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/screens/add/add_01.dart';
 import 'package:dongpo_test/main.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
+
+import '../login/login_view_model.dart';
 
 class GageAddSangsea extends StatefulWidget {
   const GageAddSangsea({super.key});
@@ -18,8 +19,6 @@ class GageAddSangsea extends StatefulWidget {
 }
 
 class _GageAddSangseaState extends State<GageAddSangsea> {
-  static const storage = FlutterSecureStorage();
-
   String openTime = '00:00';
   String closeTime = '00:00';
   int bathSelected = 0; //화장실 라디오 버튼
@@ -68,332 +67,480 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '가게 등록',
-          style: TextStyle(fontWeight: FontWeight.bold),
+    // 전체 화면 너비
+    final screenWidth = MediaQuery.of(context).size.width;
+    // 좌우 마진 제외
+    final contentsWidth = screenWidth - 48;
+
+    return GestureDetector(
+      onTap: () {
+        // TextField 외부를 터치했을 때 키보드 내려감
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
+          centerTitle: true,
+          title: Text(
+            "가게 등록",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context); //뒤로가기
+            },
+            icon: const Icon(
+              Icons.chevron_left,
+              size: 24,
+              color: Color(0xFF767676),
+            ),
+          ),
+          actions: [
+            Container(
+              margin: EdgeInsets.only(right: 24),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.close,
+                  size: 24,
+                  color: Color(0xFF767676),
+                ),
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyAppPage()),
+                    (route) => false, // 모든 이전 페이지 제거
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const MyAppPage();
-                }));
-              },
-              icon: const Icon(CupertinoIcons.xmark))
-        ],
-      ),
-      body: Container(
-        margin: const EdgeInsets.only(left: 25, right: 25),
-        child: ListView(
-          children: [
-            //가게 위치 *
-            const Row(
-              children: [
-                Text(
-                  '가게 위치',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  '*',
-                  style: TextStyle(color: Colors.orange),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            //가게위치 검색바
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                //검색바 안에 주소
-                child: Row(
-                  children: <Widget>[
-                    const SizedBox(width: 8.0),
-                    Text(
-                      dataForm.sendAddress,
-                      style: TextStyle(fontSize: 20, color: Colors.grey[600]),
-                    ),
-                    const Spacer(),
-                    const Icon(CupertinoIcons.right_chevron),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            //가게 이름 *
-            const Row(
-              children: [
-                Text(
-                  '가게 이름',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  '*',
-                  style: TextStyle(color: Colors.orange),
-                ),
-              ],
-            ),
-            Container(
-              padding: const EdgeInsets.only(
-                left: 16,
-              ),
-              decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10)),
-              child: TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  hintText: '가게 이름을 입력해주세요.',
-                  border: InputBorder.none, // 밑줄 제거
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 40,
-            ),
+        body: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          child: ListView(
+            children: [
+              SizedBox(height: 24,),
 
-            // 오픈 요일
-            Row(
-              children: [
-                const Text(
-                  '오픈요일',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  '여러 개 선택 가능해요!',
-                  style: TextStyle(color: Colors.grey[500]),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(7, (index) {
-                return GestureDetector(
-                  onTap: () => _onDayTapped(index),
-                  child: Container(
-                    margin: const EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _selectedDays[index]
-                          ? const Color(0xffF15A2B)
-                          : Colors.grey[300],
-                    ),
-                    width: 32.0,
-                    height: 48.0,
-                    child: Center(
-                      child: Text(
-                        ['일', '월', '화', '수', '목', '금', '토'][index],
-                        style: TextStyle(
-                          color: _selectedDays[index]
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 16.0,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-
-            // 오픈시간
-            const Row(
-              children: [
-                Text(
-                  '오픈 시간',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-              ],
-            ),
-
-            //오픈시간 시간설정
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
+              //가게 위치 *
+              const Row(
                 children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        picker.DatePicker.showTimePicker(context,
-                            showSecondsColumn: false,
-                            showTitleActions: true,
-                            onChanged: (date) {}, onConfirm: (date) {
-                          setState(() {
-                            openTime = "${date.hour}:${date.minute}";
-                          });
-                        }, currentTime: DateTime.now());
-                      },
-                      //openTime Container
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        width: 150,
-                        decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Text(
-                          openTime,
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ),
+                  Text(
+                    '가게 위치',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16
                     ),
                   ),
-                  const Text(
-                    " ~ ",
-                    style: TextStyle(fontSize: 25),
+                  SizedBox(
+                    width: 4,
                   ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        picker.DatePicker.showTimePicker(context,
-                            showSecondsColumn: false,
-                            showTitleActions: true,
-                            onChanged: (date) {}, onConfirm: (date) {
-                          setState(() {
-                            closeTime = "${date.hour}:${date.minute}";
-                          });
-                        }, currentTime: DateTime.now());
-                      },
-                      //closeTime Container
-                      child: Container(
-                        width: 150,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Text(
-                          closeTime,
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ),
+                  Text(
+                    '*',
+                    style: TextStyle(
+                      color: Color(0xFFF15A2B),
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
-            ),
-
-            const SizedBox(
-              height: 30,
-            ),
-
-            //결제 방식
-            Row(
-              children: [
-                const Text(
-                  '결제 방식',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  '여러 개 선택 가능해요!',
-                  style: TextStyle(color: Colors.grey[500]),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(3, (index) {
-                return GestureDetector(
-                  onTap: () => _onPaymentMethodTapped(index),
-                  child: Container(
-                    margin: const EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.0),
-                      color: _selectedPaymentMethods[index]
-                          ? const Color(0xffF15A2B)
-                          : Colors.grey[300],
-                    ),
-                    width: 96.0,
-                    height: 50.0,
-                    child: Center(
-                      child: Text(
-                        ['현금', '계좌이체', '카드'][index],
+              const SizedBox(
+                height: 16,
+              ),
+              //가게위치 검색바
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF4F4F4),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  //검색바 안에 주소
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(width: 24,),
+                      Text(
+                        dataForm.sendAddress,
                         style: TextStyle(
-                          color: _selectedPaymentMethods[index]
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 14.0,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF767676),
+                        ),
+                      ),
+                      const Spacer(),
+                      const Icon(
+                        size: 16,
+                        CupertinoIcons.right_chevron
+                      ),
+                      SizedBox(width: 24,),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+
+              //가게 이름 *
+              const Row(
+                children: [
+                  Text(
+                    '가게 이름',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16
+                    ),
+                  ),
+                  SizedBox(
+                    width: 4,
+                  ),
+                  Text(
+                    '*',
+                    style: TextStyle(
+                      color: Color(0xFFF15A2B),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16,),
+              Container(
+                height: 44,
+                width: double.infinity,
+                padding: const EdgeInsets.only(
+                  left: 24,
+                ),
+                decoration: BoxDecoration(
+                    color: Color(0xFFF4F4F4),
+                    borderRadius: BorderRadius.circular(12)),
+                child: TextField(
+                  controller: _nameController,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF767676),
+                  ),
+                  decoration: const InputDecoration(
+                    hintText: '가게 이름을 입력해 주세요.',
+                    hintStyle: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF767676),
+                    ),
+                    border: InputBorder.none, // 밑줄 제거
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+
+              // 오픈 요일
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const Text(
+                    '오픈 요일',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    '여러 개 선택 가능해요!',
+                    style: TextStyle(
+                      color: Color(0xFF767676),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(7, (index) {
+                  return GestureDetector(
+                    onTap: () => _onDayTapped(index),
+                    child: Container(
+                      margin: const EdgeInsets.all(4.0),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _selectedDays[index]
+                            ? const Color(0xffF15A2B)
+                            : Color(0xFFF4F4F4),
+                      ),
+                      width: contentsWidth * 0.118,
+                      height: contentsWidth * 0.118,
+                      child: Center(
+                        child: Text(
+                          ['일', '월', '화', '수', '목', '금', '토'][index],
+                          style: TextStyle(
+                            color: _selectedDays[index]
+                                ? Colors.white
+                                : Color(0xFF767676),
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
                     ),
+                  );
+                }),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+
+              // 오픈시간
+              const Row(
+                children: [
+                  Text(
+                    '오픈 시간',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16
+                    ),
                   ),
-                );
-              }),
-            ),
-
-            const SizedBox(
-              height: 30,
-            ),
-            //화장실
-            const Row(
-              children: [
-                Text(
-                  '화장실',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ],
+              ),
+              SizedBox(height: 16,),
+              //오픈시간 시간설정
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          picker.DatePicker.showTimePicker(
+                            context,
+                            showSecondsColumn: false,
+                            showTitleActions: true,
+                            onChanged: (date) {}, onConfirm: (date) {
+                              setState(() {
+                                openTime = "${date.hour}:${date.minute}";
+                              });
+                            },
+                            currentTime: DateTime.now()
+                          );
+                        },
+                        //openTime Container
+                        child: Container(
+                          height: 44,
+                          width: contentsWidth * 0.4,
+                          padding: EdgeInsets.only(left: 24),
+                          alignment: Alignment.centerLeft,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF4F4F4),
+                            borderRadius: BorderRadius.circular(12)
+                          ),
+                          child: Text(
+                            openTime,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF767676),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      " ~ ",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF767676),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          picker.DatePicker.showTimePicker(
+                            context,
+                            showSecondsColumn: false,
+                            showTitleActions: true,
+                            onChanged: (date) {}, onConfirm: (date) {
+                              setState(() {
+                               closeTime = "${date.hour}:${date.minute}";
+                              });
+                            },
+                            currentTime: DateTime.now()
+                          );
+                        },
+                        //closeTime Container
+                        child: Container(
+                          height: 44,
+                          width: contentsWidth * 0.4,
+                          padding: EdgeInsets.only(left: 24),
+                          alignment: Alignment.centerLeft,
+                          decoration: BoxDecoration(
+                              color: Color(0xFFF4F4F4),
+                              borderRadius: BorderRadius.circular(12)
+                          ),
+                          child: Text(
+                            closeTime,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF767676),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(child: _bathSelected('있음', 1)),
-                const SizedBox(width: 30),
-                Expanded(child: _bathSelected('없음 ', 2)),
-              ],
-            ),
-            //가게 등록버튼
+              ),
+              const SizedBox(
+                height: 40,
+              ),
 
-            const SizedBox(
-              height: 30,
-            ),
+              //결제 방식
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const Text(
+                    '결제 방식',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    '여러 개 선택 가능해요!',
+                    style: TextStyle(
+                      color: Color(0xFF767676),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(3, (index) {
+                  return GestureDetector(
+                    onTap: () => _onPaymentMethodTapped(index),
+                    child: Container(
+                      margin: const EdgeInsets.all(4.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.0),
+                        color: _selectedPaymentMethods[index]
+                            ? const Color(0xffF15A2B)
+                            : Color(0xFFF4F4F4),
+                      ),
+                      width: contentsWidth * 0.3,
+                      height: 44.0,
+                      child: Center(
+                        child: Text(
+                          ['현금', '계좌이체', '카드'][index],
+                          style: TextStyle(
+                            color: _selectedPaymentMethods[index]
+                                ? Colors.white
+                                : Color(0xFF767676),
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
 
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  splashFactory: (value == 0)
+              //화장실
+              const Row(
+                children: [
+                  Text(
+                    '화장실',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    height: 44,
+                    width: contentsWidth * 0.48,
+                    child: _bathSelected('있음', 1)
+                  ),
+                  Container(
+                    height: 44,
+                    width: contentsWidth * 0.48,
+                    child: _bathSelected('없음 ', 2)
+                  ),
+                ],
+              ),
+              //가게 등록버튼
+
+              const SizedBox(
+                height: 40,
+              ),
+
+              Container(
+                height: 44,
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0,
+                    splashFactory: (value == 0)
                       ? NoSplash.splashFactory
                       : InkSplash.splashFactory,
-                  //모두 동의했을 경우 버튼 활성화
-                  backgroundColor:
-                      (value == 1) ? const Color(0xffF15A2B) : Colors.grey[300],
-                  minimumSize: const Size(double.infinity, 40),
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)))),
-              onPressed: () {
-                //가게 등록 로직 구현
-                (value == 0) ? null : sendData();
-              },
-              child: Text(
-                '가게등록',
-                style: TextStyle(
-                    color: (value == 1) ? Colors.white : Colors.grey[700]),
+                    //모두 동의했을 경우 버튼 활성화
+                    backgroundColor: (value == 1)
+                      ? const Color(0xffF15A2B)
+                      : Color(0xFFF4F4F4),
+                    minimumSize: const Size(double.infinity, 40),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12))
+                    )
+                  ),
+                  onPressed: () {
+                    //가게 등록 로직 구현
+                    (value == 0) ? null : sendData();
+                  },
+                  child: Text(
+                    '가게 등록',
+                    style: TextStyle(
+                      color: (value == 1)
+                        ? Colors.white
+                        : Color(0xFF767676)
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(
+                height: 40,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -522,11 +669,14 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
   Widget _bathSelected(String text, int index) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10))),
-          backgroundColor: bathSelected == index
-              ? const Color(0xffF15A2B)
-              : Colors.grey[300]),
+        elevation: 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12))
+        ),
+        backgroundColor: bathSelected == index
+          ? const Color(0xffF15A2B)
+          : Color(0xFFF4F4F4)
+      ),
       onPressed: () {
         setState(() {
           bathSelected = index;
@@ -535,7 +685,10 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       child: Text(
         text,
         style: TextStyle(
-            color: bathSelected == index ? Colors.white : Colors.grey[700]),
+          color: bathSelected == index
+            ? Colors.white
+            : Color(0xFF767676)
+        ),
       ),
     );
   }

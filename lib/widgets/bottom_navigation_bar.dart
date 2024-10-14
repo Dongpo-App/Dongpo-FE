@@ -40,6 +40,7 @@ class MyAppPageState extends State<MyAppPage> {
     // final screenHeight = MediaQuery.of(context).size.height; // 현재 화면 높이
     // final bottomNavHeight = screenHeight * 0.08; // 화면 높이의 8%
     return Scaffold(
+      backgroundColor: Colors.white,
       body: IndexedStack(
         index: selectedIndex,
         children: screens,
@@ -70,6 +71,7 @@ class MyAppPageState extends State<MyAppPage> {
           selectedItemColor: const Color(0xffF15A2B), // 클릭 시 변경할 색상
           unselectedItemColor: const Color(0xff767676), // 클릭되지 않은 아이콘 색상
           onTap: onItemTapped,
+          backgroundColor: Colors.white,
           type: BottomNavigationBarType.fixed, // 메뉴 아이템 고정 크기
           showSelectedLabels: false, // 라벨 감추기
           showUnselectedLabels: false, // 라벨 감추기

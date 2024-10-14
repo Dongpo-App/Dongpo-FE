@@ -61,12 +61,14 @@ Future<void> reissue(BuildContext context) async {
         await storage.delete(key: 'loginPlatform');
         logger.d("Unauthorized refresh. Redirecting to login.");
 
-        // 로그인 페이지로 전환
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-              (route) => false, // 모든 이전 페이지 제거
-        );
+        if (context.mounted){
+          // 로그인 페이지로 전환
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+                (route) => false, // 모든 이전 페이지 제거
+          );
+        }
       }
     } else {
       // 실패

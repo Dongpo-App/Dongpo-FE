@@ -49,9 +49,23 @@ class _AddPageState extends State<AddPage> {
 
   @override
   Widget build(BuildContext context) {
+    // 전체 화면 높이
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('위치 제보'),
+        backgroundColor: Colors.white,
+        scrolledUnderElevation: 0,
+        automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
+        centerTitle: true,
+        title: Text(
+          "가게 등록",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: FutureBuilder<NLatLng>(
         future: getCurrentLocation(), // 현재 위치 정보를 가져오는 Future를 빌드
@@ -101,24 +115,26 @@ class _AddPageState extends State<AddPage> {
                 ),
                 const Center(
                   child: Icon(
-                    Icons.location_pin, // 중앙에 위치 핀 아이콘 표시
-                    size: 40,
-                    color: Colors.orangeAccent,
+                    Icons.location_on, // 중앙에 위치 핀 아이콘 표시
+                    size: 48,
+                    color: Color(0xFFF15A2B),
                   ),
                 ),
                 SizedBox(
-                  width: 500,
+                  height: screenHeight * 0.5,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(12),
-                            foregroundColor: Colors.blue,
-                            backgroundColor: WidgetStateColor.resolveWith(
-                                (states) => Colors.white)),
+                          elevation: 8,
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(4),
+                          foregroundColor: Colors.blue,
+                          backgroundColor: WidgetStateColor.resolveWith(
+                              (states) => Colors.white
+                          )
+                        ),
                         onPressed: _moveToCurrentLocation,
                         child: const Icon(Icons.my_location),
                       ),
@@ -129,27 +145,27 @@ class _AddPageState extends State<AddPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(16.0), // 패딩 설정
+                      padding: const EdgeInsets.all(24.0), // 패딩 설정
                       color: Colors.white,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(bottom: 10),
+                            margin: const EdgeInsets.only(bottom: 24),
                             child: const Text(
                               "가게 위치를 알려주세요",
                               style: TextStyle(
                                 fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.all(10),
+                            height: 44,
+                            width: double.infinity,
                             decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(8),
+                              color: Color(0xFFF4F4F4),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             child: Center(
                               child: ValueListenableBuilder<String>(
@@ -159,34 +175,43 @@ class _AddPageState extends State<AddPage> {
                                   return Text(
                                     address,
                                     style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.grey[800],
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xFF767676),
                                     ),
                                   );
                                 },
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 16), // margin
                           Container(
-                            margin: const EdgeInsets.fromLTRB(0, 5, 20, 10),
+                            height: 44,
                             width: double.infinity,
+                            margin: EdgeInsets.only(bottom: 24),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    const Color(0xffF15A2B), // 버튼 색상 설정
+                                elevation: 0, // 그림자 제거
+                                backgroundColor: const Color(0xFFF15A2B), // 버튼 색상 설정
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(12)
+                                    )
+                                ),
                               ),
                               child: const Text(
-                                '여기로 등록',
+                                '가게 등록',
                                 style: TextStyle(
-                                    fontSize: 20, color: Colors.white),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white
+                                ),
                               ),
                               onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const GageAddSangsea()));
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) =>
+                                  const GageAddSangsea()
+                                ));
                               },
                             ),
                           ),

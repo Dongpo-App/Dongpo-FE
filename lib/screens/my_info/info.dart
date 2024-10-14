@@ -74,7 +74,10 @@ class _MyPageState extends State<MyPage> {
     double bodyHeight = (MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).viewInsets.bottom) * 0.9;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
         centerTitle: true,
@@ -424,7 +427,7 @@ class _MyPageState extends State<MyPage> {
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (context) => LoginPage()),
-                                  (route) => false, // 모든 이전 페이지 제거
+                              (route) => false, // 모든 이전 페이지 제거
                             );
                           }
                         },
@@ -450,11 +453,10 @@ class _MyPageState extends State<MyPage> {
 
   void showEditProfileBottomSheet(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height; // 현재 화면 높이
-    final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 50%
+    final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 45%
 
     // TextEditingController를 사용하여 초기값 설정
     String nickname = nicknameController.text;
-
 
     // userProfileUpdate 초기값 설정
     String userPic = (_userProfile.profilePic != null) ? _userProfile.profilePic! : 'assets/images/profile.jpg';
@@ -486,7 +488,7 @@ class _MyPageState extends State<MyPage> {
               ),
               child: GestureDetector(
                 onTap: () {
-                  FocusScope.of(context).unfocus(); //
+                  FocusScope.of(context).unfocus();
                 },
                 child: Container(
                   height: bottomSheetHeight,

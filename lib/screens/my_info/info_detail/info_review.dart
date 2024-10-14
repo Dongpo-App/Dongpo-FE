@@ -26,6 +26,10 @@ class InfoReviewPageState extends State<InfoReviewPage> {
     _userReview = await viewModel.userReviewGetAPI(context);
     setState(() {});
   }
+  void deleteUserReview(int reviewId) async {
+    bool isReviewDeleted = await viewModel.userReviewDeleteAPI(context, reviewId);
+    if (isReviewDeleted) setState(() {});
+  }
 
   // 리뷰 사진 함수
   Widget reviewImageList(List<String> imageUrls) {
@@ -77,6 +81,8 @@ class InfoReviewPageState extends State<InfoReviewPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F4),
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: Text(
@@ -84,14 +90,15 @@ class InfoReviewPageState extends State<InfoReviewPage> {
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context); //뒤로가기
-            },
-            icon: const Icon(
-              Icons.chevron_left,
-              size: 24,
-              color: Color(0xFF767676),
-            )),
+          onPressed: () {
+            Navigator.pop(context); //뒤로가기
+          },
+          icon: const Icon(
+            Icons.chevron_left,
+            size: 24,
+            color: Color(0xFF767676),
+          )
+        ),
       ),
       body: _userReview.isEmpty
           ? const Center(
@@ -118,7 +125,7 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.only(
-                        top: 24, right: 24, left: 24, bottom: 48
+                        top: 24, right: 24, left: 24, bottom: 32
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,10 +165,10 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                                 Row(
                                   children: [
                                     RatingBarIndicator(
-                                      rating: review.reviewStar.toDouble(), // 확인할 별점 값
+                                      rating: review.reviewStar.toDouble(),
                                       itemCount: 5,
                                       itemSize: 16.0,
-                                      unratedColor: Color(0xFF767676), // 채워지지 않은 별의 색상
+                                      unratedColor: Color(0xFF767676),
                                       itemBuilder: (context, index) => Icon(
                                         Icons.star,
                                         color: Color(0xFFF15A2B),
@@ -193,22 +200,49 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                                 review.reviewPics.isEmpty // 리뷰 사진이 있으면 이미지 띄움
                                 ? SizedBox(height: 24,)
                                 : reviewImageList(review.reviewPics),
-                                GestureDetector(
-                                  onTap: () async {
-                                    // 리뷰 삭제
-                                  },
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      '삭제',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 14,
-                                        color: Color(0xFF767676),
-                                        decoration: TextDecoration.underline, // 밑줄 추가
+                                Row(
+                                  children: [
+                                    // GestureDetector(
+                                    //   onTap: () async {
+                                    //     // 리뷰 수정
+                                    //     showReviewEditBottomSheet(context);
+                                    //   },
+                                    //   child: Container(
+                                    //     width: 44,
+                                    //     height: 44,
+                                    //     child: Text(
+                                    //       '수정',
+                                    //       style: TextStyle(
+                                    //         fontWeight: FontWeight.w400,
+                                    //         fontSize: 14,
+                                    //         color: Color(0xFF767676),
+                                    //         decoration: TextDecoration.underline, // 밑줄 추가
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    Spacer(),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        // 리뷰 삭제
+                                        deleteUserReview(review.id);
+                                      },
+                                      child: Container(
+                                        width: 44,
+                                        height: 44,
+                                        alignment: Alignment.centerRight,
+                                        child: Text(
+                                          '삭제',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14,
+                                            color: Color(0xFF767676),
+                                            decoration: TextDecoration.underline, // 밑줄 추가
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -220,6 +254,41 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                 },
               ),
             ),
+    );
+  }
+
+  // 리뷰 수정 바텀시트
+  void showReviewEditBottomSheet(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height; // 현재 화면 높이
+    final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 45%
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Container(
+              height: bottomSheetHeight,
+              width: double.infinity,
+              margin: EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12)
+                ),
+              ),
+
+            ),
+          ),
+        );
+      }
     );
   }
 }

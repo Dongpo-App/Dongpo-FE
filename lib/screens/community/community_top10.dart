@@ -23,6 +23,8 @@ class CommunityTop10PageState extends State<CommunityTop10Page> {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F4),
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
         title: Text(
