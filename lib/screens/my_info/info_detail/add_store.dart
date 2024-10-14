@@ -1,8 +1,7 @@
+import 'package:dongpo_test/models/user_add_store.dart';
 import 'package:dongpo_test/screens/my_info/info_detail/add_store_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dongpo_test/models/user_bookmark.dart';
-import 'bookmark_view_model.dart';
 
 class AddStorePage extends StatefulWidget {
   const AddStorePage({super.key});
@@ -14,16 +13,16 @@ class AddStorePage extends StatefulWidget {
 class AddStorePageState extends State<AddStorePage> {
   AddStoreViewModel viewModel = AddStoreViewModel();
 
-  late List<UserBookmark> _userBookmark = [
+  late List<UserAddStore> _userAddStore = [
   ];
 
   @override
   void initState() {
     super.initState();
-    // getUserBookmark();
+    getUserAddStore();
   }
-  void getUserBookmark() async {
-    // _userBookmark = await viewModel.userBookmarkGetAPI();
+  void getUserAddStore() async {
+    _userAddStore = await viewModel.userAddStoreGetAPI(context);
     setState(() {});
   }
 
@@ -48,12 +47,62 @@ class AddStorePageState extends State<AddStorePage> {
               color: Color(0xFF767676),
             )),
       ),
-      body: const Center(
-        child: Text(
-          "테스트 페이지",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+      body: _userAddStore.isEmpty
+      ? const Center(
+          child: Text(
+            "테스트 페이지",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+          ),
+        )
+      : Padding(
+        padding: const EdgeInsets.only(top: 24),
+        child: ListView.builder(
+          itemCount: _userAddStore.length,
+          itemBuilder: (context, index) {
+            var addStore = _userAddStore[index];
+            return Card(
+              elevation: 0,
+              color: const Color(0xFFFFFFFF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              margin: const EdgeInsets.symmetric(
+                  vertical: 12, horizontal: 24
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _userAddStore[index].name,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(// 테스트용
+                            width: 30,
+                          ),
+                          Text(
+                            _userAddStore[index].address,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ]
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
         ),
-      )
+      ),
     );
   }
 }

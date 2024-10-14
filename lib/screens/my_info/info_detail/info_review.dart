@@ -48,59 +48,60 @@ class InfoReviewPageState extends State<InfoReviewPage> {
       ),
       body: _userReview.isEmpty
           ? const Center(
-        child: Text(
-          "",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-        ),
-      )
+              child: Text(
+                "",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+              ),
+            )
           : Padding(
-        padding: const EdgeInsets.only(top: 24),
-        child: ListView.builder(
-          itemCount: _userReview.length,
-          itemBuilder: (context, index) {
-            var review = _userReview[index];
-            return Card(
-              elevation: 0,
-              color: const Color(0xFFFFFFFF),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
+              padding: const EdgeInsets.only(top: 24),
+              child: ListView.builder(
+                itemCount: _userReview.length,
+                itemBuilder: (context, index) {
+                  var review = _userReview[index];
+                  return Card(
+                    elevation: 0,
+                    color: const Color(0xFFFFFFFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 24
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _userReview[index].storeName,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              SizedBox(// 테스트용
+                                width: 30,
+                              ),
+                              Text(
+                                _userReview[index].text,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ]
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-              margin: const EdgeInsets.symmetric(
-                  vertical: 12, horizontal: 24
-              ),
-              child: SizedBox(
-                height: 80,
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundImage: AssetImage(
-                            'assets/images/icon.png'
-                        ),
-                      ),
-                      SizedBox( // 테스트용
-                        width: 30,
-                      ),
-                      Text(
-                        _userReview[index].text,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(// 테스트용
-                        width: 30,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
+            ),
     );
   }
 }

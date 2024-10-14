@@ -181,7 +181,11 @@ class _MyPageState extends State<MyPage> {
                     // 등록한 가게
                     GestureDetector(
                       onTap: () {
-
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return AddStorePage();
+                          }
+                        ));
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,

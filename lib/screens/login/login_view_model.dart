@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
+import 'kakao_naver_login.dart';
 import 'login.dart';
 import 'login_platform.dart';
 
@@ -47,17 +48,27 @@ Future<void> reissue(BuildContext context) async {
       await storage.write(key: 'refreshToken', value: token['refreshToken']);
 
     } else if (response.statusCode == 401) {
-      logger.d("Unauthorized refresh. Redirecting to login.");
+      final loginViewModel = LoginViewModel(KakaoNaverLogin());
+      bool isLogouted = false;
 
-      // FlutterSecureStorage에 있는 token 삭제
-      await storage.delete(key: 'accessToken');
-      await storage.delete(key: 'refreshToken');
-      await storage.delete(key: 'loginPlatform');
+      String? loginPlatform = await storage.read(key: 'loginPlatform');
+      logger.d("reissue : loginPlatform - ${loginPlatform}");
 
-      // 로그인 페이지로 전환
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
+      isLogouted = await loginViewModel.logout(loginPlatform);
+      if (isLogouted) {
+        // FlutterSecureStorage에 있는 token 삭제
+        await storage.delete(key: 'accessToken');
+        await storage.delete(key: 'refreshToken');
+        await storage.delete(key: 'loginPlatform');
+        logger.d("Unauthorized refresh. Redirecting to login.");
+
+        // 로그인 페이지로 전환
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+              (route) => false, // 모든 이전 페이지 제거
+        );
+      }
     } else {
       // 실패
       logger.d("Fail to load $data. status code : ${response.statusCode}");
