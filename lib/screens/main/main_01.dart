@@ -1,12 +1,12 @@
 import 'package:dongpo_test/models/gaGeSangSe.dart';
 import 'package:dongpo_test/models/pocha.dart';
+import 'package:dongpo_test/models/user_bookmark.dart';
+import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 import 'main_02.dart';
 import 'package:dongpo_test/api_key.dart';
 import 'dart:developer';
@@ -31,9 +31,9 @@ import 'package:dongpo_test/screens/add/add_01.dart';
 
 StoreSangse? storeData; // storeData를 nullable로 변경
 
-List<NMarker> _clickedMarkers = [];
-List<NMarker> _markers = []; //마커 담는 리스트
+List<NMarker> markers = []; //마커 담는 리스트
 List<MyData> myDataList = []; //가게 기본정보 담는 리스트
+List<UserBookmark> userBookmark = []; //북마크 체크를 위한 클래스
 
 // 바텀시트에 표시되는 주소
 String bsAddress = '';
@@ -63,8 +63,10 @@ class _MainPageState extends State<MainPage>
 
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
   late NaverMapController _mapController;
-  String _currentAddress = "";
-  bool _showReSearchButton = false;
+  String _searchBarInnerText = "구, 동, 도로명, 장소명으로 검색";
+  bool _showReSearchButton = false; // 재검색 버튼 표시 여부
+  NMarker? _selectedMarker;
+  late NMarker _userMarker;
   late AnimationController _controller; // 애니메이션 컨트롤러 선언
   late Animation<Offset> _offsetAnimation; // 슬라이더 애니메이션 선언
   late Animation<double> _buttonAnimation; // 버튼 애니메이션 선언
@@ -75,7 +77,6 @@ class _MainPageState extends State<MainPage>
   void initState() {
     super.initState();
 
-    _initSetting();
     // 애니메이션 컨트롤러 초기화 (300ms 동안 애니메이션 실행)
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -116,16 +117,6 @@ class _MainPageState extends State<MainPage>
     super.dispose();
   }
 
-  // 비동기 메서드로 가게 정보를 가져옴
-  Future<void> _initSetting() async {
-    try {
-      await _reSearchCurrentLocation(); // 비동기 호출
-      setState(() {});
-    } catch (e) {
-      logger.e('Error fetching store details: $e'); // 에러 처리
-    }
-  }
-
   // 슬라이더 토글 함수
   void _toggleBottomSheet() {
     setState(() {
@@ -157,13 +148,27 @@ class _MainPageState extends State<MainPage>
                 NaverMap(
                   onMapReady: (controller) async {
                     _onMapReady(controller);
-                    _moveCamera();
-                    List<MyData> storeList = await _researchFromMe();
+                    await _initUserMarker();
+                    await _moveCamera(_userMarker.position);
+                    await _searchStoreCurrentLocation(_userMarker.position);
                     logger.d(
-                        "초기 마커 생성 sample : ${storeList.isEmpty ? "no sample" : storeList[0]}");
-                    _reSearchCurrentLocation();
+                        "초기 마커 생성 sample : ${myDataList.isEmpty ? "no sample" : myDataList[0]}");
+                    setState(() {
+                      _showReSearchButton = false;
+                    });
                   },
-
+                  onMapTapped: (point, latLng) {
+                    if (_selectedMarker != null) {
+                      setState(() {
+                        Navigator.pop(context);
+                        _selectedMarker!.setIcon(
+                            const NOverlayImage.fromAssetImage(
+                                'assets/images/defaultMarker.png'));
+                        _selectedMarker = null;
+                        // 추가로 바텀 시트도 닫히게 해야함
+                      });
+                    }
+                  },
                   //렉 유발 하는 듯 setstate로 인한 지도 재호출
                   // 카메라 변경 이벤트 시 상태 업데이트 최소화
                   onCameraChange: (reason, animated) {
@@ -200,14 +205,16 @@ class _MainPageState extends State<MainPage>
                       logger.d("search result is $searchResult");
                       // 검색 결과가 있는 경우 해당 위치로 이동
                       if (searchResult != null) {
-                        await _moveCamera(
-                          lat: searchResult['lat'],
-                          lng: searchResult['lng'],
+                        NLatLng target = NLatLng(
+                          double.parse(searchResult['lat']),
+                          double.parse(searchResult['lng']),
                         );
-                        List<MyData> storeList = await _researchFromMe();
+                        _searchBarInnerText = searchResult['place_name'];
+                        logger.d("검색창에 표시할 데이터 : $_searchBarInnerText");
+                        await _moveCamera(target);
+                        await _searchStoreCurrentLocation(target);
                         logger.d(
-                            "검색 이후 마커 생성 : sample ${storeList.isEmpty ? "no sample" : storeList[0]}");
-                        _addMarkers(storeList);
+                            "검색 이후 마커 생성 : sample ${myDataList.isEmpty ? "no sample" : myDataList[0]}");
                       }
                     },
                     child: Container(
@@ -229,9 +236,7 @@ class _MainPageState extends State<MainPage>
                         children: <Widget>[
                           const SizedBox(width: 8.0),
                           Text(
-                            _currentAddress.length > 28
-                                ? '${_currentAddress.substring(0, 28)}...'
-                                : _currentAddress,
+                            _searchBarInnerText,
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey[400]),
                           ),
@@ -255,102 +260,102 @@ class _MainPageState extends State<MainPage>
                         color: Colors.white,
                       ),
                       child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              bsAddress,
-                              style: const TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            bsAddress,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                             ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 10),
-                              height: 90,
-                              child: ListView.builder(
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: myDataList.length,
-                                  itemBuilder: (BuildContext ctx, int idx) {
-                                    return Row(
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            height: 90,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: myDataList.length,
+                              itemBuilder: (BuildContext ctx, int idx) {
+                                return Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
                                               return StoreInfo(
                                                   idx: idx +
-                                                      1); //터치하면 해당 가게 상세보기로
-                                            }));
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                10, 20, 20, 20),
-                                            decoration: BoxDecoration(
-                                                color: Colors.grey[200],
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            height: 100,
-                                            child: Row(
+                                                      1); // 터치하면 해당 가게 상세보기로
+                                            },
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            10, 20, 20, 20),
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[200],
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        height: 100,
+                                        child: Row(
+                                          children: [
+                                            const SizedBox(
+                                              height: 30,
+                                              width: 40,
+                                              child: CircleAvatar(
+                                                minRadius: 15,
+                                                backgroundImage: AssetImage(
+                                                    'assets/images/rakoon.png'),
+                                              ),
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
                                               children: [
-                                                //CircleAvatar 컨테이너
-                                                const SizedBox(
-                                                  height: 30,
-                                                  width: 40,
-                                                  child: CircleAvatar(
-                                                    minRadius: 15,
-                                                    backgroundImage: AssetImage(
-                                                        'assets/images/rakoon.png'),
-                                                  ),
+                                                Text(
+                                                  '${myDataList[idx].name}',
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
+                                                const SizedBox(height: 10),
+                                                const Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
                                                   children: [
+                                                    Icon(
+                                                      Icons.location_on_rounded,
+                                                      size: 13,
+                                                      color: Color(0xffF15A2B),
+                                                    ),
                                                     Text(
-                                                      '${myDataList[idx].name}',
-                                                      style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold),
+                                                      '영업 가능성 있어요!',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w100,
+                                                        fontSize: 10,
+                                                      ),
                                                     ),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    const Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Icon(
-                                                          Icons
-                                                              .location_on_rounded,
-                                                          size: 13,
-                                                          color:
-                                                              Color(0xffF15A2B),
-                                                        ),
-                                                        Text(
-                                                          '영업 가능성 있어요!',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w100,
-                                                              fontSize: 10),
-                                                        )
-                                                      ],
-                                                    )
                                                   ],
                                                 ),
                                               ],
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                        const SizedBox(
-                                          width: 20,
-                                        )
-                                      ],
-                                    );
-                                  }),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 20),
+                                  ],
+                                );
+                              },
                             ),
-                          ]),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -363,7 +368,8 @@ class _MainPageState extends State<MainPage>
                   right: MediaQuery.of(context).size.width / 3.5,
                   child: GestureDetector(
                     onTap: () async {
-                      await _reSearchCurrentLocation();
+                      final position = await _mapController.getCameraPosition();
+                      await _searchStoreCurrentLocation(position.target);
                       setState(() {
                         _showReSearchButton = false;
                       });
@@ -410,7 +416,12 @@ class _MainPageState extends State<MainPage>
                               foregroundColor: Colors.blue,
                               backgroundColor: WidgetStateColor.resolveWith(
                                   (states) => Colors.white)),
-                          onPressed: _moveCamera,
+                          onPressed: () async {
+                            NLatLng target = await _getCurrentNLatLng();
+                            _userMarker.setPosition(target);
+                            await _moveCamera(target);
+                            await _searchStoreCurrentLocation(target);
+                          },
                           child: const Icon(Icons.my_location),
                         ),
                       );
@@ -458,31 +469,29 @@ class _MainPageState extends State<MainPage>
   //마커 관련
   // 기존 마커 삭제 함수
   Future<void> _clearMarkers() async {
-    logger.d('마커가 정상적으로 들어왔음 $_markers');
-    // for (int i =0 ; i >= _markers.length; i++) {
-    //   _mapController
-    //       .deleteOverlay(NOverlayInfo(type: NOverlayType.marker, id:  )); // 마커 제거
-    // }
-    _mapController.clearOverlays();
-    _markers.clear(); // 리스트 초기화
-    logger.d('마커삭제 테스트 $_markers');
+    logger.d('마커가 정상적으로 들어왔음 ${markers.length}');
+    for (int i = 0; i < markers.length; i++) {
+      await _mapController.deleteOverlay(NOverlayInfo(
+          type: NOverlayType.marker, id: markers[i].info.id)); // 마커 제거
+    }
+    // _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
+    markers.clear(); // 리스트 초기화
+    logger.d('마커삭제 테스트 $markers');
   }
 
   // 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
   void _addMarkers(List<MyData> dataList) async {
     //여러개 마커 담는 리스트
     try {
-      var defaultMarkerSize = const Size(40, 50);
+      var defaultMarkerSize = const Size(32, 40);
       await _clearMarkers(); // 기존 마커 제거
       for (var data in dataList) {
-        var markerIcon = const NOverlayImage.fromAssetImage(
-            'assets/images/defalutMarker.png');
         NMarker marker = NMarker(
           id: data.id.toString(),
-          position: NLatLng(data.latitude!, data.longitude!),
-          icon: markerIcon,
+          position: NLatLng(data.latitude, data.longitude),
+          icon: const NOverlayImage.fromAssetImage(
+              'assets/images/defaultMarker.png'),
         );
-        _clickedMarkers.add(marker);
         //마커 사이즈 조절
         marker.setSize(defaultMarkerSize);
         marker.setOnTapListener((overlay) {
@@ -490,24 +499,33 @@ class _MainPageState extends State<MainPage>
         });
         _mapController.addOverlay(marker);
         // 마커 리스트에 추가
-        _markers.add(marker);
+        markers.add(marker);
       }
     } catch (e) {
       logger.w('에러발생 :$e');
     }
   }
 
-  //마커 클릭 이벤트 함수
+  // 마커 클릭 이벤트 함수
   void _onMarkerTapped(NMarker marker, MyData data) {
+    logger.d("onMakerTapped start");
+    setState(() {
+      if (_selectedMarker != null) {
+        _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage(
+            'assets/images/defaultMarker.png'));
+      }
+      _selectedMarker = marker;
+    });
     try {
       marker.setIcon(const NOverlayImage.fromAssetImage(
           'assets/images/clickedMarker.png'));
+
       //해당 위치로 이동
       logger.d("클릭된 마커 id =  ${marker.info.id}");
       _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
           NCameraPosition(
-            target: NLatLng(data.latitude!, data.longitude!),
+            target: NLatLng(data.latitude, data.longitude),
             zoom: 16,
           ),
         ),
@@ -520,26 +538,21 @@ class _MainPageState extends State<MainPage>
     }
   }
 
-  //해당 위치로 재검색
-  Future<void> _reSearchCurrentLocation() async {
-    //서버에 위도경도 보내서 데이터 더미로 받아와야함
-    List<MyData> myList = await _researchFromMe();
-
-    //받아온 데이터 myDataList에 넣기
-    myDataList = myList;
-    _addMarkers(myList);
-
-    //하단 주소 업뎃
-    try {
-      final position = await _mapController.getCameraPosition();
-      final latLng = position.target;
-      final myLocation = NLatLng(latLng.latitude, latLng.longitude);
-      bsAddress = await _reverseGeocode(myLocation);
-      logger.d("안에 든 내용 : $bsAddress");
-    } on Exception catch (e) {
-      // TODO
-      logger.w("Error! 내용: $e 위치: _reSearchCurrentLocation() ");
-    }
+  // 사용자 마커 초기화
+  Future<void> _initUserMarker() async {
+    NLatLng position = await _getCurrentNLatLng();
+    // 사용자 위치 아이콘 에셋 지정
+    const myLocationIcon =
+        NOverlayImage.fromAssetImage('assets/images/myLocation.png');
+    // 마커 객체 생성
+    _userMarker = NMarker(
+      id: "my_location_marker",
+      position: position,
+      icon: myLocationIcon,
+    );
+    // 마커 사이즈 지정 및 지도에 추가
+    _userMarker.setSize(const Size(40, 50));
+    _mapController.addOverlay(_userMarker);
   }
 
   // 카메라 위치 기반으로 근처 가게 검색
@@ -564,9 +577,11 @@ class _MainPageState extends State<MainPage>
     if (response.statusCode == 200) {
       logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
       List jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
-      final List<MyData> myDataList =
-          jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
-      return myDataList;
+      return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
+    } else if (response.statusCode == 401) {
+      logger.d('token expired! status code : ${response.statusCode}');
+      await reissue(context);
+      return _researchFromMe();
     } else {
       logger.e(
           'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
@@ -574,65 +589,43 @@ class _MainPageState extends State<MainPage>
     }
   }
 
+  Future<void> _searchStoreCurrentLocation(NLatLng target) async {
+    // 점포 데이터 받기
+    try {
+      List<MyData> storeList = await _researchFromMe();
+      myDataList = storeList;
+      bsAddress = await _reverseGeocode(target);
+      _addMarkers(storeList);
+    } on Exception catch (e) {
+      logger.e("Error! message: $e");
+    }
+  }
+
+  // 현재 위치를 NLatLng 으로 받기
+  Future<NLatLng> _getCurrentNLatLng() async {
+    Position position = await Geolocator.getCurrentPosition();
+    return NLatLng(position.latitude, position.longitude);
+  }
+
   // 위치 정보를 받아 해당 위치로 이동
   // 내 위치로 또는 특정 위치로 이동
-  Future<void> _moveCamera({String? lat, String? lng}) async {
-    late NLatLng target;
-
+  Future<void> _moveCamera(NLatLng position) async {
     try {
-      if (lat == null || lng == null) {
-        // 매개변수가 없으면 현재 위치로 이동
-        Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
-        target = NLatLng(position.latitude, position.longitude);
-        // 사용자 위치 아이콘 에셋 지정
-        const myLocationIcon =
-            NOverlayImage.fromAssetImage('assets/images/myLocation.png');
-        // 마커 객체 생성
-        NMarker myLocationMarker = NMarker(
-          id: "my_location_marker",
-          position: target,
-          icon: myLocationIcon,
-        );
-        // 마커 사이즈 지정 및 지도에 추가
-        myLocationMarker.setSize(const Size(40, 50));
-        _mapController.addOverlay(myLocationMarker);
-      } else {
-        // 매개변수를 받는 경우 해당 위치로 이동
-        target = NLatLng(double.parse(lat), double.parse(lng));
-      }
-
       // 카메라 이동
       await _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
           NCameraPosition(
-            target: target,
+            target: position,
             zoom: 16,
           ),
         ),
       );
-      // 검색창에 주소 표시
-      _updateAddress(target.latitude, target.longitude);
     } catch (e) {
       logger.e("Error in _moveToCurrentLocation: $e");
     }
   }
 
-  // 주소 띄우기
-  Future<void> _updateAddress(double latitude, double longitude) async {
-    try {
-      List<Placemark> placemarks =
-          await placemarkFromCoordinates(latitude, longitude);
-      Placemark place = placemarks[0];
-      setState(() {
-        _currentAddress = '${place.locality} ' '${place.street} ';
-      });
-    } catch (e) {
-      logger.d('주소 찾지못함');
-    }
-  }
-
-  //위치권한
+  // 위치권한
   Future<String> checkPermission() async {
     final isLocationEnabled = await Geolocator.isLocationServiceEnabled();
 
@@ -730,38 +723,47 @@ class _MainPageState extends State<MainPage>
 
   //가게 기본정보 바텀시트
   void _showBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      barrierColor: Colors.transparent,
+    showBottomSheet(
       context: context,
-      isScrollControlled: true,
       builder: (BuildContext context) {
-        return Container(
-          margin: const EdgeInsets.only(left: 15, right: 15),
-          height: MediaQuery.of(context).size.height * 0.36,
-          decoration: const BoxDecoration(),
-          child: Column(
-            children: [
-              TextButton(
-                onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
-                  return StoreInfo(
-                      idx: int.parse(
-                          _clickedMarkers[1].info.id)); //클릭된 마커 id 넣어야함
-                })),
-                child: const Icon(Icons.menu),
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.35,
+          minChildSize: 0.35,
+          shouldCloseOnMinExtent: false,
+          snap: true,
+          snapAnimationDuration: const Duration(milliseconds: 300),
+          builder: (context, scrollController) {
+            return SingleChildScrollView(
+              controller: scrollController,
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 15),
+                decoration: const BoxDecoration(),
+                child: Column(
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const StoreInfo(idx: 1);
+                      })),
+                      child: const Icon(Icons.menu),
+                    ),
+                    const MainTitle(
+                      idx: 1,
+                    ),
+                    //사진
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    const MainPhoto(),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
               ),
-              //제목, 영업가능성, 거리
-              const MainTitle(idx: 1), //변경해야함
-              //사진
-              const SizedBox(
-                height: 30,
-              ),
-              MainPhoto(),
-              const SizedBox(
-                height: 20,
-              ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

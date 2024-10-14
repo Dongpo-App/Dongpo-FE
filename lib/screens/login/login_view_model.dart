@@ -11,19 +11,19 @@ import 'login_platform.dart';
 
 // 전역
 // secure storage
-final FlutterSecureStorage storage = FlutterSecureStorage();
+const FlutterSecureStorage storage = FlutterSecureStorage();
 
 // Token refresh : /auth/reissue - 재발급 후에 로그아웃 처리.
 Future<void> reissue(BuildContext context) async {
-  final refreshToken  = await storage.read(key: 'refreshToken');
+  final refreshToken = await storage.read(key: 'refreshToken');
   if (refreshToken == null) {
     logger.d("refreshToken is null. Redirecting to login.");
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => LoginPage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
     return;
   }
-  final url = Uri.parse(serverUrl + '/auth/reissue');
+  final url = Uri.parse('$serverUrl/auth/reissue');
   final headers = {'Content-Type': 'application/json'};
   final data = {
     "refreshToken": refreshToken,
@@ -46,7 +46,6 @@ Future<void> reissue(BuildContext context) async {
       // token 재작성
       await storage.write(key: 'accessToken', value: token['accessToken']);
       await storage.write(key: 'refreshToken', value: token['refreshToken']);
-
     } else if (response.statusCode == 401) {
       final loginViewModel = LoginViewModel(KakaoNaverLogin());
       bool isLogouted = false;
@@ -79,7 +78,6 @@ Future<void> reissue(BuildContext context) async {
 }
 
 class LoginViewModel {
-
   final SocialLogin _socialLogin;
   bool isLogined = false;
   bool isLogouted = false;
@@ -120,7 +118,8 @@ class LoginViewModel {
   }
 
   Future<bool> logout(String? loginPlatformString) async {
-    LoginPlatform loginPlatform = LoginPlatformExtension.fromString(loginPlatformString); // String -> enum
+    LoginPlatform loginPlatform = LoginPlatformExtension.fromString(
+        loginPlatformString); // String -> enum
     isLogouted = await _socialLogin.isLogout(loginPlatform);
     if (isLogouted) {
       // 로그아웃 성공
@@ -137,7 +136,7 @@ class LoginViewModel {
     final data = {
       "token": socialToken,
     };
-    final url = Uri.parse(serverUrl + '/auth/${loginPlatform.name}');
+    final url = Uri.parse('$serverUrl/auth/${loginPlatform.name}');
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode(data);
 
@@ -151,12 +150,11 @@ class LoginViewModel {
         refreshToken = token['refreshToken'];
 
         return true;
-      } else if(response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
         await reissue(context);
         return tokenAPI(context);
-      }
-      else {
+      } else {
         // 실패
         logger.d("Fail to load $data. status code : ${response.statusCode}");
         // 실패

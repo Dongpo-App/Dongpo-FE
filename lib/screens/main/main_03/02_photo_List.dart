@@ -46,12 +46,12 @@ class _MainPhotoState extends State<MainPhoto> {
     try {
       if (storeData != null && storeData!.reviews != null) {
         for (int i = 0; i < storeData!.reviews!.length; i++) {
-          logger.d(
-              '첫번째 for문 들어옴 리뷰 사진 갯수 : ${storeData!.reviews![i].reviewPics!.length}');
+          // logger.d(
+          //     '첫번째 for문 들어옴 리뷰 사진 갯수 : ${storeData!.reviews![i].reviewPics!.length}');
           for (int ii = 0;
               ii < storeData!.reviews![i].reviewPics!.length;
               ii++) {
-            logger.d("두 번째 for문 들어옴 ");
+            //   logger.d("두 번째 for문 들어옴 ");
             setState(() {
               imageList.add(
                   Image.network('${storeData?.reviews?[i].reviewPics?[ii]}'));

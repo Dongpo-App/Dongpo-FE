@@ -11,6 +11,7 @@ import 'package:dongpo_test/screens/main/main_03/05_review.dart';
 import 'package:dongpo_test/screens/main/main_03/01_title.dart';
 import 'package:dongpo_test/screens/main/main_03/03_user_action.dart';
 import 'package:dongpo_test/screens/main/main_03/07_dangol.dart';
+import 'package:dongpo_test/screens/my_info/info_detail/bookmark_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
@@ -40,9 +41,15 @@ class StoreInfo extends StatefulWidget {
 }
 
 class _StoreInfoState extends State<StoreInfo> {
+  BookmarkViewModel viewModel = BookmarkViewModel();
+  void getBookmark() async {
+    userBookmark = await viewModel.userBookmarkGetAPI(context);
+  }
+
   @override
   void initState() {
     super.initState();
+    getBookmark();
     // 페이지가 처음 생성될 때 비동기 메서드 호출
     _fetchStoreDetails();
   }

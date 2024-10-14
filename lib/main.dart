@@ -14,12 +14,6 @@ void main() async {
   // Flutter SDK 초기화 보장
   WidgetsFlutterBinding.ensureInitialized();
 
-  // FlutterSecureStorage 초기화
-  const storage = FlutterSecureStorage();
-  // await storage.delete(key: 'accessToken');
-  // await storage.delete(key: 'refreshToken');
-  // await storage.delete(key: 'loginPlatform');
-
   // Kakao SDK 초기화
   KakaoSdk.init(
     nativeAppKey: nativeAppKey,
@@ -36,6 +30,8 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  // FlutterSecureStorage 초기화
+  static const storage = FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {

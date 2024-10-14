@@ -240,6 +240,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                     child: GestureDetector(
                       onTap: () {
                         picker.DatePicker.showTimePicker(context,
+                            showSecondsColumn: false,
                             showTitleActions: true,
                             onChanged: (date) {}, onConfirm: (date) {
                           setState(() {
@@ -269,6 +270,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                     child: GestureDetector(
                       onTap: () {
                         picker.DatePicker.showTimePicker(context,
+                            showSecondsColumn: false,
                             showTitleActions: true,
                             onChanged: (date) {}, onConfirm: (date) {
                           setState(() {
