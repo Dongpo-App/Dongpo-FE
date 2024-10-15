@@ -13,6 +13,7 @@ import 'package:dongpo_test/screens/my_info/info_detail/bookmark_view_model.dart
 //아니라면
 //북마크 아이콘 + 버튼 누를시 추가
 
+//내려갔다 올라가면 북마크 다시 초기화되어있는 오류있음
 class UserAction extends StatefulWidget {
   final int idx;
   const UserAction({super.key, required this.idx});
@@ -29,7 +30,7 @@ class _UserActionState extends State<UserAction> {
     checkBookMark();
   }
 
-  bool _selected = false;
+  late bool _selected;
   static const storage = FlutterSecureStorage();
   @override
   Widget build(BuildContext context) {
@@ -125,7 +126,7 @@ class _UserActionState extends State<UserAction> {
     final responseData = json.decode(utf8.decode(response.bodyBytes));
     if (response.statusCode == 200) {
       logger.d("북마크 동작 성공");
-      logger.d('북마크 추가된 ID: ${responseData['id']}');
+      logger.d('북마크 추가된 ID: ${widget.idx}');
     } else {
       logger.e(
           'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responseData}');
@@ -154,9 +155,9 @@ class _UserActionState extends State<UserAction> {
   }
 
   void checkBookMark() {
-    for (int i = 0; i >= userBookmark.length; i++) {
+    for (int i = 0; i <= userBookmark.length - 1; i++) {
       if (userBookmark[i].storeId == widget.idx) {
-        _selected == true;
+        _selected = true;
         logger.d('북마크한 가게');
       }
     }
