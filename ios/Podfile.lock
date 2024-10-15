@@ -5,9 +5,9 @@ PODS:
   - flutter_naver_login (0.0.1):
     - Flutter
     - naveridlogin-sdk-ios (~> 4.1.0)
-  - flutter_naver_map (1.2.3):
+  - flutter_naver_map (1.3.0):
     - Flutter
-    - NMapsMap (= 3.18.1)
+    - NMapsMap (= 3.19.0)
   - flutter_secure_storage (6.0.0):
     - Flutter
   - flutter_web_auth (0.5.0):
@@ -22,7 +22,7 @@ PODS:
     - Flutter
   - naveridlogin-sdk-ios (4.1.6)
   - NMapsGeometry (1.0.2)
-  - NMapsMap (3.18.1):
+  - NMapsMap (3.19.0):
     - NMapsGeometry
   - open_settings_plus (0.0.1):
     - Flutter
@@ -101,7 +101,7 @@ SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_native_splash: edf599c81f74d093a4daf8e17bd7a018854bc778
   flutter_naver_login: 1dbf6d21aae5235cdf76a28ac79cf6871899282f
-  flutter_naver_map: 9b36cee8e83421f40782af8a4e7afbdf63ee5f92
+  flutter_naver_map: d31b1884517151e7b3121e3b24c18733ef4e4387
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   flutter_web_auth: c25208760459cec375a3c39f6a8759165ca0fa4d
   geocoding_ios: d7460f56e80e118d57678efe5c2cdc888739ff18
@@ -110,7 +110,7 @@ SPEC CHECKSUMS:
   kakao_flutter_sdk_common: 4f10f98226da5d0f7cbdeeaed5cc21f144515209
   naveridlogin-sdk-ios: cdd34e3585a3d5aaf37c1d84c1f41faba4a25d1a
   NMapsGeometry: 4e02554fa9880ef02ed96b075dc84355d6352479
-  NMapsMap: e879088eeee2d1e3b97f0a609076e1824dce2cad
+  NMapsMap: 99c10429d93340780b6f88d3fc7c0a3850b43664
   open_settings_plus: 4bd848866fea2becc124581d868a6164cf768831
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
