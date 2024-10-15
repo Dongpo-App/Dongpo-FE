@@ -540,7 +540,6 @@ class _MyPageState extends State<MyPage> {
                                 setState(() {
                                   updateValue = 1;
                                   // 서버에 보낼 이미지 경로 XFile? image;
-                                  logger.d("image path : pickedFile!.path");
                                   sendData = pickedFile!.path;
                                 });
                               }
