@@ -3,6 +3,7 @@ import 'package:dongpo_test/screens/login/social_login.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'login_platform.dart';
 
 class KakaoNaverLogin implements SocialLogin {
@@ -64,6 +65,42 @@ class KakaoNaverLogin implements SocialLogin {
       return token.accessToken.toString();
     } catch (e) {
       logger.d("naver login error : $e");
+      return null;
+    }
+  }
+
+  @override
+  Future<String?> isAppleLogin() async {
+    try {
+      logger.d('애플로그인 요청 시작');
+      // 애플 로그인 요청
+      final AuthorizationCredentialAppleID appleCredential =
+          await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+      logger.d('애플로그인 완료');
+
+      // 애플 로그인 성공 후, 받은 credential을 사용하여 필요한 처리 수행
+      logger.d("Apple login userIdentifier: ${appleCredential.userIdentifier}");
+      logger.d("Apple login identityToken: ${appleCredential.identityToken}");
+      logger.d(
+          "Apple login authorizationCode: ${appleCredential.authorizationCode}");
+
+      // 받은 identityToken(토큰)을 서버로 보내어 검증하거나, 인증된 로그인 처리를 수행
+      final String? identityToken = appleCredential.identityToken;
+
+      //서버에 전송하는 로직 작성
+      if (identityToken != null) {
+        return identityToken; // 서버에 전송하거나 앱 내에서 처리
+      } else {
+        logger.d("Apple login failed: No identity token");
+        return null;
+      }
+    } catch (e) {
+      logger.d("Apple login error: $e");
       return null;
     }
   }

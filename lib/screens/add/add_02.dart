@@ -115,7 +115,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => MyAppPage()),
-                    (route) => false, // 모든 이전 페이지 제거
+                    (route) => true, // 모든 이전 페이지 제거
                   );
                 },
               ),
@@ -126,17 +126,16 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
           margin: const EdgeInsets.symmetric(horizontal: 24),
           child: ListView(
             children: [
-              SizedBox(height: 24,),
+              SizedBox(
+                height: 24,
+              ),
 
               //가게 위치 *
               const Row(
                 children: [
                   Text(
                     '가게 위치',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                   SizedBox(
                     width: 4,
@@ -168,7 +167,9 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                   //검색바 안에 주소
                   child: Row(
                     children: <Widget>[
-                      SizedBox(width: 24,),
+                      SizedBox(
+                        width: 24,
+                      ),
                       Text(
                         dataForm.sendAddress,
                         style: TextStyle(
@@ -178,11 +179,10 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                         ),
                       ),
                       const Spacer(),
-                      const Icon(
-                        size: 16,
-                        CupertinoIcons.right_chevron
+                      const Icon(size: 16, CupertinoIcons.right_chevron),
+                      SizedBox(
+                        width: 24,
                       ),
-                      SizedBox(width: 24,),
                     ],
                   ),
                 ),
@@ -196,10 +196,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                 children: [
                   Text(
                     '가게 이름',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                   SizedBox(
                     width: 4,
@@ -213,7 +210,9 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                   ),
                 ],
               ),
-              SizedBox(height: 16,),
+              SizedBox(
+                height: 16,
+              ),
               Container(
                 height: 44,
                 width: double.infinity,
@@ -251,10 +250,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                 children: [
                   const Text(
                     '오픈 요일',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                   const SizedBox(
                     width: 8,
@@ -269,7 +265,9 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                   ),
                 ],
               ),
-              SizedBox(height: 16,),
+              SizedBox(
+                height: 16,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.generate(7, (index) {
@@ -310,14 +308,13 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                 children: [
                   Text(
                     '오픈 시간',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                 ],
               ),
-              SizedBox(height: 16,),
+              SizedBox(
+                height: 16,
+              ),
               //오픈시간 시간설정
               Container(
                 child: Row(
@@ -326,17 +323,14 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          picker.DatePicker.showTimePicker(
-                            context,
-                            showSecondsColumn: false,
-                            showTitleActions: true,
-                            onChanged: (date) {}, onConfirm: (date) {
-                              setState(() {
-                                openTime = "${date.hour}:${date.minute}";
-                              });
-                            },
-                            currentTime: DateTime.now()
-                          );
+                          picker.DatePicker.showTimePicker(context,
+                              showSecondsColumn: false,
+                              showTitleActions: true,
+                              onChanged: (date) {}, onConfirm: (date) {
+                            setState(() {
+                              openTime = "${date.hour}:${date.minute}";
+                            });
+                          }, currentTime: DateTime.now());
                         },
                         //openTime Container
                         child: Container(
@@ -345,9 +339,8 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                           padding: EdgeInsets.only(left: 24),
                           alignment: Alignment.centerLeft,
                           decoration: BoxDecoration(
-                            color: Color(0xFFF4F4F4),
-                            borderRadius: BorderRadius.circular(12)
-                          ),
+                              color: Color(0xFFF4F4F4),
+                              borderRadius: BorderRadius.circular(12)),
                           child: Text(
                             openTime,
                             style: const TextStyle(
@@ -370,17 +363,14 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          picker.DatePicker.showTimePicker(
-                            context,
-                            showSecondsColumn: false,
-                            showTitleActions: true,
-                            onChanged: (date) {}, onConfirm: (date) {
-                              setState(() {
-                               closeTime = "${date.hour}:${date.minute}";
-                              });
-                            },
-                            currentTime: DateTime.now()
-                          );
+                          picker.DatePicker.showTimePicker(context,
+                              showSecondsColumn: false,
+                              showTitleActions: true,
+                              onChanged: (date) {}, onConfirm: (date) {
+                            setState(() {
+                              closeTime = "${date.hour}:${date.minute}";
+                            });
+                          }, currentTime: DateTime.now());
                         },
                         //closeTime Container
                         child: Container(
@@ -390,8 +380,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                           alignment: Alignment.centerLeft,
                           decoration: BoxDecoration(
                               color: Color(0xFFF4F4F4),
-                              borderRadius: BorderRadius.circular(12)
-                          ),
+                              borderRadius: BorderRadius.circular(12)),
                           child: Text(
                             closeTime,
                             style: const TextStyle(
@@ -416,10 +405,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                 children: [
                   const Text(
                     '결제 방식',
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                   const SizedBox(
                     width: 8,
@@ -434,7 +420,9 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                   ),
                 ],
               ),
-              SizedBox(height: 16,),
+              SizedBox(
+                height: 16,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.generate(3, (index) {
@@ -475,27 +463,24 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                 children: [
                   Text(
                     '화장실',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                 ],
               ),
-              SizedBox(height: 16,),
+              SizedBox(
+                height: 16,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    height: 44,
-                    width: contentsWidth * 0.48,
-                    child: _bathSelected('있음', 1)
-                  ),
+                      height: 44,
+                      width: contentsWidth * 0.48,
+                      child: _bathSelected('있음', 1)),
                   Container(
-                    height: 44,
-                    width: contentsWidth * 0.48,
-                    child: _bathSelected('없음 ', 2)
-                  ),
+                      height: 44,
+                      width: contentsWidth * 0.48,
+                      child: _bathSelected('없음 ', 2)),
                 ],
               ),
               //가게 등록버튼
@@ -509,19 +494,17 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    splashFactory: (value == 0)
-                      ? NoSplash.splashFactory
-                      : InkSplash.splashFactory,
-                    //모두 동의했을 경우 버튼 활성화
-                    backgroundColor: (value == 1)
-                      ? const Color(0xffF15A2B)
-                      : Color(0xFFF4F4F4),
-                    minimumSize: const Size(double.infinity, 40),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12))
-                    )
-                  ),
+                      elevation: 0,
+                      splashFactory: (value == 0)
+                          ? NoSplash.splashFactory
+                          : InkSplash.splashFactory,
+                      //모두 동의했을 경우 버튼 활성화
+                      backgroundColor: (value == 1)
+                          ? const Color(0xffF15A2B)
+                          : Color(0xFFF4F4F4),
+                      minimumSize: const Size(double.infinity, 40),
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12)))),
                   onPressed: () {
                     //가게 등록 로직 구현
                     (value == 0) ? null : sendData();
@@ -529,10 +512,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                   child: Text(
                     '가게 등록',
                     style: TextStyle(
-                      color: (value == 1)
-                        ? Colors.white
-                        : Color(0xFF767676)
-                    ),
+                        color: (value == 1) ? Colors.white : Color(0xFF767676)),
                   ),
                 ),
               ),
@@ -673,14 +653,12 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
   Widget _bathSelected(String text, int index) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12))
-        ),
-        backgroundColor: bathSelected == index
-          ? const Color(0xffF15A2B)
-          : Color(0xFFF4F4F4)
-      ),
+          elevation: 0,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12))),
+          backgroundColor: bathSelected == index
+              ? const Color(0xffF15A2B)
+              : Color(0xFFF4F4F4)),
       onPressed: () {
         setState(() {
           bathSelected = index;
@@ -689,10 +667,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       child: Text(
         text,
         style: TextStyle(
-          color: bathSelected == index
-            ? Colors.white
-            : Color(0xFF767676)
-        ),
+            color: bathSelected == index ? Colors.white : Color(0xFF767676)),
       ),
     );
   }

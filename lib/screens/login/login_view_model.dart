@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:dongpo_test/screens/login/social_login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'kakao_naver_login.dart';
 import 'login.dart';
 import 'login_platform.dart';
@@ -61,12 +63,12 @@ Future<void> reissue(BuildContext context) async {
         await storage.delete(key: 'loginPlatform');
         logger.d("Unauthorized refresh. Redirecting to login.");
 
-        if (context.mounted){
+        if (context.mounted) {
           // 로그인 페이지로 전환
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => LoginPage()),
-                (route) => false, // 모든 이전 페이지 제거
+            (route) => false, // 모든 이전 페이지 제거
           );
         }
       }
@@ -114,6 +116,24 @@ class LoginViewModel {
       return isLogined;
     } else {
       logger.d("naver login fail");
+      isLogined = false;
+      return isLogined;
+    }
+  }
+
+  Future<bool> appleLogin(BuildContext context) async {
+    logger.d('애플로그인 테스트 0');
+    socialToken = await _socialLogin.isAppleLogin();
+    logger.d(socialToken);
+    logger.d('애플로그인 테스트 1');
+    if (socialToken != null) {
+      //애플 로그인 성공함
+      loginPlatform = LoginPlatform.apple;
+      logger.d('애플로그인 테스트 2');
+      isLogined = await tokenAPI(context);
+      return isLogined;
+    } else {
+      logger.d("apple login fail");
       isLogined = false;
       return isLogined;
     }
