@@ -35,9 +35,9 @@ class AddStorePageState extends State<AddStorePage> {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "등록한 가게",
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
             onPressed: () {
@@ -75,31 +75,31 @@ class AddStorePageState extends State<AddStorePage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 18,
                       backgroundImage: AssetImage(
                           'assets/images/icon.png'
                       ),
                     ),
-                    SizedBox( // 테스트용
+                    const SizedBox( // 테스트용
                       width: 30,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _userAddStore[index].name,
-                          style: TextStyle(
+                          addStore.name,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(// 테스트용
+                        const SizedBox(// 테스트용
                           height: 4,
                         ),
                         Text(
-                          _userAddStore[index].address,
-                          style: TextStyle(
+                          addStore.address,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                           ),

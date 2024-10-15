@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/models/user_review.dart';
 import 'package:intl/intl.dart';
-import '../../../main.dart';
 import 'info_review_view_model.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -90,9 +88,9 @@ class InfoReviewPageState extends State<InfoReviewPage> {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "내가 쓴 리뷰",
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
           onPressed: () {
@@ -148,15 +146,15 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                                     children: [
                                       Text(
                                         review.storeName,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 12,
                                       ),
-                                      Icon(
+                                      const Icon(
                                         Icons.keyboard_arrow_right,
                                         size: 24,
                                         color: Colors.black,
@@ -164,7 +162,7 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                                     ]
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 12,
                                 ),
                                 Row(
@@ -173,18 +171,18 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                                       rating: review.reviewStar.toDouble(),
                                       itemCount: 5,
                                       itemSize: 16.0,
-                                      unratedColor: Color(0xFF767676),
-                                      itemBuilder: (context, index) => Icon(
+                                      unratedColor: const Color(0xFF767676),
+                                      itemBuilder: (context, index) => const Icon(
                                         Icons.star,
                                         color: Color(0xFFF15A2B),
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 12,
                                     ),
                                     Text(
                                       reviewDate,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400,
                                         color: Color(0xFF767676),
@@ -192,22 +190,22 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 24,
                                 ),
                                 Text(
-                                  _userReview[index].text,
-                                  style: TextStyle(
+                                  review.text,
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
                                 review.reviewPics.isEmpty // 리뷰 사진이 있으면 이미지 띄움
-                                ? SizedBox(height: 24,)
+                                ? const SizedBox(height: 24,)
                                 : reviewImageList(review.reviewPics),
                                 Row(
                                   children: [
-                                    Spacer(),
+                                    const Spacer(),
                                     GestureDetector(
                                       onTap: () async {
                                         // 리뷰 삭제
@@ -217,7 +215,7 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                                         width: 44,
                                         height: 44,
                                         alignment: Alignment.centerRight,
-                                        child: Text(
+                                        child: const Text(
                                           '삭제',
                                           style: TextStyle(
                                             fontWeight: FontWeight.w400,
@@ -263,8 +261,8 @@ class InfoReviewPageState extends State<InfoReviewPage> {
             child: Container(
               height: bottomSheetHeight,
               width: double.infinity,
-              margin: EdgeInsets.all(24),
-              decoration: BoxDecoration(
+              margin: const EdgeInsets.all(24),
+              decoration: const BoxDecoration(
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12)

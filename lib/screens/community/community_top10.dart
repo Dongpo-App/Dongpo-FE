@@ -1,5 +1,4 @@
 import 'package:dongpo_test/screens/community/community.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../models/community_rack.dart';
 

@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
-import 'package:dongpo_test/main.dart';
 import 'bookmark_view_model.dart';
 
 class BookmarkPage extends StatefulWidget {
@@ -44,9 +42,9 @@ class BookmarkPageState extends State<BookmarkPage> {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "북마크 한 가게",
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
             onPressed: () {
@@ -87,23 +85,23 @@ class BookmarkPageState extends State<BookmarkPage> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CircleAvatar(
+                          const CircleAvatar(
                             radius: 18,
                             backgroundImage: AssetImage(
                               'assets/images/icon.png'
                             ),
                           ),
-                          SizedBox( // 테스트용
+                          const SizedBox( // 테스트용
                             width: 30,
                           ),
                           Text(
                             bookmark.storeName,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           GestureDetector(
                             onTap: () {
                               // 버튼이 눌리면 북마크 취소됨
@@ -113,7 +111,7 @@ class BookmarkPageState extends State<BookmarkPage> {
                               width: 44,
                               height: 44,
                               alignment: Alignment.center, // 아이콘이 가운데에 오도록 설정
-                              child: Icon(
+                              child: const Icon(
                                 Icons.bookmark_rounded,
                                 size: 24,
                                 color: Color(0xFFF15A2B),

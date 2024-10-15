@@ -11,7 +11,7 @@ class InfoTitleViewModel{
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(serverUrl + '/api/my-page/titles');
+    final url = Uri.parse('$serverUrl/api/my-page/titles');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -27,8 +27,12 @@ class InfoTitleViewModel{
         return infoUserTitleJson.map((item) => InfoUserTitle.fromJson(item)).toList();
       } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return infoUserTitleGetAPI(context);
+        if (context.mounted) await reissue(context);
+        if (context.mounted) {
+          return infoUserTitleGetAPI(context);
+        } else {
+          throw InfoTitleViewModelException("context.mounted is false");
+        }
       } else {
         // 실패
         throw InfoTitleViewModelException(

@@ -13,7 +13,7 @@ class MyPageViewModel {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(serverUrl + '/api/my-page');
+    final url = Uri.parse('$serverUrl/api/my-page');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -28,8 +28,13 @@ class MyPageViewModel {
         return UserProfile.fromJson(userProfileJson);
       } else if(response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return userProfileGetAPI(context);
+        if (context.mounted) await reissue(context);
+        if (context.mounted) {
+          return userProfileGetAPI(context);
+        } else {
+          throw UserProfileException(
+              "context.mounted is false");
+        }
       } else {
         logger.d("Fail to load. status code : ${response.statusCode}");
         // 실패
@@ -51,7 +56,7 @@ class MyPageViewModel {
 
     // 사용자 프로필 사진 업로드 API
     String? userPicURL;
-    if (pic != null) {
+    if (pic != null && context.mounted) {
       userPicURL = await userPicUploadAPI(context, pic);
     } else {
       userPicURL = null;
@@ -62,7 +67,7 @@ class MyPageViewModel {
       "profilePic": userPicURL,
       "newMainTitle": newMainTitle,
     };
-    final url = Uri.parse(serverUrl + '/api/my-page');
+    final url = Uri.parse('$serverUrl/api/my-page');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -75,8 +80,13 @@ class MyPageViewModel {
         return true;
       } else if(response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return userProfileUpdateAPI(context, pic, nickname, newMainTitle);
+        if (context.mounted) await reissue(context);
+        if (context.mounted) {
+          return userProfileUpdateAPI(context, pic, nickname, newMainTitle);
+        } else {
+          throw UserProfileException(
+              "context.mounted is false");
+        }
       } else {
         // 실패
         logger.d("Fail to load $data. status code : ${response.statusCode}");
@@ -98,7 +108,7 @@ class MyPageViewModel {
     var formData =
         FormData.fromMap({'image': await MultipartFile.fromFile(pic)});
 
-    const url = serverUrl + '/api/file-upload';
+    const url = '$serverUrl/api/file-upload';
 
     try {
       dio.options.contentType = 'multipart/form-data';
@@ -114,8 +124,13 @@ class MyPageViewModel {
         return imageUrl;
       } else if(response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return userPicUploadAPI(context, pic);
+        if (context.mounted) await reissue(context);
+        if (context.mounted) {
+          return userPicUploadAPI(context, pic);
+        } else {
+          throw UserProfileException(
+              "context.mounted is false");
+        }
       } else {
         // 실패
         logger.d("Fail to upload $formData. status code : ${response.statusCode}");

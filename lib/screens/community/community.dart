@@ -1,6 +1,5 @@
 import 'package:dongpo_test/models/community_rack.dart';
 import 'package:dongpo_test/screens/community/community_view_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'community_top10.dart';
 
@@ -173,7 +172,7 @@ class CommunityPageState extends State<CommunityPage> {
                   radius: 24,
                   backgroundImage: (memberProfile != null && memberProfile.isNotEmpty )
                       ? NetworkImage(memberProfile) as ImageProvider
-                      : AssetImage('assets/images/profile.jpg'),
+                      : const AssetImage('assets/images/profile.jpg'),
                 ),
               ),
               Padding(

@@ -11,7 +11,7 @@ class InfoReviewViewModel{
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(serverUrl + '/api/my-page/reviews');
+    final url = Uri.parse('$serverUrl/api/my-page/reviews');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -27,8 +27,12 @@ class InfoReviewViewModel{
         return userReviewJson.map((item) => UserReview.fromJson(item)).toList();
       } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return userReviewGetAPI(context);
+        if (context.mounted) await reissue(context);
+        if (context.mounted) {
+          return userReviewGetAPI(context);
+        } else {
+          throw InfoReviewViewException("context.mounted is false");
+        }
       } else {
         // 실패
         throw InfoReviewViewException(
@@ -43,7 +47,7 @@ class InfoReviewViewModel{
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(serverUrl + '/api/store/review/${reviewId}');
+    final url = Uri.parse('$serverUrl/api/store/review/$reviewId');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -51,19 +55,23 @@ class InfoReviewViewModel{
     try {
       final response = await http.delete(url, headers: headers);
       if (response.statusCode == 200) {
-        logger.d("review Delete : ${reviewId}");
+        logger.d("review Delete : $reviewId");
         return true;
       } else if(response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return userReviewDeleteAPI(context, reviewId);
+        if (context.mounted) await reissue(context);
+        if (context.mounted) {
+          return userReviewDeleteAPI(context, reviewId);
+        } else {
+          throw InfoReviewViewException("context.mounted is false");
+        }
       } else {
         // 실패
         throw InfoReviewViewException(
             "Fail to load. status code: ${response.statusCode} / ${utf8.decode(response.bodyBytes)}");
       }
     } catch (e) {
-      logger.d("error : $e / reviewId : ${reviewId}");
+      logger.d("error : $e / reviewId : $reviewId");
       throw InfoReviewViewException("Error occurred: $e");
     }
   }

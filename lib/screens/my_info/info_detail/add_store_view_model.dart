@@ -11,7 +11,7 @@ class AddStoreViewModel{
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(serverUrl + '/api/my-page/stores');
+    final url = Uri.parse('$serverUrl/api/my-page/stores');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -27,8 +27,13 @@ class AddStoreViewModel{
         return userAddStoreJson.map((item) => UserAddStore.fromJson(item)).toList();
       } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return userAddStoreGetAPI(context);
+        if (context.mounted) await reissue(context);
+        if (context.mounted) {
+          return userAddStoreGetAPI(context);
+        } else {
+          throw AddStoreException(
+              "context.mounted is false");
+        }
       } else {
         // 실패
         throw AddStoreException(

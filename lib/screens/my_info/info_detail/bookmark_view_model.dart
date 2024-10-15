@@ -11,7 +11,7 @@ class BookmarkViewModel{
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(serverUrl + '/api/my-page/bookmarks');
+    final url = Uri.parse('$serverUrl/api/my-page/bookmarks');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -27,8 +27,12 @@ class BookmarkViewModel{
         return userBookmarkJson.map((item) => UserBookmark.fromJson(item)).toList();
       } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return userBookmarkGetAPI(context);
+        if (context.mounted) await reissue(context);
+        if (context.mounted) {
+          return userBookmarkGetAPI(context);
+        } else {
+          throw UserBookmarkException("context.mounted is false");
+        }
       } else {
         // 실패
         throw UserBookmarkException(
@@ -44,7 +48,7 @@ class BookmarkViewModel{
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(serverUrl + '/api/bookmark/${storeId}');
+    final url = Uri.parse('$serverUrl/api/bookmark/${storeId}');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -52,12 +56,16 @@ class BookmarkViewModel{
     try {
       final response = await http.delete(url, headers: headers);
       if (response.statusCode == 200) {
-        logger.d("bookmark Delete : ${storeId}");
+        logger.d("bookmark Delete : $storeId");
         return true;
       } else if(response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return userBookmarkDeleteAPI(context, storeId);
+        if (context.mounted) await reissue(context);
+        if (context.mounted) {
+          return userBookmarkDeleteAPI(context, storeId);
+        } else {
+          throw UserBookmarkException("context.mounted is false");
+        }
       } else {
         // 실패
         throw UserBookmarkException(

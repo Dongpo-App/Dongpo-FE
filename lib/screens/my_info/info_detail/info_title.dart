@@ -1,5 +1,4 @@
 import 'package:dongpo_test/screens/my_info/info_detail/info_title_view_model.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../models/info_user_title.dart';
 
@@ -34,9 +33,9 @@ class InfoTitlePageState extends State<InfoTitlePage> {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "칭호",
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
             onPressed: () {
@@ -75,29 +74,29 @@ class InfoTitlePageState extends State<InfoTitlePage> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CircleAvatar(
+                          const CircleAvatar(
                             radius: 18,
                             backgroundImage: AssetImage(
                                 'assets/images/icon.png'
                             ),
                           ),
-                          SizedBox( // 테스트용
+                          const SizedBox( // 테스트용
                             width: 30,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _userTitle[index].description,
-                                style: TextStyle(
+                                titles.description,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              SizedBox(height: 4,),
+                              const SizedBox(height: 4,),
                               Text(
-                                _userTitle[index].achieveCondition,
-                                style: TextStyle(
+                                titles.achieveCondition,
+                                style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                 ),
@@ -105,7 +104,7 @@ class InfoTitlePageState extends State<InfoTitlePage> {
                             ],
                           ),
 
-                        SizedBox(// 테스트용
+                        const SizedBox(// 테스트용
                           width: 30,
                         ),
                       ],

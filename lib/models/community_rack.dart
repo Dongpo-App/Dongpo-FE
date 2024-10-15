@@ -1,5 +1,3 @@
-import 'title.dart';
-
 class CommunityRank {
   late final String nickname; // 닉네임
   late final String title; // 칭호

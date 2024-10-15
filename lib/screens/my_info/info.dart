@@ -3,7 +3,6 @@ import 'package:dongpo_test/models/user_profile.dart';
 import 'package:dongpo_test/screens/my_info/my_page_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
 import 'package:dongpo_test/screens/login/login.dart';
@@ -56,10 +55,10 @@ class _MyPageState extends State<MyPage> {
   }
 
   Future<void> getUserProfile() async {
-    final _userProfileGet = await viewModel.userProfileGetAPI(context);
+    final userProfileGet = await viewModel.userProfileGetAPI(context);
     if (mounted) {
       setState(() {
-        _userProfile = _userProfileGet;
+        _userProfile = userProfileGet;
         nicknameController.text = _userProfile.nickname;
       });
     }
@@ -81,7 +80,7 @@ class _MyPageState extends State<MyPage> {
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "마이 페이지",
           style: TextStyle(
             fontSize: 14,
@@ -90,14 +89,14 @@ class _MyPageState extends State<MyPage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           height: bodyHeight, // 전체 화면 높이 설정
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.only(top: 24, left: 24, right: 24),
-                color:  Color(0xFFFFFF),
+                padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
+                color:  const Color(0x00ffffff),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -107,9 +106,9 @@ class _MyPageState extends State<MyPage> {
                       backgroundImage: (_userProfile.profilePic != null && _userProfile.profilePic!.isNotEmpty)
                           ? NetworkImage(_userProfile.profilePic!)
                       as ImageProvider
-                          : AssetImage('assets/images/profile.jpg'),
+                          : const AssetImage('assets/images/profile.jpg'),
                     ),
-                    SizedBox(width: 16), // 간격 조정
+                    const SizedBox(width: 16), // 간격 조정
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
@@ -117,28 +116,28 @@ class _MyPageState extends State<MyPage> {
                           // 칭호
                           Container(
                             padding:
-                            EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                            const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                             decoration: BoxDecoration(
-                              color: Color(0xFFF5E0D9),
+                              color: const Color(0xFFF5E0D9),
                               borderRadius: BorderRadius.circular(12.0),
                               border: Border.all(
-                                color: Color(0xFFF5E0D9), // 테두리 색상
+                                color: const Color(0xFFF5E0D9), // 테두리 색상
                               ),
                             ),
                             child: Text(
                               _userProfile.mainTitle.description,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: Color(0xFFF15A2B),
                               ),
                             ),
                           ),
-                          SizedBox(height: 8), // 간격 조정
+                          const SizedBox(height: 8), // 간격 조정
                           // 닉네임
                           Text(
                             _userProfile.nickname,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.w600,
                             ),
@@ -149,22 +148,22 @@ class _MyPageState extends State<MyPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 40), // 간격 조정
+              const SizedBox(height: 40), // 간격 조정
               Container(
                 height: 44,
                 width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 // 프로필 편집 버튼
                 child: OutlinedButton(
                   onPressed: () {
                     showEditProfileBottomSheet(context);
                   },
                   style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
+                      shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(
                             Radius.circular(12),
                           ))),
-                  child: Text(
+                  child: const Text(
                     '프로필 편집',
                     style: TextStyle(
                       fontSize: 16,
@@ -174,10 +173,10 @@ class _MyPageState extends State<MyPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 24), // 간격 조정
+              const SizedBox(height: 24), // 간격 조정
               // 등록한 가게, 칭호, 선물함
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -186,7 +185,7 @@ class _MyPageState extends State<MyPage> {
                       onTap: () {
                         Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
-                            return AddStorePage();
+                            return const AddStorePage();
                           }
                         ));
                       },
@@ -195,16 +194,16 @@ class _MyPageState extends State<MyPage> {
                         children: [
                           Text(
                             _userProfile.registerCount.toString(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                               color: Color(0xFF767676),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
-                          Text(
+                          const Text(
                             '등록한 가게',
                             style: TextStyle(
                               fontSize: 16,
@@ -220,7 +219,7 @@ class _MyPageState extends State<MyPage> {
                       onTap: () {
                         Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
-                            return InfoTitlePage();
+                            return const InfoTitlePage();
                           }
                         ));
                       },
@@ -229,16 +228,16 @@ class _MyPageState extends State<MyPage> {
                         children: [
                           Text(
                             _userProfile.titleCount.toString(),
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                               color: Color(0xFF767676),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
-                          Text(
+                          const Text(
                             '칭호',
                             style: TextStyle(
                               fontSize: 16,
@@ -278,7 +277,7 @@ class _MyPageState extends State<MyPage> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24,
                 width: double.infinity,
                 child: DecoratedBox(
@@ -305,42 +304,42 @@ class _MyPageState extends State<MyPage> {
               //   ),
               // ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: ListTile(
-                  title: Text(
+                  title: const Text(
                     '내가 쓴 리뷰',
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: Colors.black),
                   ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
                   onTap: () {
                     // 내가 쓴 리뷰 버튼이 클릭되었을 때의 액션
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
-                          return InfoReviewPage();
+                          return const InfoReviewPage();
                         }
                     ));
                   },
                 ),
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: ListTile(
-                  title: Text(
+                  title: const Text(
                     '북마크 한 가게',
                     style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: Colors.black),
                   ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
+                  trailing: const Icon(Icons.keyboard_arrow_right),
                   onTap: () {
                     // 북마크한 가게 버튼이 클릭되었을 때의 액션
                     Navigator.push(context,
                       MaterialPageRoute(builder: (BuildContext context) {
-                        return BookmarkPage();
+                        return const BookmarkPage();
                       }
                     ));
                   },
@@ -365,8 +364,8 @@ class _MyPageState extends State<MyPage> {
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(24),
-                  color: Color(0xFFF4F4F4),
+                  padding: const EdgeInsets.all(24),
+                  color: const Color(0xFFF4F4F4),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -377,7 +376,7 @@ class _MyPageState extends State<MyPage> {
                           if (loginPlatform == null) {
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              MaterialPageRoute(builder: (context) => const LoginPage()),
                                   (route) => false, // 모든 이전 페이지 제거
                             );
                           }
@@ -390,12 +389,12 @@ class _MyPageState extends State<MyPage> {
 
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              MaterialPageRoute(builder: (context) => const LoginPage()),
                                   (route) => false, // 모든 이전 페이지 제거
                             );
                           }
                         },
-                        child: Text(
+                        child: const Text(
                           '로그아웃',
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
@@ -404,7 +403,7 @@ class _MyPageState extends State<MyPage> {
                           ),
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       GestureDetector(
                         onTap: () async {
                           String? loginPlatform =
@@ -412,7 +411,7 @@ class _MyPageState extends State<MyPage> {
                           if (loginPlatform == null) {
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              MaterialPageRoute(builder: (context) => const LoginPage()),
                                   (route) => false, // 모든 이전 페이지 제거
                             );
                           }
@@ -423,15 +422,15 @@ class _MyPageState extends State<MyPage> {
                             await storage.delete(key: 'refreshToken');
                             await storage.delete(key: 'loginPlatform');
                             Map<String, String> allData = await storage.readAll();
-                            logger.d("logout token : ${allData}");
+                            logger.d("logout token : $allData");
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              MaterialPageRoute(builder: (context) => const LoginPage()),
                               (route) => false, // 모든 이전 페이지 제거
                             );
                           }
                         },
-                        child: Text(
+                        child: const Text(
                           '탈퇴',
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
@@ -463,7 +462,7 @@ class _MyPageState extends State<MyPage> {
 
     // 사용자 사진 선택
     XFile? pickedFile;
-    dynamic? sendData;
+    dynamic sendData;
 
     // 사용자 정보 수정 상태 변수
     bool userProfileUpdate = false;
@@ -493,8 +492,8 @@ class _MyPageState extends State<MyPage> {
                 child: Container(
                   height: bottomSheetHeight,
                   width: double.infinity,
-                  margin: EdgeInsets.all(24),
-                  decoration: BoxDecoration(
+                  margin: const EdgeInsets.all(24),
+                  decoration: const BoxDecoration(
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(12),
                         topRight: Radius.circular(12)),
@@ -507,27 +506,27 @@ class _MyPageState extends State<MyPage> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 "프로필 편집",
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               IconButton(
                                 onPressed: () {
                                   updateValue = 0;
                                   Navigator.pop(context);
                                 },
-                                icon: Icon(
+                                icon: const Icon(
                                   CupertinoIcons.xmark,
                                   size: 24,
                                 ),
                               )
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 24,
                           ),
                           GestureDetector(
@@ -558,12 +557,12 @@ class _MyPageState extends State<MyPage> {
                                   bottom: 0,
                                   right: 0,
                                   child: Container(
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: Colors.white,
                                     ),
-                                    padding: EdgeInsets.all(4),
-                                    child: Icon(
+                                    padding: const EdgeInsets.all(4),
+                                    child: const Icon(
                                       Icons.camera_alt,
                                       color: Color(0xFF767676),
                                       size: 24,
@@ -573,7 +572,7 @@ class _MyPageState extends State<MyPage> {
                               ],
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 16,
                           ),
                           SizedBox(
@@ -586,7 +585,7 @@ class _MyPageState extends State<MyPage> {
                               onChanged: (text) {
                                 if (mounted) {
                                   setState(() {
-                                    if (text.length <= 7 && text.length > 0) {
+                                    if (text.length <= 7 && text.isNotEmpty) {
                                       nickname = text;
                                       updateValue = 1;
                                     } else {
@@ -595,11 +594,11 @@ class _MyPageState extends State<MyPage> {
                                   });
                                 }
                               },
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 16,
                               ),
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: "닉네임",
                                 hintText: '7글자까지 입력 가능해요',
                                 hintStyle: TextStyle(
@@ -630,7 +629,7 @@ class _MyPageState extends State<MyPage> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 24),
+                          const SizedBox(height: 24),
                           SizedBox(
                               width: double.infinity,
                               child: DropdownButtonHideUnderline(
@@ -645,18 +644,18 @@ class _MyPageState extends State<MyPage> {
                                   onChanged: (UserTitle? selectedTitle) {
                                     if (selectedTitle != null && mounted) {
                                       setState(() {
-                                        dropDownValue = selectedTitle!
+                                        dropDownValue = selectedTitle
                                             .description; // dropDownValue에 description 저장
                                         mainTitle = selectedTitle
                                             .title; // mainTitle에 title 저장
                                         updateValue = 1;
-                                        logger.d("userTitle : ${mainTitle}");
+                                        logger.d("userTitle : $mainTitle");
                                         logger.d(
-                                            "userTitleDescription : ${dropDownValue}");
+                                            "userTitleDescription : $dropDownValue");
                                       });
                                     }
                                   },
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
                                     color: Color(0xFF767676),
@@ -664,7 +663,7 @@ class _MyPageState extends State<MyPage> {
                                 ),
                               )
                           ),
-                          SizedBox(height: 24),
+                          const SizedBox(height: 24),
                           SizedBox(
                             height: 44,
                             width: double.infinity,
@@ -676,10 +675,10 @@ class _MyPageState extends State<MyPage> {
                                       : InkSplash.splashFactory,
                                   // 수정이 있을 경우 버튼 활성화
                                   backgroundColor: (updateValue == 1)
-                                      ? Color(0xffF15A2B)
-                                      : Color(0xFFF4F4F4),
-                                  minimumSize: Size(double.infinity, 40),
-                                  shape: RoundedRectangleBorder(
+                                      ? const Color(0xffF15A2B)
+                                      : const Color(0xFFF4F4F4),
+                                  minimumSize: const Size(double.infinity, 40),
+                                  shape: const RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(12))
                                   )
@@ -688,13 +687,13 @@ class _MyPageState extends State<MyPage> {
                                 if (updateValue == 0) return;
 
                                 userProfileUpdate = await viewModel.userProfileUpdateAPI(context, sendData, nickname, mainTitle);
-                                logger.d("profile update : ${userProfileUpdate}");
+                                logger.d("profile update : $userProfileUpdate");
 
                                 if (userProfileUpdate) {
                                   // 상태 업데이트를 제거하고 바로 네비게이션 수행
                                   Navigator.pushAndRemoveUntil(
                                     context,
-                                    MaterialPageRoute(builder: (context) => MyAppPage(initialIndex: 3)),
+                                    MaterialPageRoute(builder: (context) => const MyAppPage(initialIndex: 3)),
                                         (route) => false,
                                   );
                                 }
@@ -707,7 +706,7 @@ class _MyPageState extends State<MyPage> {
                                     fontSize: 16,
                                     color: (updateValue == 1)
                                         ? Colors.white
-                                        : Color(0xFF767676)
+                                        : const Color(0xFF767676)
                                 ),
                               ),
                             ),
