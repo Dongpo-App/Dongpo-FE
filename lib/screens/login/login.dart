@@ -67,6 +67,31 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.1,
             ),
+            // 소셜 로그인 - 애플
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: InkWell(
+                onTap: () async {
+                  // 애플 로그인을 터치했을 때 로직(로그인 -> secureStorage에 토큰, 플랫폼 저장 -> 네비게이션 페이지로 이동)
+                },
+                child: Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFFFF),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0), // 이미지가 컨테이너 경계를 넘지 않도록 둥근 모서리 설정
+                    child: Image.asset(
+                      'assets/images/login_apple.png',
+                      fit: BoxFit.contain, // 이미지가 컨테이너에 맞게 조정되도록 설정
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
             // 소셜 로그인 - 네이버
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -98,8 +123,12 @@ class _LoginPageState extends State<LoginPage> {
                     color: const Color(0xFF03C75A),
                     borderRadius: BorderRadius.circular(12.0),
                   ),
-                  child: Image.asset(
-                    'assets/images/login_naver.png',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0), // 이미지가 컨테이너 경계를 넘지 않도록 둥근 모서리 설정
+                    child: Image.asset(
+                      'assets/images/login_naver.png',
+                      fit: BoxFit.contain, // 이미지가 컨테이너에 맞게 조정되도록 설정
+                    ),
                   ),
                 ),
               ),
@@ -137,8 +166,12 @@ class _LoginPageState extends State<LoginPage> {
                     color: const Color(0xFFFEE500),
                     borderRadius: BorderRadius.circular(12.0),
                   ),
-                  child: Image.asset(
-                    'assets/images/login_kakao.png',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0), // 이미지가 컨테이너 경계를 넘지 않도록 둥근 모서리 설정
+                    child: Image.asset(
+                      'assets/images/login_kakao.png',
+                      fit: BoxFit.contain, // 이미지가 컨테이너에 맞게 조정되도록 설정
+                    ),
                   ),
                 ),
               ),
