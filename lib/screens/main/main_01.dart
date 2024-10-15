@@ -39,17 +39,6 @@ List<UserBookmark> userBookmark = []; //북마크 체크를 위한 클래스
 String bsAddress = '';
 // 검색창에 표시
 
-// 지도 초기화하기
-Future<void> resetMap() async {
-  // splash 화면 종료
-  FlutterNativeSplash.remove();
-
-  WidgetsFlutterBinding.ensureInitialized();
-  await NaverMapSdk.instance.initialize(
-      clientId: naverApiKey, // 클라이언트 ID 설정
-      onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
-}
-
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -530,7 +519,10 @@ class _MainPageState extends State<MainPage>
           ),
         ),
       );
-      _showBottomSheet(context);
+      _showBottomSheet(
+        context,
+      );
+      _showReSearchButton = false;
     } catch (e) {
       logger.d('에러발생 $e');
     } finally {

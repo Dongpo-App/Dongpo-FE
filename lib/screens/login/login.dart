@@ -1,8 +1,6 @@
 import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
-import 'package:dongpo_test/screens/my_info/info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/main.dart';
 import 'login_view_model.dart';
@@ -18,29 +16,6 @@ class _LoginPageState extends State<LoginPage> {
   final loginViewModel = LoginViewModel(KakaoNaverLogin());
   bool isLogined = false;
   bool isLogouted = false;
-
-  @override
-  void initState() {
-    super.initState();
-    //비동기로 flutter secure storage 정보를 불러오는 작업.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadAuthToken();
-    });
-  }
-
-  Future<void> _loadAuthToken() async {
-    // key값에 맞는 데이터 값 불러옴. key에 맞는 데이터가 없을 때는 null을 반환
-    final accessToken = await storage.read(key: 'accessToken');
-    final refreshToken = await storage.read(key: 'refreshToken');
-    Map<String, String> allData = await storage.readAll();
-    // token 데이터가 있다면 메인페이지로 이동
-    if (accessToken != null && refreshToken != null) {
-      logger.d("secure storage read 1 : $allData");
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const MyAppPage()),
-      );
-    }
-  }
 
   // Future<void> loginsfa() async {}
 
@@ -85,10 +60,12 @@ class _LoginPageState extends State<LoginPage> {
                         value: loginViewModel.loginPlatform.name);
                     Map<String, String> allData = await storage.readAll();
                     logger.d("secure storage naver read : $allData");
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (context) => const MyAppPage()),
-                    );
+                    if (mounted) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => const MyAppPage()),
+                      );
+                    }
                   }
                 },
                 child: Container(
@@ -124,10 +101,12 @@ class _LoginPageState extends State<LoginPage> {
                     Map<String, String> allData = await storage.readAll();
                     logger.d("secure storage kakao read : $allData");
                     // 메인페이지로 이동
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (context) => const MyAppPage()),
-                    );
+                    if (mounted) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => const MyAppPage()),
+                      );
+                    }
                   }
                 },
                 child: Container(

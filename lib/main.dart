@@ -1,28 +1,31 @@
 import 'package:dongpo_test/api_key.dart';
-import 'package:dongpo_test/screens/login/login.dart';
+import 'package:dongpo_test/screens/login/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:logger/logger.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const serverUrl = "https://ysw123.xyz";
 
 //메인 함수
 void main() async {
   // Flutter SDK 초기화 보장
-  WidgetsFlutterBinding.ensureInitialized();
+  // 스플래시 화면 초기화 및 유지
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // Kakao SDK 초기화
   KakaoSdk.init(
     nativeAppKey: nativeAppKey,
   );
-
-  // 스플래시 화면 초기화 및 유지
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  await resetMap();
+  // 지도 초기화
+  await NaverMapSdk.instance.initialize(
+    clientId: naverApiKey, // 클라이언트 ID 설정
+    onAuthFailed: (e) => logger.e("네이버맵 인증오류 : $e onAuthFailed"),
+  );
+  FlutterNativeSplash.remove();
 
   // 앱 실행
   runApp(const MyApp());
@@ -30,8 +33,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  // FlutterSecureStorage 초기화
-  static const storage = FlutterSecureStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
         splashColor: Colors.transparent, // splash 효과 없애기
         highlightColor: Colors.transparent, // splash 효과 없애기
       ),
-      home: const LoginPage(), // 로그인 페이지 이동
+      home: const SplashPage(), // 로그인 페이지 이동
     );
   }
 }
