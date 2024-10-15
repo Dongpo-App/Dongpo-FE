@@ -621,6 +621,10 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       if (response.statusCode == 200) {
         logger.d('성공 보낸 데이터: $data');
         showAlertDialog(context);
+      } else if (response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return sendData();
       } else {
         logger.d('전송 실패 ${response.statusCode} 에러');
         //실패했을 떄
