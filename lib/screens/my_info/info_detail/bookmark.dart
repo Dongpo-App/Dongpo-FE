@@ -26,9 +26,13 @@ class BookmarkPageState extends State<BookmarkPage> {
     _userBookmark = await viewModel.userBookmarkGetAPI(context);
     setState(() {});
   }
-  void deleteUserBookmark(int bookmarkId) async {
-    bool isBookmarkDeleted = await viewModel.userBookmarkDeleteAPI(context, bookmarkId);
-    if (isBookmarkDeleted) setState(() {});
+  void deleteUserBookmark(int storeId) async {
+    bool isBookmarkDeleted = await viewModel.userBookmarkDeleteAPI(context, storeId);
+    if (isBookmarkDeleted && mounted) {
+      setState(() {
+        getUserBookmark();
+      });
+    }
   }
 
   @override
@@ -100,17 +104,22 @@ class BookmarkPageState extends State<BookmarkPage> {
                             ),
                           ),
                           Spacer(),
-                          IconButton(
-                            onPressed: (){
+                          GestureDetector(
+                            onTap: () {
                               // 버튼이 눌리면 북마크 취소됨
-                              deleteUserBookmark(bookmark.id);
+                              deleteUserBookmark(bookmark.storeId);
                             },
-                            icon: Icon(
-                              Icons.bookmark_rounded,
-                              size: 24,
-                              color: Color(0xFFF15A2B),
-                            )
-                          ),
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              alignment: Alignment.center, // 아이콘이 가운데에 오도록 설정
+                              child: Icon(
+                                Icons.bookmark_rounded,
+                                size: 24,
+                                color: Color(0xFFF15A2B),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),

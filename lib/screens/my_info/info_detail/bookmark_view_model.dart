@@ -40,11 +40,11 @@ class BookmarkViewModel{
     }
   }
 
-  Future<bool> userBookmarkDeleteAPI(BuildContext context, int bookmarkId) async {
+  Future<bool> userBookmarkDeleteAPI(BuildContext context, int storeId) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(serverUrl + '/api/bookmark/${bookmarkId}');
+    final url = Uri.parse(serverUrl + '/api/bookmark/${storeId}');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -52,19 +52,19 @@ class BookmarkViewModel{
     try {
       final response = await http.delete(url, headers: headers);
       if (response.statusCode == 200) {
-        logger.d("bookmark Delete : ${bookmarkId}");
+        logger.d("bookmark Delete : ${storeId}");
         return true;
       } else if(response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
         await reissue(context);
-        return userBookmarkDeleteAPI(context, bookmarkId);
+        return userBookmarkDeleteAPI(context, storeId);
       } else {
         // 실패
         throw UserBookmarkException(
             "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
-      logger.d("error : $e / bookmarkId : ${bookmarkId}");
+      logger.d("error : $e / bookmarkId : ${storeId}");
       throw UserBookmarkException("Error occurred: $e");
     }
   }

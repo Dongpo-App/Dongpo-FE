@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/models/user_review.dart';
 import 'package:intl/intl.dart';
+import '../../../main.dart';
 import 'info_review_view_model.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -28,7 +29,11 @@ class InfoReviewPageState extends State<InfoReviewPage> {
   }
   void deleteUserReview(int reviewId) async {
     bool isReviewDeleted = await viewModel.userReviewDeleteAPI(context, reviewId);
-    if (isReviewDeleted) setState(() {});
+    if (isReviewDeleted && mounted) {
+      setState(() {
+        getUserReview();
+      });
+    }
   }
 
   // 리뷰 사진 함수
@@ -202,25 +207,6 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                                 : reviewImageList(review.reviewPics),
                                 Row(
                                   children: [
-                                    // GestureDetector(
-                                    //   onTap: () async {
-                                    //     // 리뷰 수정
-                                    //     showReviewEditBottomSheet(context);
-                                    //   },
-                                    //   child: Container(
-                                    //     width: 44,
-                                    //     height: 44,
-                                    //     child: Text(
-                                    //       '수정',
-                                    //       style: TextStyle(
-                                    //         fontWeight: FontWeight.w400,
-                                    //         fontSize: 14,
-                                    //         color: Color(0xFF767676),
-                                    //         decoration: TextDecoration.underline, // 밑줄 추가
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    // ),
                                     Spacer(),
                                     GestureDetector(
                                       onTap: () async {
