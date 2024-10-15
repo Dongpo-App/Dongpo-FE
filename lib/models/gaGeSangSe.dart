@@ -70,6 +70,7 @@ class Review {
   final int? storeId;
   final int? memberId;
   final int? reviewStar;
+  final String? memberProfilePic;
   final String? text;
   final List<String>? reviewPics;
   final String? registerDate;
@@ -79,6 +80,7 @@ class Review {
     required this.storeId,
     required this.memberId,
     required this.reviewStar,
+    required this.memberProfilePic,
     required this.text,
     required this.reviewPics,
     required this.registerDate,
@@ -91,6 +93,7 @@ class Review {
       memberId: json['memberId'] as int?,
       reviewStar: json['reviewStar'] as int?,
       text: json['text'] as String?,
+      memberProfilePic: json['memberProfilePic'],
       reviewPics: json['reviewPics'] != null
           ? List<String>.from(json['reviewPics'])
           : null,

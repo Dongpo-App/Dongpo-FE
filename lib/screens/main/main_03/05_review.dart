@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dongpo_test/screens/add/add_01.dart';
+import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,7 @@ class _ShowReviewState extends State<ShowReview> {
   List<XFile> _pickedImgs = [];
   int _rating = 0;
   final TextEditingController _reviewController = TextEditingController();
+  final reviewList = storeData?.reviews ?? []; // null일 경우 빈 리스트로 대체
 
 //여기서 부터 화면
   @override
@@ -209,9 +212,28 @@ class _ShowReviewState extends State<ShowReview> {
           const SizedBox(height: 15),
           const SizedBox(height: 40),
           const SizedBox(height: 40),
-          _showReview(context, 4),
-          _showReview(context, 3.2),
-          _showReview(context, 5.0),
+          //showReview 넣을 곳
+
+          reviewList.isNotEmpty
+              ? ListView.builder(
+                  shrinkWrap: true, // 높이를 자동으로 조정
+                  physics: NeverScrollableScrollPhysics(), // 스크롤 비활성화
+                  itemCount: reviewList.length,
+                  itemBuilder: (context, index) {
+                    final review =
+                        reviewList[index].reviewStar; // 항상 비어있지 않으므로 직접 접근
+                    logger.d('리뷰 리스트에 들어있는 값 체크 : $reviewList');
+
+                    return _showReview(
+                        context, review ?? 1, index); // 각 리뷰 위젯 생성
+                  },
+                )
+              : Container(
+                  child: Center(
+                    child: Text('리뷰가 아직 없습니다'),
+                  ),
+                ), // 리뷰가 없을 경우 빈 컨테이너 또는 메시지를 반환
+
           Container(
             margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
             child: ElevatedButton(
@@ -453,6 +475,170 @@ class _ShowReviewState extends State<ShowReview> {
       },
     );
   }
+
+// 개별 리뷰를 표시하는 함수
+  Widget _showReview(BuildContext context, int rating, int index) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage:
+                      NetworkImage('${reviewList[index].memberProfilePic}'),
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Text('이름'),
+                        const SizedBox(width: 20),
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.red[100],
+                          ),
+                          child: Text(
+                            "난 한 가게만 패",
+                            style: TextStyle(
+                                fontSize: 10, color: Colors.redAccent[400]),
+                          ),
+                        ),
+                      ],
+                    ),
+                    RatingWidget(
+                        rating: reviewList[index].reviewStar ?? 0), // 별점 위젯 추가
+                  ],
+                ),
+              ],
+            ),
+            Text('${reviewList[index].text}'),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 100,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: const [
+                  Image(image: AssetImage('assets/images/rakoon.png')),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Text('${reviewList[index].registerDate}'),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return StatefulBuilder(builder:
+                            (BuildContext context, StateSetter setState) {
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            child: Container(
+                              margin: const EdgeInsets.all(20),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        "리뷰 신고하기",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 30),
+                                      ),
+                                      const Spacer(),
+                                      IconButton(
+                                          onPressed: () {
+                                            setState(() => value = 0);
+                                            Navigator.pop(context);
+                                          },
+                                          icon:
+                                              const Icon(CupertinoIcons.xmark))
+                                    ],
+                                  ),
+                                  //버튼 모음
+                                  Container(
+                                    height: 350,
+                                    padding: const EdgeInsets.all(20),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        _radioBtn('홍보성 리뷰에요', 1, setState),
+                                        _radioBtn('도배 글이에요', 2, setState),
+                                        _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)', 3,
+                                            setState),
+                                        _radioBtn('가게에 무관한 리뷰에요', 4, setState),
+                                        _radioBtn('기타', 5, setState),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              (value == 0)
+                                                  ? null
+                                                  : logger.d('버튼 활성화');
+                                              //dio.post()구현
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              splashFactory: (value ==
+                                                      0) // 아무것도 터치 안했으면
+                                                  ? NoSplash
+                                                      .splashFactory //스플레시 효과 비활성화
+                                                  : InkSplash
+                                                      .splashFactory, //스플레시 효과 활성화
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  10))),
+                                              minimumSize: const Size(
+                                                  double.infinity, 40),
+                                              backgroundColor: value != 0
+                                                  ? const Color(0xffF15A2B)
+                                                  : Colors.grey[300],
+                                            ),
+                                            child: Text(
+                                              "가게 신고",
+                                              style: TextStyle(
+                                                  color: (value > 0)
+                                                      ? Colors.white
+                                                      : Colors.grey[600]),
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                      },
+                    );
+                  },
+                  child: const Text("신고",
+                      style: TextStyle(fontSize: 20, color: Colors.orange)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Divider(),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 // 별점을 표시하는 위젯
@@ -487,8 +673,31 @@ class RatingWidget extends StatelessWidget {
   }
 }
 
+Widget _radioBtn(String text, int index, StateSetter setStater) {
+  return ElevatedButton(
+    onPressed: () {
+      setStater(() {
+        value = index;
+        logger.d('선택한 index : $index');
+      });
+    },
+    style: ElevatedButton.styleFrom(
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      minimumSize: const Size(double.infinity, 40),
+      backgroundColor:
+          (value == index) ? const Color(0xffF15A2B) : Colors.grey[300],
+    ),
+    child: Text(
+      text,
+      style:
+          TextStyle(color: (value == index) ? Colors.white : Colors.grey[600]),
+    ),
+  );
+}
+
 // 개별 리뷰를 표시하는 함수
-Widget _showReview(BuildContext context, double rating) {
+Widget _showReview2(BuildContext context, int rating, int index) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16.0),
     child: Container(
@@ -523,12 +732,12 @@ Widget _showReview(BuildContext context, double rating) {
                       ),
                     ],
                   ),
-                  RatingWidget(rating: rating.floor()), // 별점 위젯 추가
+                  RatingWidget(rating: rating), // 별점 위젯 추가
                 ],
               ),
             ],
           ),
-          const Text("리뷰 내용입니다..."),
+          const Text(''),
           const SizedBox(height: 10),
           SizedBox(
             height: 100,
@@ -647,29 +856,6 @@ Widget _showReview(BuildContext context, double rating) {
   );
 }
 
-Widget _radioBtn(String text, int index, StateSetter setStater) {
-  return ElevatedButton(
-    onPressed: () {
-      setStater(() {
-        value = index;
-        logger.d('선택한 index : $index');
-      });
-    },
-    style: ElevatedButton.styleFrom(
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10))),
-      minimumSize: const Size(double.infinity, 40),
-      backgroundColor:
-          (value == index) ? const Color(0xffF15A2B) : Colors.grey[300],
-    ),
-    child: Text(
-      text,
-      style:
-          TextStyle(color: (value == index) ? Colors.white : Colors.grey[600]),
-    ),
-  );
-}
-
 class ShowAllReviews extends StatelessWidget {
   const ShowAllReviews({super.key});
 
@@ -681,7 +867,7 @@ class ShowAllReviews extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          _showReview(context, 4),
+          _showReview2(context, 4, 1),
         ],
       ),
     );

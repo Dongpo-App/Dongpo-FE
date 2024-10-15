@@ -30,7 +30,7 @@ class _UserActionState extends State<UserAction> {
     checkBookMark();
   }
 
-  late bool _selected;
+  bool _selected = false;
   static const storage = FlutterSecureStorage();
   @override
   Widget build(BuildContext context) {
@@ -155,7 +155,7 @@ class _UserActionState extends State<UserAction> {
   }
 
   void checkBookMark() {
-    for (int i = 0; i <= userBookmark.length - 1; i++) {
+    for (int i = 0; i < userBookmark.length; i++) {
       if (userBookmark[i].storeId == widget.idx) {
         _selected = true;
         logger.d('북마크한 가게');

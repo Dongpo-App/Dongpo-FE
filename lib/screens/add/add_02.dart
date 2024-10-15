@@ -115,7 +115,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => MyAppPage()),
-                    (route) => true, // 모든 이전 페이지 제거
+                    (route) => false, // 모든 이전 페이지 제거
                   );
                 },
               ),
