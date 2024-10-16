@@ -4,7 +4,7 @@ import 'package:dongpo_test/screens/my_info/my_page_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
-import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
+import 'package:dongpo_test/screens/login/apple_kakao_naver_login.dart';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,7 +26,7 @@ class _MyPageState extends State<MyPage> {
   late TextEditingController nicknameController;
 
   // 로그아웃 관련
-  final loginViewModel = LoginViewModel(KakaoNaverLogin());
+  final loginViewModel = LoginViewModel(AppleKakaoNaverLogin());
   bool isLogouted = false;
 
   // 사용자 정보 관련

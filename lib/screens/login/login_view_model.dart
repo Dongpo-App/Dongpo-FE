@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'kakao_naver_login.dart';
+import 'apple_kakao_naver_login.dart';
 import 'login.dart';
 import 'login_platform.dart';
 
@@ -49,7 +49,7 @@ Future<void> reissue(BuildContext context) async {
       await storage.write(key: 'accessToken', value: token['accessToken']);
       await storage.write(key: 'refreshToken', value: token['refreshToken']);
     } else if (response.statusCode == 401) {
-      final loginViewModel = LoginViewModel(KakaoNaverLogin());
+      final loginViewModel = LoginViewModel(AppleKakaoNaverLogin());
       bool isLogouted = false;
 
       String? loginPlatform = await storage.read(key: 'loginPlatform');
@@ -122,18 +122,13 @@ class LoginViewModel {
   }
 
   Future<bool> appleLogin(BuildContext context) async {
-    logger.d('애플로그인 테스트 0');
     socialToken = await _socialLogin.isAppleLogin();
-    logger.d(socialToken);
-    logger.d('애플로그인 테스트 1');
     if (socialToken != null) {
       //애플 로그인 성공함
       loginPlatform = LoginPlatform.apple;
-      logger.d('애플로그인 테스트 2');
       isLogined = await tokenAPI(context);
       return isLogined;
     } else {
-      logger.d("apple login fail");
       isLogined = false;
       return isLogined;
     }

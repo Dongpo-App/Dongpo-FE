@@ -1,8 +1,6 @@
-import 'package:dongpo_test/screens/login/kakao_naver_login.dart';
-import 'package:dongpo_test/screens/my_info/info.dart';
+import 'package:dongpo_test/screens/login/apple_kakao_naver_login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/main.dart';
 import 'login_view_model.dart';
@@ -11,11 +9,11 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final loginViewModel = LoginViewModel(KakaoNaverLogin());
+class LoginPageState extends State<LoginPage> {
+  final loginViewModel = LoginViewModel(AppleKakaoNaverLogin());
   bool isLogined = false;
   bool isLogouted = false;
 
@@ -74,6 +72,23 @@ class _LoginPageState extends State<LoginPage> {
                 onTap: () async {
                   // 애플 로그인을 터치했을 때 로직(로그인 -> secureStorage에 토큰, 플랫폼 저장 -> 네비게이션 페이지로 이동)
                   isLogined = await loginViewModel.appleLogin(context);
+                  if (isLogined) {
+                    // 로그인플랫폼 & 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
+                    await storage.write(
+                        key: 'accessToken', value: loginViewModel.accessToken);
+                    await storage.write(
+                        key: 'refreshToken',
+                        value: loginViewModel.refreshToken);
+                    await storage.write(
+                        key: 'loginPlatform',
+                        value: loginViewModel.loginPlatform.name);
+                    Map<String, String> allData = await storage.readAll();
+                    logger.d("secure storage apple read : $allData");
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (context) => const MyAppPage()),
+                    );
+                  }
                 },
                 child: Container(
                   height: 44,

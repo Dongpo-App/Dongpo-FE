@@ -6,7 +6,7 @@ import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'login_platform.dart';
 
-class KakaoNaverLogin implements SocialLogin {
+class AppleKakaoNaverLogin implements SocialLogin {
   @override
   Future<String?> isKakaoLogin() async {
     try {
@@ -55,11 +55,8 @@ class KakaoNaverLogin implements SocialLogin {
 
   @override
   Future<String?> isNaverLogin() async {
-    NaverLoginResult result;
-
     try {
       // 네이버 로그인 시도
-      result = await FlutterNaverLogin.logIn();
       NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
       logger.d("naver login accessToken : ${token.accessToken}");
       return token.accessToken.toString();
@@ -92,7 +89,6 @@ class KakaoNaverLogin implements SocialLogin {
       // 받은 identityToken(토큰)을 서버로 보내어 검증하거나, 인증된 로그인 처리를 수행
       final String? identityToken = appleCredential.identityToken;
 
-      //서버에 전송하는 로직 작성
       if (identityToken != null) {
         return identityToken; // 서버에 전송하거나 앱 내에서 처리
       } else {
@@ -135,7 +131,7 @@ class KakaoNaverLogin implements SocialLogin {
           logger.d("$loginPlatform : logout");
           return true;
         } catch (e) {
-          logger.d("kakao logout error : $e");
+          logger.d("apple logout error : $e");
           return false;
         }
       case LoginPlatform.none:
