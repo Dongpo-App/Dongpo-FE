@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dongpo_test/screens/add/add_01.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
-import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -217,7 +215,7 @@ class _ShowReviewState extends State<ShowReview> {
           reviewList.isNotEmpty
               ? ListView.builder(
                   shrinkWrap: true, // 높이를 자동으로 조정
-                  physics: NeverScrollableScrollPhysics(), // 스크롤 비활성화
+                  physics: const NeverScrollableScrollPhysics(), // 스크롤 비활성화
                   itemCount: reviewList.length,
                   itemBuilder: (context, index) {
                     final review =
@@ -229,7 +227,7 @@ class _ShowReviewState extends State<ShowReview> {
                   },
                 )
               : Container(
-                  child: Center(
+                  child: const Center(
                     child: Text('리뷰가 아직 없습니다'),
                   ),
                 ), // 리뷰가 없을 경우 빈 컨테이너 또는 메시지를 반환

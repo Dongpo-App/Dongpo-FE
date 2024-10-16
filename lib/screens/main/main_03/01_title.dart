@@ -1,8 +1,6 @@
 import 'package:dongpo_test/screens/main/main_01.dart';
-import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dongpo_test/main.dart';
 
 class MainTitle extends StatelessWidget {
   final int idx;
@@ -17,7 +15,7 @@ class MainTitle extends StatelessWidget {
           children: [
             Text(
               storeData?.name ?? '이름이 없습니다',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
             const Spacer(),
             IconButton(

@@ -1,5 +1,4 @@
 import 'package:dongpo_test/screens/main/main_01.dart';
-import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
@@ -17,7 +16,7 @@ class MainTitle2 extends StatelessWidget {
           children: [
             Text(
               markerInfo.name,
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
             const Spacer(),
             IconButton(
@@ -82,7 +81,7 @@ class _MainPhotoState extends State<MainPhoto2> {
     // storeData가 null이 아니고 reviews가 있는지 확인
     try {
       for (int i = 0; i < markerInfo.reviewPics.length; i++) {
-        imageList.add(Image.network('${markerInfo.reviewPics[i]}'));
+        imageList.add(Image.network(markerInfo.reviewPics[i]));
       }
       setState(() {});
     } catch (e) {

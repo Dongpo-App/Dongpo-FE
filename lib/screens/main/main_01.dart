@@ -11,11 +11,7 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'main_02.dart';
 import 'package:dongpo_test/api_key.dart';
-import 'dart:developer';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:dongpo_test/screens/main/main_03/01_title.dart';
-import 'package:dongpo_test/screens/main/main_03/02_photo_List.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -139,6 +135,7 @@ class _MainPageState extends State<MainPage>
                 //네이버 지도 시작
                 NaverMap(
                   onMapReady: (controller) async {
+                    logger.d("controller : ${controller.hashCode}");
                     _onMapReady(controller);
                     await _initUserMarker();
                     await _moveCamera(_userMarker.position);

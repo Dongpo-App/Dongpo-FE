@@ -31,6 +31,7 @@ class MyAppPageState extends State<MyAppPage> {
   void onItemTapped(int index) {
     // 콜백 함수
     setState(() {
+      Navigator.of(context).maybePop();
       selectedIndex = index;
     });
   }

@@ -1,12 +1,10 @@
 import 'dart:convert'; // JSON 데이터를 다루기 위해 사용
 import 'package:dongpo_test/screens/add/add_02.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart'; // Naver Map API를 사용하기 위해 사용
 import 'package:geolocator/geolocator.dart'; // 위치 정보를 얻기 위해 사용
 import 'package:http/http.dart' as http; // HTTP 요청을 보내기 위해 사용
 import 'package:dongpo_test/api_key.dart'; // API 키를 저장한 파일을 가져오기 위해 사용
-import 'dart:developer'; // 디버깅을 위해 로그를 남기기 위해 사용
 import 'package:dongpo_test/main.dart';
 
 //등록페이지로 주소하고 위도 경도 넘기기위한 클래스
@@ -31,12 +29,10 @@ class AddPage extends StatefulWidget {
   State<AddPage> createState() => _AddPageState();
 }
 
-// NaverMapController와 ValueNotifier를 전역으로 선언
-late NaverMapController _mapController;
-late ValueNotifier<String> _addressNotifier;
-String _address = '';
-
 class _AddPageState extends State<AddPage> {
+  late NaverMapController _mapController;
+  late ValueNotifier<String> _addressNotifier;
+  String _address = '';
   bool _isCameraMoving = false; // 카메라 이동 상태를 추적하기 위한 변수
 
   @override
@@ -59,7 +55,7 @@ class _AddPageState extends State<AddPage> {
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "가게 등록",
           style: TextStyle(
             fontSize: 14,
@@ -83,6 +79,7 @@ class _AddPageState extends State<AddPage> {
                 NaverMap(
                   onMapReady: (controller) {
                     // 맵이 준비되었을 때 컨트롤러 초기화
+                    logger.d("controller : ${controller.hashCode}");
                     _onMapReady(controller);
                     _mapController.updateCamera(
                       NCameraUpdate.fromCameraPosition(
@@ -127,14 +124,12 @@ class _AddPageState extends State<AddPage> {
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          elevation: 8,
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(4),
-                          foregroundColor: Colors.blue,
-                          backgroundColor: WidgetStateColor.resolveWith(
-                              (states) => Colors.white
-                          )
-                        ),
+                            elevation: 8,
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(4),
+                            foregroundColor: Colors.blue,
+                            backgroundColor: WidgetStateColor.resolveWith(
+                                (states) => Colors.white)),
                         onPressed: _moveToCurrentLocation,
                         child: const Icon(Icons.my_location),
                       ),
@@ -164,7 +159,7 @@ class _AddPageState extends State<AddPage> {
                             height: 44,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              color: Color(0xFFF4F4F4),
+                              color: const Color(0xFFF4F4F4),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Center(
@@ -174,7 +169,7 @@ class _AddPageState extends State<AddPage> {
                                 builder: (context, address, child) {
                                   return Text(
                                     address,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400,
                                       color: Color(0xFF767676),
@@ -188,30 +183,29 @@ class _AddPageState extends State<AddPage> {
                           Container(
                             height: 44,
                             width: double.infinity,
-                            margin: EdgeInsets.only(bottom: 24),
+                            margin: const EdgeInsets.only(bottom: 24),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 elevation: 0, // 그림자 제거
-                                backgroundColor: const Color(0xFFF15A2B), // 버튼 색상 설정
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(12)
-                                    )
-                                ),
+                                backgroundColor:
+                                    const Color(0xFFF15A2B), // 버튼 색상 설정
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(12))),
                               ),
                               child: const Text(
                                 '가게 등록',
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.white
-                                ),
+                                    color: Colors.white),
                               ),
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) =>
-                                  const GageAddSangsea()
-                                ));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const GageAddSangsea()));
                               },
                             ),
                           ),
@@ -270,48 +264,29 @@ class _AddPageState extends State<AddPage> {
     }
     return '주소를 불러올 수 없습니다.';
   }
-}
 
-Future<NLatLng> getCurrentLocation() async {
-  // 현재 위치 정보를 가져와 NLatLng 객체로 반환
-  Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high);
-  return NLatLng(position.latitude, position.longitude);
-}
+  Future<NLatLng> getCurrentLocation() async {
+    // 현재 위치 정보를 가져와 NLatLng 객체로 반환
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    return NLatLng(position.latitude, position.longitude);
+  }
 
-// Future<void> reset_map() async {
-// 네이버 맵 초기화
-// WidgetsFlutterBinding.ensureInitialized();
-// await NaverMapSdk.instance.initialize(
-// clientId: naverApiKey,
-// onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
-// }
+  void _onMapReady(NaverMapController controller) {
+    // 맵 준비 완료 시 컨트롤러 초기화
+    _mapController = controller;
+  }
 
-// 지도 초기화하기
-Future<void> reset_map() async {
-  // splash 화면 종료
-  FlutterNativeSplash.remove();
-
-  WidgetsFlutterBinding.ensureInitialized();
-  await NaverMapSdk.instance.initialize(
-      clientId: naverApiKey, // 클라이언트 ID 설정
-      onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
-}
-
-void _onMapReady(NaverMapController controller) {
-  // 맵 준비 완료 시 컨트롤러 초기화
-  _mapController = controller;
-}
-
-Future<void> _moveToCurrentLocation() async {
-  Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high);
-  _mapController.updateCamera(
-    NCameraUpdate.fromCameraPosition(
-      NCameraPosition(
-        target: NLatLng(position.latitude, position.longitude),
-        zoom: 18,
+  Future<void> _moveToCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    _mapController.updateCamera(
+      NCameraUpdate.fromCameraPosition(
+        NCameraPosition(
+          target: NLatLng(position.latitude, position.longitude),
+          zoom: 18,
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

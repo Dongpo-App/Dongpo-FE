@@ -5,7 +5,6 @@ import 'package:dongpo_test/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
-import 'package:dongpo_test/screens/my_info/info_detail/bookmark_view_model.dart';
 
 //북마크, 리뷰 댓글
 //만약 내가 북마크를 해놓은 상태라면

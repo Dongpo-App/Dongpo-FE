@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dongpo_test/main.dart';
 

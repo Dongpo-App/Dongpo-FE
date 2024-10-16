@@ -80,8 +80,8 @@ class _SplashPageState extends State<SplashPage> {
         await storage.write(key: 'refreshToken', value: tokens['refreshToken']);
 
         // 데이터 확인
-        Map<String, String> allData = await storage.readAll();
-        logger.d("secure storage check data : $allData");
+        //Map<String, String> allData = await storage.readAll();
+        //logger.d("secure storage check data : $allData");
 
         return true;
       } else if (response.statusCode == 401) {

@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:dongpo_test/screens/main/main_02.dart';
-import 'package:dongpo_test/api_key.dart';
 import 'dart:developer';
 
 class NaverMapApp extends StatefulWidget {

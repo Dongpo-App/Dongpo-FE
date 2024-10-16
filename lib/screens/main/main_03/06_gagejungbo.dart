@@ -1,7 +1,5 @@
 import 'package:dongpo_test/screens/main/main_03/06_gagaeUpdate.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:dongpo_test/widgets/buttonForm.dart';
 
 class GageJungbo extends StatelessWidget {
   const GageJungbo({super.key});

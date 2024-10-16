@@ -1,4 +1,3 @@
-import 'package:dongpo_test/models/store_detail.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';

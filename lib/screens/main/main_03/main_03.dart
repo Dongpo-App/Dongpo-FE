@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 import 'package:dongpo_test/models/store_detail.dart';
-import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/04_bangmoon.dart';
 import 'package:dongpo_test/screens/main/main_03/06_gagejungbo.dart';
