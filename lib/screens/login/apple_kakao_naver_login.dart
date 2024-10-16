@@ -57,6 +57,8 @@ class AppleKakaoNaverLogin implements SocialLogin {
   Future<String?> isNaverLogin() async {
     try {
       // 네이버 로그인 시도
+      NaverLoginResult result = await FlutterNaverLogin.logIn();
+      logger.d("naver login 결과 ${result.toString()}");
       NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
       logger.d("naver login accessToken : ${token.accessToken}");
       return token.accessToken.toString();
