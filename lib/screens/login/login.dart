@@ -9,10 +9,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  LoginPageState createState() => LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
   final loginViewModel = LoginViewModel(AppleKakaoNaverLogin());
   bool isLogined = false;
   bool isLogouted = false;
