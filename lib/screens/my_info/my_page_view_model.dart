@@ -8,7 +8,6 @@ import 'package:dongpo_test/main.dart';
 import '../login/login_view_model.dart';
 
 class MyPageViewModel {
-
   Future<UserProfile> userProfileGetAPI(BuildContext context) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
@@ -26,7 +25,7 @@ class MyPageViewModel {
         logger.d("userData : $userProfileJson");
 
         return UserProfile.fromJson(userProfileJson);
-      } else if(response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
         if (context.mounted) await reissue(context);
         if (context.mounted) {
@@ -47,8 +46,8 @@ class MyPageViewModel {
     }
   }
 
-  Future<bool> userProfileUpdateAPI(
-    BuildContext context, dynamic pic, String nickname, String newMainTitle) async {
+  Future<bool> userProfileUpdateAPI(BuildContext context, dynamic pic,
+      String nickname, String newMainTitle) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
@@ -78,7 +77,7 @@ class MyPageViewModel {
       final response = await http.patch(url, headers: headers, body: body);
       if (response.statusCode == 200) {
         return true;
-      } else if(response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
         if (context.mounted) await reissue(context);
         if (context.mounted) {
@@ -122,7 +121,7 @@ class MyPageViewModel {
         String imageUrl = dataList[0]['imageUrl'];
 
         return imageUrl;
-      } else if(response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
         if (context.mounted) await reissue(context);
         if (context.mounted) {
@@ -133,7 +132,8 @@ class MyPageViewModel {
         }
       } else {
         // 실패
-        logger.d("Fail to upload $formData. status code : ${response.statusCode}");
+        logger.d(
+            "Fail to upload $formData. status code : ${response.statusCode}");
         throw UserProfileException(
             "Fail to load. status code: ${response.statusCode}");
       }

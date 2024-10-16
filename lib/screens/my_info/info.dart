@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/models/user_profile.dart';
+import 'package:dongpo_test/screens/my_info/info_detail/add_store.dart';
 import 'package:dongpo_test/screens/my_info/my_page_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +9,10 @@ import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/screens/login/apple_kakao_naver_login.dart';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
+import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/models/title.dart';
-import 'info_detail/add_store.dart';
 import 'info_detail/bookmark.dart';
 import 'info_detail/info_review.dart';
 import 'info_detail/info_title.dart';
@@ -31,7 +33,14 @@ class _MyPageState extends State<MyPage> {
 
   // 사용자 정보 관련
   MyPageViewModel viewModel = MyPageViewModel();
-  late UserProfile _userProfile = UserProfile(nickname: "", profilePic: "", mainTitle: UserTitle(title: "", description: ""), titles: [], registerCount: 0, titleCount: 0, presentCount: 0);
+  late UserProfile _userProfile = UserProfile(
+      nickname: "",
+      profilePic: "",
+      mainTitle: UserTitle(title: "", description: ""),
+      titles: [],
+      registerCount: 0,
+      titleCount: 0,
+      presentCount: 0);
 
   BuildContext? ancestorContext; // 조상 컨텍스트를 저장할 변수
 
@@ -62,7 +71,6 @@ class _MyPageState extends State<MyPage> {
         nicknameController.text = _userProfile.nickname;
       });
     }
-
   }
 
   // 프로필 사진 수정 관련
@@ -70,7 +78,10 @@ class _MyPageState extends State<MyPage> {
 
   @override
   Widget build(BuildContext context) {
-    double bodyHeight = (MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).viewInsets.bottom) * 0.9;
+    double bodyHeight = (MediaQuery.of(context).size.height -
+            AppBar().preferredSize.height -
+            MediaQuery.of(context).viewInsets.bottom) *
+        0.9;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -96,16 +107,17 @@ class _MyPageState extends State<MyPage> {
             children: [
               Container(
                 padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
-                color:  const Color(0x00ffffff),
+                color: const Color(0x00ffffff),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // 프로필 사진
                     CircleAvatar(
                       radius: 48,
-                      backgroundImage: (_userProfile.profilePic != null && _userProfile.profilePic!.isNotEmpty)
+                      backgroundImage: (_userProfile.profilePic != null &&
+                              _userProfile.profilePic!.isNotEmpty)
                           ? NetworkImage(_userProfile.profilePic!)
-                      as ImageProvider
+                              as ImageProvider
                           : const AssetImage('assets/images/profile.jpg'),
                     ),
                     const SizedBox(width: 16), // 간격 조정
@@ -115,8 +127,8 @@ class _MyPageState extends State<MyPage> {
                         children: [
                           // 칭호
                           Container(
-                            padding:
-                            const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 1),
                             decoration: BoxDecoration(
                               color: const Color(0xFFF5E0D9),
                               borderRadius: BorderRadius.circular(12.0),
@@ -161,8 +173,8 @@ class _MyPageState extends State<MyPage> {
                   style: OutlinedButton.styleFrom(
                       shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(
-                            Radius.circular(12),
-                          ))),
+                    Radius.circular(12),
+                  ))),
                   child: const Text(
                     '프로필 편집',
                     style: TextStyle(
@@ -176,7 +188,8 @@ class _MyPageState extends State<MyPage> {
               const SizedBox(height: 24), // 간격 조정
               // 등록한 가게, 칭호, 선물함
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -184,10 +197,9 @@ class _MyPageState extends State<MyPage> {
                     GestureDetector(
                       onTap: () {
                         Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                            return const AddStorePage();
-                          }
-                        ));
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return const AddStorePage();
+                        }));
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -218,10 +230,9 @@ class _MyPageState extends State<MyPage> {
                     GestureDetector(
                       onTap: () {
                         Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                            return const InfoTitlePage();
-                          }
-                        ));
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          return const InfoTitlePage();
+                        }));
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -304,7 +315,8 @@ class _MyPageState extends State<MyPage> {
               //   ),
               // ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: ListTile(
                   title: const Text(
                     '내가 쓴 리뷰',
@@ -318,14 +330,14 @@ class _MyPageState extends State<MyPage> {
                     // 내가 쓴 리뷰 버튼이 클릭되었을 때의 액션
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
-                          return const InfoReviewPage();
-                        }
-                    ));
+                      return const InfoReviewPage();
+                    }));
                   },
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: ListTile(
                   title: const Text(
                     '북마크 한 가게',
@@ -338,10 +350,9 @@ class _MyPageState extends State<MyPage> {
                   onTap: () {
                     // 북마크한 가게 버튼이 클릭되었을 때의 액션
                     Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                        return const BookmarkPage();
-                      }
-                    ));
+                        MaterialPageRoute(builder: (BuildContext context) {
+                      return const BookmarkPage();
+                    }));
                   },
                 ),
               ),
@@ -371,16 +382,24 @@ class _MyPageState extends State<MyPage> {
                     children: [
                       GestureDetector(
                         onTap: () async {
+                          logger.d("네이버 맵 지도 초기화");
+                          await NaverMapSdk.instance.initialize(
+                            clientId: naverApiKey, // 클라이언트 ID 설정
+                            onAuthFailed: (e) =>
+                                logger.e("네이버맵 인증오류 : $e onAuthFailed"),
+                          );
                           String? loginPlatform =
-                          await storage.read(key: 'loginPlatform');
+                              await storage.read(key: 'loginPlatform');
                           if (loginPlatform == null) {
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => const LoginPage()),
-                                  (route) => false, // 모든 이전 페이지 제거
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
+                              (route) => false, // 모든 이전 페이지 제거
                             );
                           }
-                          isLogouted = await loginViewModel.logout(loginPlatform);
+                          isLogouted =
+                              await loginViewModel.logout(loginPlatform);
                           if (isLogouted) {
                             // FlutterSecureStorage에 있는 token 삭제
                             await storage.delete(key: 'accessToken');
@@ -389,8 +408,9 @@ class _MyPageState extends State<MyPage> {
 
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => const LoginPage()),
-                                  (route) => false, // 모든 이전 페이지 제거
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
+                              (route) => false, // 모든 이전 페이지 제거
                             );
                           }
                         },
@@ -407,25 +427,29 @@ class _MyPageState extends State<MyPage> {
                       GestureDetector(
                         onTap: () async {
                           String? loginPlatform =
-                          await storage.read(key: 'loginPlatform');
+                              await storage.read(key: 'loginPlatform');
                           if (loginPlatform == null) {
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => const LoginPage()),
-                                  (route) => false, // 모든 이전 페이지 제거
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
+                              (route) => false, // 모든 이전 페이지 제거
                             );
                           }
-                          isLogouted = await loginViewModel.logout(loginPlatform);
+                          isLogouted =
+                              await loginViewModel.logout(loginPlatform);
                           if (isLogouted) {
                             // FlutterSecureStorage에 있는 token 삭제
                             await storage.delete(key: 'accessToken');
                             await storage.delete(key: 'refreshToken');
                             await storage.delete(key: 'loginPlatform');
-                            Map<String, String> allData = await storage.readAll();
+                            Map<String, String> allData =
+                                await storage.readAll();
                             logger.d("logout token : $allData");
                             Navigator.pushAndRemoveUntil(
                               context,
-                              MaterialPageRoute(builder: (context) => const LoginPage()),
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
                               (route) => false, // 모든 이전 페이지 제거
                             );
                           }
@@ -458,7 +482,9 @@ class _MyPageState extends State<MyPage> {
     String nickname = nicknameController.text;
 
     // userProfileUpdate 초기값 설정
-    String userPic = (_userProfile.profilePic != null) ? _userProfile.profilePic! : 'assets/images/profile.jpg';
+    String userPic = (_userProfile.profilePic != null)
+        ? _userProfile.profilePic!
+        : 'assets/images/profile.jpg';
 
     // 사용자 사진 선택
     XFile? pickedFile;
@@ -547,11 +573,13 @@ class _MyPageState extends State<MyPage> {
                               children: [
                                 CircleAvatar(
                                   radius: 40, // 80 / 2
-                                  backgroundImage: (pickedFile != null && pickedFile!.path.isNotEmpty)
+                                  backgroundImage: (pickedFile != null &&
+                                          pickedFile!.path.isNotEmpty)
                                       ? FileImage(File(pickedFile!.path))
                                       : (_userProfile.profilePic != null)
-                                      ? NetworkImage(userPic) as ImageProvider
-                                      : AssetImage(userPic),
+                                          ? NetworkImage(userPic)
+                                              as ImageProvider
+                                          : AssetImage(userPic),
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -581,7 +609,7 @@ class _MyPageState extends State<MyPage> {
                             child: TextField(
                               textAlignVertical: TextAlignVertical.center,
                               controller:
-                              nicknameController, // TextEditingController를 연결
+                                  nicknameController, // TextEditingController를 연결
                               onChanged: (text) {
                                 if (mounted) {
                                   setState(() {
@@ -613,19 +641,18 @@ class _MyPageState extends State<MyPage> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                     borderRadius:
-                                    BorderRadius.all(Radius.circular(12)),
+                                        BorderRadius.all(Radius.circular(12)),
                                     borderSide: BorderSide(
                                       width: 1,
                                       color: Color(0xFF767676),
                                     )),
                                 border: OutlineInputBorder(
                                     borderRadius:
-                                    BorderRadius.all(Radius.circular(12)),
+                                        BorderRadius.all(Radius.circular(12)),
                                     borderSide: BorderSide(
                                       width: 1,
                                       color: Color(0xFF767676),
-                                    )
-                                ),
+                                    )),
                               ),
                             ),
                           ),
@@ -634,11 +661,17 @@ class _MyPageState extends State<MyPage> {
                               width: double.infinity,
                               child: DropdownButtonHideUnderline(
                                 child: DropdownButton<UserTitle>(
-                                  value: _userProfile.titles.firstWhere((title) => title.title == mainTitle), // 현재 선택된 항목
-                                  items: _userProfile.titles.map<DropdownMenuItem<UserTitle>>((UserTitle title) {
+                                  value: _userProfile.titles.firstWhere(
+                                      (title) =>
+                                          title.title ==
+                                          mainTitle), // 현재 선택된 항목
+                                  items: _userProfile.titles
+                                      .map<DropdownMenuItem<UserTitle>>(
+                                          (UserTitle title) {
                                     return DropdownMenuItem<UserTitle>(
                                       value: title, // UserTitle 객체를 value로 사용
-                                      child: Text(title.description), // description을 보여줌
+                                      child: Text(title
+                                          .description), // description을 보여줌
                                     );
                                   }).toList(),
                                   onChanged: (UserTitle? selectedTitle) {
@@ -661,8 +694,7 @@ class _MyPageState extends State<MyPage> {
                                     color: Color(0xFF767676),
                                   ),
                                 ),
-                              )
-                          ),
+                              )),
                           const SizedBox(height: 24),
                           SizedBox(
                             height: 44,
@@ -680,25 +712,26 @@ class _MyPageState extends State<MyPage> {
                                   minimumSize: const Size(double.infinity, 40),
                                   shape: const RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
-                                          Radius.circular(12))
-                                  )
-                              ),
+                                          Radius.circular(12)))),
                               onPressed: () async {
                                 if (updateValue == 0) return;
 
-                                userProfileUpdate = await viewModel.userProfileUpdateAPI(context, sendData, nickname, mainTitle);
+                                userProfileUpdate =
+                                    await viewModel.userProfileUpdateAPI(
+                                        context, sendData, nickname, mainTitle);
                                 logger.d("profile update : $userProfileUpdate");
 
                                 if (userProfileUpdate) {
                                   // 상태 업데이트를 제거하고 바로 네비게이션 수행
                                   Navigator.pushAndRemoveUntil(
                                     context,
-                                    MaterialPageRoute(builder: (context) => const MyAppPage(initialIndex: 3)),
-                                        (route) => false,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const MyAppPage(initialIndex: 3)),
+                                    (route) => false,
                                   );
                                 }
                               },
-
                               child: Text(
                                 '저장',
                                 style: TextStyle(
@@ -706,8 +739,7 @@ class _MyPageState extends State<MyPage> {
                                     fontSize: 16,
                                     color: (updateValue == 1)
                                         ? Colors.white
-                                        : const Color(0xFF767676)
-                                ),
+                                        : const Color(0xFF767676)),
                               ),
                             ),
                           ),

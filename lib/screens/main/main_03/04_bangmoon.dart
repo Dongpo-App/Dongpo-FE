@@ -4,28 +4,6 @@ import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dongpo_test/main.dart';
 
-late NaverMapController _mapController;
-void main() async {
-  await resetMap();
-  runApp(const MyApp());
-}
-
-int okValue = 0;
-int noValue = 0;
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: SecondPage(),
-      ),
-    );
-  }
-}
-
 class BangMoon extends StatelessWidget {
   const BangMoon({super.key});
 
@@ -124,6 +102,10 @@ class SecondPage extends StatefulWidget {
 }
 
 class _SecondPageState extends State<SecondPage> {
+  late NaverMapController _mapController;
+  int okValue = 0;
+  int noValue = 0;
+
   @override
   //초기화
   void initState() {
@@ -299,69 +281,69 @@ class _SecondPageState extends State<SecondPage> {
       ),
     );
   }
-}
 
-void _onMapReady(NaverMapController controller) {
-  _mapController = controller;
-}
-
-Future<void> _moveToCurrentLocation() async {
-  try {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    final myLocation = NLatLng(position.latitude, position.longitude);
-
-    const myLocationIcon =
-        NOverlayImage.fromAssetImage('assets/images/myLocation.png');
-
-    NMarker myLocationMarker = NMarker(
-      id: "my_location_marker",
-      position: myLocation,
-      icon: myLocationIcon,
-    );
-
-    myLocationMarker.setSize(const Size(40, 50));
-    _mapController.addOverlay(myLocationMarker);
-
-    _mapController.updateCamera(
-      NCameraUpdate.fromCameraPosition(
-        NCameraPosition(
-          target: myLocation,
-          zoom: 16,
-        ),
-      ),
-    );
-  } catch (e) {
-    // 에러 발생 시 로그 출력
-    logger.d("Error in _moveToCurrentLocation: $e");
+  void _onMapReady(NaverMapController controller) {
+    _mapController = controller;
   }
-}
 
-showAlertDialog(BuildContext context, int okValue, int noValue) {
-  // set up the button
-  Widget okButton = TextButton(
-    child: const Text("OK"),
-    onPressed: () {
-      logger.d('하이');
-      Navigator.pop(context);
-      Navigator.pop(context);
-    },
-  );
+  Future<void> _moveToCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      final myLocation = NLatLng(position.latitude, position.longitude);
 
-  // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: const Text("방문 인증"),
-    content: const Text("방문 인증이 완료되었습니다. "),
-    actions: [
-      okButton,
-    ],
-  );
+      const myLocationIcon =
+          NOverlayImage.fromAssetImage('assets/images/myLocation.png');
 
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
+      NMarker myLocationMarker = NMarker(
+        id: "my_location_marker",
+        position: myLocation,
+        icon: myLocationIcon,
+      );
+
+      myLocationMarker.setSize(const Size(40, 50));
+      _mapController.addOverlay(myLocationMarker);
+
+      _mapController.updateCamera(
+        NCameraUpdate.fromCameraPosition(
+          NCameraPosition(
+            target: myLocation,
+            zoom: 16,
+          ),
+        ),
+      );
+    } catch (e) {
+      // 에러 발생 시 로그 출력
+      logger.d("Error in _moveToCurrentLocation: $e");
+    }
+  }
+
+  showAlertDialog(BuildContext context, int okValue, int noValue) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: const Text("OK"),
+      onPressed: () {
+        logger.d('하이');
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("방문 인증"),
+      content: const Text("방문 인증이 완료되었습니다. "),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }

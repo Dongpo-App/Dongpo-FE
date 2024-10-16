@@ -1,7 +1,7 @@
 //가게정보 자세히
 import 'dart:convert';
 
-import 'package:dongpo_test/models/gaGeSangSe.dart';
+import 'package:dongpo_test/models/store_detail.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/04_bangmoon.dart';
@@ -192,7 +192,7 @@ class _StoreInfoState extends State<StoreInfo> {
         ],
       ),
       body: storeData == null // storeData가 null인 경우 로딩 표시
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Container(
               margin: const EdgeInsets.all(24),
               child: ListView(
@@ -206,7 +206,7 @@ class _StoreInfoState extends State<StoreInfo> {
                   const SizedBox(
                     height: 30,
                   ),
-                  MainPhoto(),
+                  const MainPhoto(),
                   const SizedBox(
                     height: 20,
                   ),
@@ -284,7 +284,7 @@ class _StoreInfoState extends State<StoreInfo> {
       return storeData;
     } else {
       logger.e(
-          '가게정보 상세 불러오는 중 (가게 id : ${widget.idx}) HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답본문 : ${data}');
+          '가게정보 상세 불러오는 중 (가게 id : ${widget.idx}) HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답본문 : $data');
       throw Exception('Failed to load 가게상세정보');
     }
   }

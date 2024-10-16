@@ -129,8 +129,8 @@ class _UserActionState extends State<UserAction> {
       logger.d('북마크 추가된 ID: ${widget.idx}');
     } else {
       logger.e(
-          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responseData}');
-      throw Exception('HTTP ERROR !!! ${responseData}');
+          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : $responseData');
+      throw Exception('HTTP ERROR !!! $responseData');
     }
   }
 
@@ -149,7 +149,7 @@ class _UserActionState extends State<UserAction> {
     if (response.statusCode == 200) {
       logger.d("북마크 삭제 완료");
     } else {
-      logger.e('HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${data}');
+      logger.e('HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : $data');
       throw Exception('HTTP ERROR !!! $data');
     }
   }

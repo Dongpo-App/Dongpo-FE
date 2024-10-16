@@ -25,14 +25,16 @@ class CommunityRank {
   String getNickname() {
     return nickname;
   }
+
   String getTitle() {
     return title;
   }
+
   String? getPic() {
     return pic;
   }
+
   int getCount() {
     return count;
   }
 }
-

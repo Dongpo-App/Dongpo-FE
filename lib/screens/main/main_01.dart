@@ -1,4 +1,4 @@
-import 'package:dongpo_test/models/gaGeSangSe.dart';
+import 'package:dongpo_test/models/store_detail.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
@@ -38,17 +38,6 @@ List<UserBookmark> userBookmark = []; //북마크 체크를 위한 클래스
 // 바텀시트에 표시되는 주소
 String bsAddress = '';
 // 검색창에 표시
-
-// 지도 초기화하기
-Future<void> resetMap() async {
-  // splash 화면 종료
-  FlutterNativeSplash.remove();
-
-  WidgetsFlutterBinding.ensureInitialized();
-  await NaverMapSdk.instance.initialize(
-      clientId: naverApiKey, // 클라이언트 ID 설정
-      onAuthFailed: (e) => log("네이버맵 인증오류 : $e", name: "onAuthFailed"));
-}
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -109,8 +98,6 @@ class _MainPageState extends State<MainPage>
       parent: _controller,
       curve: Curves.easeInOut,
     ));
-
-    resetMap();
   }
 
   @override
@@ -468,20 +455,14 @@ class _MainPageState extends State<MainPage>
     _mapController = controller;
   }
 
-  //_mapController가 null인것 같다 ㄴ
   //마커 관련
   // 기존 마커 삭제 함수
   Future<void> _clearMarkers() async {
-    logger.d('_clearMarkers 정상적으로 들어옴 markers.length : ${markers.length}');
-
+    logger.d('마커가 정상적으로 들어왔음 ${markers.length}');
     for (int i = 0; i < markers.length; i++) {
-      logger.d('for문 첫 시작 ');
       await _mapController.deleteOverlay(NOverlayInfo(
           type: NOverlayType.marker, id: markers[i].info.id)); // 마커 제거
     }
-
-    logger.d('마커 제거 완료 ');
-
     // _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
     markers.clear(); // 리스트 초기화
     logger.d('마커삭제 테스트 $markers');
@@ -489,17 +470,10 @@ class _MainPageState extends State<MainPage>
 
   // 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
   void _addMarkers(List<MyData> dataList) async {
-    logger.d('맵 컨트롤러 $_mapController');
     //여러개 마커 담는 리스트
-    logger.d("dataList에 들어있는 = $dataList");
     try {
       var defaultMarkerSize = const Size(32, 40);
-      logger.d('마커 테스트 1 ');
-      if (markers.isNotEmpty) {
-        await _clearMarkers();
-      }
-      // 기존 마커 제거
-      logger.d('마커테스트 2 (삭제)');
+      await _clearMarkers(); // 기존 마커 제거
       for (var data in dataList) {
         NMarker marker = NMarker(
           id: data.id.toString(),
@@ -507,7 +481,6 @@ class _MainPageState extends State<MainPage>
           icon: const NOverlayImage.fromAssetImage(
               'assets/images/defaultMarker.png'),
         );
-        logger.d('마커테스트 3  생성은 됩니다 오버레이 표시전');
         //마커 사이즈 조절
         marker.setSize(defaultMarkerSize);
         marker.setOnTapListener((overlay) {
@@ -546,7 +519,10 @@ class _MainPageState extends State<MainPage>
           ),
         ),
       );
-      _showBottomSheet(context);
+      _showBottomSheet(
+        context,
+      );
+      _showReSearchButton = false;
     } catch (e) {
       logger.d('에러발생 $e');
     } finally {
