@@ -1,7 +1,9 @@
+import 'package:dongpo_test/models/clickedMarkerInfo.dart';
 import 'package:dongpo_test/models/gaGeSangSe.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
+import 'package:dongpo_test/screens/main/main_03/00_marker_title.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +36,7 @@ StoreSangse? storeData; // storeData를 nullable로 변경
 List<NMarker> markers = []; //마커 담는 리스트
 List<MyData> myDataList = []; //가게 기본정보 담는 리스트
 List<UserBookmark> userBookmark = []; //북마크 체크를 위한 클래스
+late MarkerInfo markerInfo;
 
 // 바텀시트에 표시되는 주소
 String bsAddress = '';
@@ -546,7 +549,7 @@ class _MainPageState extends State<MainPage>
           ),
         ),
       );
-      _showBottomSheet(context);
+      _showBottomSheet(context, marker.info.id);
     } catch (e) {
       logger.d('에러발생 $e');
     } finally {
@@ -738,7 +741,9 @@ class _MainPageState extends State<MainPage>
   }
 
   //가게 기본정보 바텀시트
-  void _showBottomSheet(BuildContext context) {
+  void _showBottomSheet(BuildContext context, String markerId) async {
+    int index = int.parse(markerId);
+    markerInfo = await _getClickedMarkerInfo(context, index);
     showBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -760,18 +765,18 @@ class _MainPageState extends State<MainPage>
                     TextButton(
                       onPressed: () => Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return const StoreInfo(idx: 1);
+                        return StoreInfo(idx: index);
                       })),
                       child: const Icon(Icons.menu),
                     ),
-                    const MainTitle(
-                      idx: 1,
+                    MainTitle2(
+                      idx: index,
                     ),
                     //사진
                     const SizedBox(
                       height: 30,
                     ),
-                    const MainPhoto(),
+                    const MainPhoto2(),
                     const SizedBox(
                       height: 20,
                     ),
@@ -783,5 +788,38 @@ class _MainPageState extends State<MainPage>
         );
       },
     );
+  }
+
+  //마커 서버통신
+  Future<MarkerInfo> _getClickedMarkerInfo(
+      BuildContext context, int markerId) async {
+    final url = Uri.parse('$serverUrl/api/store/$markerId/summary');
+
+    final accessToken = await storage.read(key: 'accessToken');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      logger.d('데이터 통신 성공 !! (Marker) 상태코드 : ${response.statusCode}');
+
+      // 단일 객체를 처리하는 부분
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
+      return MarkerInfo.fromJson(jsonResponse); // 객체로 변환
+    } else if (response.statusCode == 401) {
+      logger.d('token expired! 상태코드 : ${response.statusCode}');
+      await reissue(context); // 토큰 갱신 함수
+      return _getClickedMarkerInfo(context, markerId); // 갱신 후 다시 호출
+    } else {
+      logger.e(
+          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
+      throw Exception('HTTP ERROR !!! ${response.body}');
+    }
   }
 }
