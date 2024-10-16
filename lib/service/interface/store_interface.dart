@@ -1,12 +1,13 @@
+import 'package:dongpo_test/models/store_detail.dart';
 import 'package:dongpo_test/models/pocha.dart';
 
 abstract class StoreServiceInterface {
   // 현재 카메라 위치 기준 주변 점포 조회
-  Future<List<MyData>> getSotreByCurrentLocation();
+  Future<List<MyData>> getStoreByCurrentLocation(double lat, double lng);
   // 점포 등록
   Future<void> addStore(MyData storeInfo);
   // 점포 상세 조회
-  Future<MyData> getStoreDetail(int id);
+  Future<StoreSangse> getStoreDetail(int id);
   // 점포 삭제
   Future<void> deleteStore(int id);
   // 점포 정보 수정

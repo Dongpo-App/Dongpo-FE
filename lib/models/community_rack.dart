@@ -1,5 +1,3 @@
-import 'title.dart';
-
 class CommunityRank {
   late final String nickname; // 닉네임
   late final String title; // 칭호
@@ -27,14 +25,16 @@ class CommunityRank {
   String getNickname() {
     return nickname;
   }
+
   String getTitle() {
     return title;
   }
+
   String? getPic() {
     return pic;
   }
+
   int getCount() {
     return count;
   }
 }
-

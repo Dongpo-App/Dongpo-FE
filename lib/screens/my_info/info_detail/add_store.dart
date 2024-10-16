@@ -14,14 +14,14 @@ class AddStorePage extends StatefulWidget {
 class AddStorePageState extends State<AddStorePage> {
   AddStoreViewModel viewModel = AddStoreViewModel();
 
-  late List<UserBookmark> _userBookmark = [
-  ];
+  late final List<UserBookmark> _userBookmark = [];
 
   @override
   void initState() {
     super.initState();
     // getUserBookmark();
   }
+
   void getUserBookmark() async {
     // _userBookmark = await viewModel.userBookmarkGetAPI();
     setState(() {});
@@ -30,30 +30,29 @@ class AddStorePageState extends State<AddStorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F4F4),
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        centerTitle: true,
-        title: Text(
-          "등록한 가게",
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        backgroundColor: const Color(0xFFF4F4F4),
+        appBar: AppBar(
+          scrolledUnderElevation: 0,
+          centerTitle: true,
+          title: const Text(
+            "등록한 가게",
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context); //뒤로가기
+              },
+              icon: const Icon(
+                Icons.chevron_left,
+                size: 24,
+                color: Color(0xFF767676),
+              )),
         ),
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context); //뒤로가기
-            },
-            icon: const Icon(
-              Icons.chevron_left,
-              size: 24,
-              color: Color(0xFF767676),
-            )),
-      ),
-      body: const Center(
-        child: Text(
-          "테스트 페이지",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-        ),
-      )
-    );
+        body: const Center(
+          child: Text(
+            "테스트 페이지",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+          ),
+        ));
   }
 }
