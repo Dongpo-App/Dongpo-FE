@@ -44,6 +44,12 @@ class _AddPageState extends State<AddPage> {
   }
 
   @override
+  void dispose() {
+    _mapController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // 전체 화면 높이
     final screenHeight = MediaQuery.of(context).size.height;
@@ -89,12 +95,15 @@ class _AddPageState extends State<AddPage> {
                         ),
                       ),
                     );
+                    _isCameraMoving = false;
                   },
                   onCameraChange: (reason, animated) {
                     // 카메라가 움직일 때 상태 변경
                     _isCameraMoving = true;
                   },
                   onCameraIdle: () {
+                    logger
+                        .d("controller is ready? : ${_mapController.hashCode}");
                     // 카메라가 멈췄을 때 주소 업데이트
                     if (_isCameraMoving) {
                       _isCameraMoving = false;
@@ -225,6 +234,7 @@ class _AddPageState extends State<AddPage> {
   }
 
   Future<void> _updateAddress() async {
+    logger.d("is controller null? : $_mapController");
     final position = await _mapController.getCameraPosition();
     final latLng = position.target;
     final address = await _reverseGeocode(latLng);
