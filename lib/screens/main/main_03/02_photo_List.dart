@@ -25,7 +25,7 @@ class _MainPhotoState extends State<MainPhoto> {
       height: 120,
       color: Colors.white,
       child: imageList.isEmpty
-          ? const Center(child: CircularProgressIndicator()) // 이미지가 없을 때 로딩 표시
+          ? const Center(child: Text('등록된 이미지가 아직 없습니다!')) // 이미지가 없을 때 로딩 표시
           : ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: imageList.length,
