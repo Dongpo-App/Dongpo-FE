@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
+import '../../main/main_03/main_03.dart';
 import 'bookmark_view_model.dart';
 
 class BookmarkPage extends StatefulWidget {
@@ -69,56 +70,65 @@ class BookmarkPageState extends State<BookmarkPage> {
               itemCount: _userBookmark.length,
               itemBuilder: (context, index) {
                 var bookmark = _userBookmark[index];
-                return Card(
-                  elevation: 0,
-                  color: const Color(0xFFFFFFFF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  margin: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 24
-                  ),
-                  child: SizedBox(
-                    height: 80,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const CircleAvatar(
-                            radius: 18,
-                            backgroundImage: AssetImage(
-                              'assets/images/icon.png'
-                            ),
-                          ),
-                          const SizedBox( // 테스트용
-                            width: 30,
-                          ),
-                          Text(
-                            bookmark.storeName,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: () {
-                              // 버튼이 눌리면 북마크 취소됨
-                              deleteUserBookmark(bookmark.storeId);
-                            },
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              alignment: Alignment.center, // 아이콘이 가운데에 오도록 설정
-                              child: const Icon(
-                                Icons.bookmark_rounded,
-                                size: 24,
-                                color: Color(0xFFF15A2B),
+                return GestureDetector(
+                  onTap: () {
+                    // 버튼이 눌리면 해당 점포 상세 페이지로 이동
+                    Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                        return StoreInfo(idx: bookmark.storeId);
+                    }));
+                  },
+                  child: Card(
+                    elevation: 0,
+                    color: const Color(0xFFFFFFFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 24
+                    ),
+                    child: SizedBox(
+                      height: 80,
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const CircleAvatar(
+                              radius: 18,
+                              backgroundImage: AssetImage(
+                                'assets/images/icon.png'
                               ),
                             ),
-                          )
-                        ],
+                            const SizedBox( // 테스트용
+                              width: 30,
+                            ),
+                            Text(
+                              bookmark.storeName,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () {
+                                // 버튼이 눌리면 북마크 취소됨
+                                deleteUserBookmark(bookmark.storeId);
+                              },
+                              child: Container(
+                                width: 44,
+                                height: 44,
+                                alignment: Alignment.center, // 아이콘이 가운데에 오도록 설정
+                                child: const Icon(
+                                  Icons.bookmark_rounded,
+                                  size: 24,
+                                  color: Color(0xFFF15A2B),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),

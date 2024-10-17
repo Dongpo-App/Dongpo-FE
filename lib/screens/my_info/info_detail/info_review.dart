@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/models/user_review.dart';
 import 'package:intl/intl.dart';
+import '../../main/main_03/main_03.dart';
 import 'info_review_view_model.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -139,7 +140,11 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    // 가게 이름이 클릭되었을 때 액션
+                                    // 버튼이 눌리면 해당 점포 상세 페이지로 이동
+                                    Navigator.push(context,
+                                      MaterialPageRoute(builder: (BuildContext context) {
+                                        return StoreInfo(idx: review.storeId);
+                                    }));
                                   },
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -238,41 +243,6 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                 },
               ),
             ),
-    );
-  }
-
-  // 리뷰 수정 바텀시트
-  void showReviewEditBottomSheet(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height; // 현재 화면 높이
-    final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 45%
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Container(
-              height: bottomSheetHeight,
-              width: double.infinity,
-              margin: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12)
-                ),
-              ),
-
-            ),
-          ),
-        );
-      }
     );
   }
 }
