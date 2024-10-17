@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/main.dart';
+import 'apple_user_info_page.dart';
 import 'login_view_model.dart';
 
 class LoginPage extends StatefulWidget {
@@ -61,9 +62,11 @@ class _LoginPageState extends State<LoginPage> {
                         value: loginViewModel.loginPlatform.name);
                     Map<String, String> allData = await storage.readAll();
                     logger.d("secure storage apple read : $allData");
+                    // 애플 로그인은 사용자 정보를 입력하는 페이지로 넘어가야 함
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                          builder: (context) => const MyAppPage()),
+                          builder: (context) => const MyAppPage()
+                      ),
                     );
                   }
                 },
@@ -171,6 +174,33 @@ class _LoginPageState extends State<LoginPage> {
                     child: Image.asset(
                       'assets/images/login_kakao.png',
                       fit: BoxFit.contain, // 이미지가 컨테이너에 맞게 조정되도록 설정
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 24,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: InkWell(
+                onTap: () async {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                        builder: (context) => const AppleUserInfoPage()),
+                  );
+                },
+                child: Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFFFF),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                        12.0), // 이미지가 컨테이너 경계를 넘지 않도록 둥근 모서리 설정
+                    child: Text(
+                      "애플로그인 정보 입력 페이지",
                     ),
                   ),
                 ),
