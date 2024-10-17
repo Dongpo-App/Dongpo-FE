@@ -7,20 +7,28 @@ import 'package:dongpo_test/service/api_service.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/interface/store_interface.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 
-class StoreApiService extends ApiServiceBase implements StoreServiceInterface {
+class StoreApiService extends ApiService implements StoreServiceInterface {
   StoreApiService._privateConstructor();
   static final StoreApiService instance = StoreApiService._privateConstructor();
 
   @override
-  Future<void> addReview(int id, Map<String, dynamic> request) async {
+  Future<void> addReview({
+    required int id,
+    required String reviewText,
+    List<XFile>? images,
+    required int rating,
+  }) async {
     await loadToken();
 
     // 이미지 S3에 업로드
-
+    if (images != null) {
+      uploadImages(images);
+    }
     // S3로부터 받은 url List와 리뷰 데이터 전송
-
     final url = Uri.parse("$serverUrl/api/store/review/$id");
+    final headers = this.headers();
   }
 
   // MyData에 추가로 사용자 위치 정보를 포함한 dto 필요

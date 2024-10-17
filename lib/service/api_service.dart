@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
-class ApiServiceBase {
+class ApiService {
   final storage = const FlutterSecureStorage();
   final serverUrl = "https://ysw123.xyz";
   String? _accessToken;
@@ -53,27 +53,43 @@ class ApiServiceBase {
     }
   }
 
+  // 토큰 삭제
   Future<void> resetToken() async {
     await storage.delete(key: 'accessToken');
     await storage.delete(key: 'refreshToken');
     await storage.delete(key: 'loginPlatform');
   }
 
+  // 사진 파일 S3 업로드
   Future<List<String>> uploadImages(List<XFile> images) async {
     await loadToken();
     final url = Uri.parse("$serverUrl/api/file-upload");
-    final request = http.MultipartRequest("POST", url);
-
-    request.headers['Authorization'] = 'Bearer $_accessToken';
+    final request = http.MultipartRequest("POST", url)
+      ..headers['Authorization'] = 'Bearer $_accessToken';
 
     for (var image in images) {
       request.files.add(await http.MultipartFile.fromPath("image", image.path));
     }
 
     final response = await request.send();
+
     if (response.statusCode == 200) {
-      return [];
+      final responseData = await http.Response.fromStream(response);
+      final jsonData = jsonDecode(responseData.body);
+
+      // Check if the data contains a list of image URLs
+      if (jsonData['data'] is List) {
+        // Extract the image URLs from the response
+        List<String> imageUrls = (jsonData['data'] as List)
+            .map((item) => item['imageUrl'].toString())
+            .toList();
+        logger.d(imageUrls);
+        return imageUrls;
+      } else {
+        throw Exception('Unexpected response format');
+      }
+    } else {
+      throw Exception('code : ${response.statusCode} Failed to upload images');
     }
-    return [];
   }
 }

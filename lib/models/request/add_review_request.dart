@@ -1,12 +1,12 @@
 class AddReviewRequest {
   final int reviewStar;
   final String text;
-  final List<String> reviewPics;
+  final List<String>? reviewPics;
 
   AddReviewRequest({
     required this.reviewStar,
     required this.text,
-    required this.reviewPics,
+    this.reviewPics,
   });
 
   Map<String, dynamic> toJson() {
