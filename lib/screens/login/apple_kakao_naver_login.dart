@@ -69,7 +69,7 @@ class AppleKakaoNaverLogin implements SocialLogin {
   }
 
   @override
-  Future<String?> isAppleLogin() async {
+  Future<Map<String, String>?> isAppleLogin() async {
     try {
       logger.d('애플로그인 요청 시작');
       // 애플 로그인 요청
@@ -89,10 +89,14 @@ class AppleKakaoNaverLogin implements SocialLogin {
           "Apple login authorizationCode: ${appleCredential.authorizationCode}");
 
       // 받은 identityToken(토큰)을 서버로 보내어 검증하거나, 인증된 로그인 처리를 수행
-      final String? identityToken = appleCredential.identityToken;
+      String? identityToken = appleCredential.identityToken;
+      String? authorizationCode = appleCredential.authorizationCode;
 
-      if (identityToken != null) {
-        return identityToken; // 서버에 전송하거나 앱 내에서 처리
+      if (identityToken != null && authorizationCode != null) {
+        return {
+          "identityToken": identityToken,
+          "authorizationCode": authorizationCode,
+        };
       } else {
         logger.d("Apple login failed: No identity token");
         return null;

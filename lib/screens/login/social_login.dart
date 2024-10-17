@@ -5,7 +5,7 @@ abstract class SocialLogin {
 
   Future<String?> isNaverLogin();
 
-  Future<String?> isAppleLogin();
+  Future<Map<String, String>?> isAppleLogin();
 
   Future<bool> isLogout(LoginPlatform loginPlatform);
 }

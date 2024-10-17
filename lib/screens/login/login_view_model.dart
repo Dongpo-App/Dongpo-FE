@@ -85,7 +85,12 @@ class LoginViewModel {
   final SocialLogin _socialLogin;
   bool isLogined = false;
   bool isLogouted = false;
+  // 네이버, 카카오 토큰
   String? socialToken;
+  // 애플 토큰
+  String? identityToken;
+  String? authorizationCode;
+
   late String accessToken;
   late String refreshToken;
 
@@ -122,10 +127,13 @@ class LoginViewModel {
   }
 
   Future<bool> appleLogin(BuildContext context) async {
-    socialToken = await _socialLogin.isAppleLogin();
-    if (socialToken != null) {
-      //애플 로그인 성공함
+    final appleLoginToken = await _socialLogin.isAppleLogin();
+    if (appleLoginToken != null) {
+      // 애플 로그인 성공함
       loginPlatform = LoginPlatform.apple;
+      identityToken = appleLoginToken["identityToken"];
+      authorizationCode = appleLoginToken["authorizationCode"];
+
       isLogined = await tokenAPI(context);
       return isLogined;
     } else {
@@ -149,10 +157,19 @@ class LoginViewModel {
 
   Future<bool> tokenAPI(BuildContext context) async {
     logger.d("loginPlatform : $loginPlatform");
+    Map<String, String> data;
 
-    final data = {
-      "token": socialToken,
-    };
+    if (loginPlatform.name == "apple"){
+      data = {
+        "identityToken" : identityToken ?? "",
+        "authorizationCode" : authorizationCode ?? "",
+      };
+    } else {
+      data = {
+        "token": socialToken ?? "",
+      };
+    }
+
     final url = Uri.parse('$serverUrl/auth/${loginPlatform.name}');
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode(data);
