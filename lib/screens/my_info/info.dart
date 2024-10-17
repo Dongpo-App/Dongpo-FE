@@ -78,10 +78,7 @@ class _MyPageState extends State<MyPage> {
 
   @override
   Widget build(BuildContext context) {
-    double bodyHeight = (MediaQuery.of(context).size.height -
-            AppBar().preferredSize.height -
-            MediaQuery.of(context).viewInsets.bottom) *
-        0.9;
+    double bodyHeight = (MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).viewInsets.bottom) * 0.9;
 
     return Scaffold(
       backgroundColor: Colors.white,

@@ -1,6 +1,7 @@
 import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/screens/login/splash_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -37,11 +38,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '동포',
-      debugShowCheckedModeBanner: false, // 우측 상단 debug 표시 제거
+      // CupertinoDatePicker 한글화
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ko', 'KR'), // Korean
+        Locale('en', 'US'), // English
+      ],
+      // 우측 상단 debug 표시 제거
+      debugShowCheckedModeBanner: false,
+      // splash 효과 없애기
       theme: ThemeData(
-        fontFamily: 'Pretendard',
-        splashColor: Colors.transparent, // splash 효과 없애기
-        highlightColor: Colors.transparent, // splash 효과 없애기
+        fontFamily: 'Pretendard', // 기본 폰트
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
       ),
       home: const SplashPage(), // 로그인 페이지 이동
     );

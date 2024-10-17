@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-
 class AppleUserInfoPage extends StatefulWidget {
   const AppleUserInfoPage({super.key});
 
@@ -450,6 +449,7 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                   maximumYear: DateTime.now().year,
                   initialDateTime: DateTime.now(),
                   maximumDate: DateTime.now(),
+                  dateOrder: DatePickerDateOrder.ymd,
                   mode: CupertinoDatePickerMode.date,
                   onDateTimeChanged: (DateTime dateTime) {
                     tempPickedDate = dateTime;
