@@ -59,64 +59,69 @@ class CommunityPageState extends State<CommunityPage> {
         backgroundColor: const Color(0xFFF4F4F4),
         automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 상단 Text
-          Container(
-              margin: const EdgeInsets.only(top: 24.0, left: 24.0, bottom: 48),
-              child: const Text(
-                "별별 사람들",
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
-              )),
-
-          // 조건 Top 10 카드 슬라이드
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                const SizedBox(width: 24.0), // 왼쪽 24 margin
-                _buildCard(
-                  top10Title: '방문 인증 횟수 top 10',
-                  member: _visitTop10GetAPI.first.nickname,
-                  memberTitle: _visitTop10GetAPI.first.title,
-                  memberProfile: _visitTop10GetAPI.first.pic,
-                  top10List: _visitTop10GetAPI,
-                ),
-                const SizedBox(width: 24.0), // 카드 사이의 거리
-                _buildCard(
-                  top10Title: '가게 등록 횟수 top 10',
-                  member: _storeTop10GetAPI.first.nickname,
-                  memberTitle: _storeTop10GetAPI.first.title,
-                  memberProfile: _storeTop10GetAPI.first.pic,
-                  top10List : _storeTop10GetAPI,
-                ),
-                const SizedBox(width: 24.0),
-                _buildCard(
-                  top10Title: '가게 리뷰 횟수 top 10',
-                  member: _reviewTop10GetAPI.first.nickname,
-                  memberTitle: _reviewTop10GetAPI.first.title,
-                  memberProfile: _reviewTop10GetAPI.first.pic,
-                  top10List : _reviewTop10GetAPI,
-                ),
-                const SizedBox(width: 24.0),
-              ],
-            ),
-          ),
-          Container(
-            width: double.infinity,
-            height: 64.0,
-            margin: const EdgeInsets.only(top: 64, left: 24.0, right: 24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12.0),
-              image: const DecorationImage(
-                image: AssetImage('assets/images/banner.png'),
-                fit: BoxFit.cover,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 상단 Text
+              Container(
+                margin: const EdgeInsets.only(top: 24.0, left: 24.0, bottom: 48),
+                child: const Text(
+                  "별별 사람들",
+                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+                )
               ),
-            ),
+          
+              // 조건 Top 10 카드 슬라이드
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    const SizedBox(width: 24.0), // 왼쪽 24 margin
+                    _buildCard(
+                      top10Title: '방문 인증 횟수 top 10',
+                      member: _visitTop10GetAPI.first.nickname,
+                      memberTitle: _visitTop10GetAPI.first.title,
+                      memberProfile: _visitTop10GetAPI.first.pic,
+                      top10List: _visitTop10GetAPI,
+                    ),
+                    const SizedBox(width: 24.0), // 카드 사이의 거리
+                    _buildCard(
+                      top10Title: '가게 등록 횟수 top 10',
+                      member: _storeTop10GetAPI.first.nickname,
+                      memberTitle: _storeTop10GetAPI.first.title,
+                      memberProfile: _storeTop10GetAPI.first.pic,
+                      top10List : _storeTop10GetAPI,
+                    ),
+                    const SizedBox(width: 24.0),
+                    _buildCard(
+                      top10Title: '가게 리뷰 횟수 top 10',
+                      member: _reviewTop10GetAPI.first.nickname,
+                      memberTitle: _reviewTop10GetAPI.first.title,
+                      memberProfile: _reviewTop10GetAPI.first.pic,
+                      top10List : _reviewTop10GetAPI,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 24.0),
+              Container(
+                width: double.infinity,
+                height: 64.0,
+                margin: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.0),
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/banner.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -135,69 +140,70 @@ class CommunityPageState extends State<CommunityPage> {
     );
 
     return GestureDetector(
-        onTap: () {
-          Navigator.push(context,
-            MaterialPageRoute(builder: (BuildContext context) {
-              return CommunityTop10Page(
-                top10TitleData: top10TitleData,
-                top10List: top10List,
-              );
-            }
-          ));
-        },
-        child: Container(
-          //
-          width: 260.0,
-          height: 213.0,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 18),
-                child: Text(
-                  top10Title,
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 29),
-                child: CircleAvatar(
-                  radius: 24,
-                  backgroundImage: (memberProfile != null && memberProfile.isNotEmpty )
-                      ? NetworkImage(memberProfile) as ImageProvider
-                      : const AssetImage('assets/images/profile.jpg'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 19),
-                child: Text(
-                  memberTitle,
-                  style: const TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  member,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
+      onTap: () {
+        Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) {
+            return CommunityTop10Page(
+              top10TitleData: top10TitleData,
+              top10List: top10List,
+            );
+          }
         ));
+      },
+      child: Container(
+        //
+        width: 260.0,
+        height: 213.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 18),
+              child: Text(
+                top10Title,
+                style: const TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 29),
+              child: CircleAvatar(
+                radius: 24,
+                backgroundImage: (memberProfile != null && memberProfile.isNotEmpty)
+                    ? NetworkImage(memberProfile) as ImageProvider
+                    : const AssetImage('assets/images/profile.jpg'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 19),
+              child: Text(
+                memberTitle,
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                member,
+                style: const TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      )
+    );
   }
 }
 
