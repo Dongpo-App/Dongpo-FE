@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import '../../widgets/bottom_navigation_bar.dart';
+import 'apple_kakao_naver_login.dart';
+import 'login_view_model.dart';
+
 class AppleUserInfoPage extends StatefulWidget {
   const AppleUserInfoPage({super.key});
 
@@ -12,6 +16,8 @@ class AppleUserInfoPage extends StatefulWidget {
 }
 
 class AppleUserInfoPageState extends State<AppleUserInfoPage> {
+  final viewModel = LoginViewModel(AppleKakaoNaverLogin());
+
   // 닉네임 입력 관련
   final TextEditingController _nickNameController = TextEditingController(text: "");
   String nickName = "";
@@ -28,6 +34,9 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
   bool nickUpdateValue = false;
   bool birthdayUpdateValue = false;
   bool genderUpdateValue = false;
+
+  // 회원가입 성공
+  bool signUp = false;
 
   @override
   void dispose() {
@@ -51,298 +60,298 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
       },
       child: Scaffold(
         backgroundColor: const Color(0xFF33393F),
-        body: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.asset('assets/images/login.png'),
-                SizedBox(
-                  height: screenHeight * 0.08,
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 24.0),
-                  child: Text(
-                    "동포 회원가입",
-                    style: TextStyle(
-                      fontFamily: 'Chosun',
-                      color: Color(0xFFFFFFFF),
-                      fontSize: 32,
-                      fontWeight: FontWeight.w600,
+        body: SingleChildScrollView(
+          child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.asset('assets/images/login.png'),
+                  SizedBox(
+                    height: screenHeight * 0.08,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 24.0),
+                    child: Text(
+                      "동포 회원가입",
+                      style: TextStyle(
+                        fontFamily: 'Chosun',
+                        color: Color(0xFFFFFFFF),
+                        fontSize: 32,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: screenHeight * 0.08,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 24.0),
-                            child: Text(
-                              "닉네임",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFFFFFFFF),
-                                fontWeight: FontWeight.w600
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Text(
-                            '*',
-                            style: TextStyle(
-                              color: Color(0xFFF15A2B),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 24.0, right: 24),
-                        child: Container(
-                          height: 44,
-                          width: double.infinity,
-                          padding: const EdgeInsets.only(
-                            left: 16,
-                          ),
-                          decoration: BoxDecoration(
-                              color: const Color(0xFF57616A),
-                              borderRadius: BorderRadius.circular(12)
-                          ),
-                          child: TextField(
-                            textAlignVertical: TextAlignVertical.center,
-                            onChanged: (text) {
-                              if (mounted) {
-                                setState(() {
-                                  if (text.length <= 7 && text.isNotEmpty) {
-                                    nickName = text;
-                                    nickUpdateValue = true;
-                                  } else {
-                                    nickUpdateValue = false;
-                                  }
-                                });
-                              }
-                            },
-                            controller: _nickNameController,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Color(0xFFF4F4F4),
-                              fontWeight: FontWeight.w400
-                            ),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: '7글자까지 입력 가능해요',
-                              hintStyle: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xFF33393F),
-                              ),
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 10.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  SizedBox(
+                    height: screenHeight * 0.08,
                   ),
-                ),
-                const SizedBox(height: 32,),
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
-                    _selectDate(); // 바텀시트
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Row(
-                        children: [
-                          Padding(
-                           padding: EdgeInsets.only(left: 24.0,),
-                            child: Text(
-                              "생년월일",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xFFFFFFFF),
-                                fontWeight: FontWeight.w600
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Text(
-                            '*',
-                            style: TextStyle(
-                              color: Color(0xFFF15A2B),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 24.0, right: 24),
-                        child: Container(
-                          height: 44,
-                          width: double.infinity,
-                          padding: const EdgeInsets.only(
-                            left: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF57616A),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: TextFormField(
-                            enabled: false,
-                            decoration: const InputDecoration(
-                              hintText: '생년월일을 선택해 주세요',
-                              hintStyle: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xFF33393F),
-                              ),
-                              isDense: true,
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(vertical: 10.0), // 세로 패딩 설정
-                            ),
-                            controller: _birthdayController,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Color(0xFFF4F4F4),
-                              fontWeight: FontWeight.w400
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32,),
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 24.0,),
-                            child: Text(
-                              "성별",
-                              style: TextStyle(
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 24.0),
+                              child: Text(
+                                "닉네임",
+                                style: TextStyle(
                                   fontSize: 16,
                                   color: Color(0xFFFFFFFF),
                                   fontWeight: FontWeight.w600
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Text(
-                            '*',
-                            style: TextStyle(
-                              color: Color(0xFFF15A2B),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 24.0, right: 24),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
-                                setState(() {
-                                  selectedGender = '남'; // 남성 선택
-                                  genderUpdateValue = true;
-                                });
-                              },
-                              child: Container(
-                                height: 44,
-                                width: contentsWidth * 0.48,
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: selectedGender == '남'
-                                      ? const Color(0xFFF15A2B) // 선택된 색상
-                                      : const Color(0xFF57616A), // 기본 색상
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "남",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: selectedGender == '남' ? Colors.white : const Color(0xFF33393F),
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
                                 ),
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
-                                setState(() {
-                                  selectedGender = '여'; // 여성 선택
-                                  genderUpdateValue = true;
-                                });
-                              },
-                              child: Container(
-                                height: 44,
-                                width: contentsWidth * 0.48,
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: selectedGender == '여'
-                                    ? const Color(0xFFF15A2B) // 선택된 색상
-                                    : const Color(0xFF57616A), // 기본 색상
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "여",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: selectedGender == '여' ? Colors.white : const Color(0xFF33393F),
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
+                            SizedBox(
+                              width: 4,
+                            ),
+                            Text(
+                              '*',
+                              style: TextStyle(
+                                color: Color(0xFFF15A2B),
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],
                         ),
-                      )
-                    ],
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 24.0, right: 24),
+                          child: Container(
+                            height: 44,
+                            width: double.infinity,
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                            ),
+                            decoration: BoxDecoration(
+                                color: const Color(0xFF57616A),
+                                borderRadius: BorderRadius.circular(12)
+                            ),
+                            child: TextField(
+                              textAlignVertical: TextAlignVertical.center,
+                              onChanged: (text) {
+                                if (mounted) {
+                                  setState(() {
+                                    if (text.length <= 7 && text.isNotEmpty) {
+                                      nickName = text;
+                                      nickUpdateValue = true;
+                                    } else {
+                                      nickUpdateValue = false;
+                                    }
+                                  });
+                                }
+                              },
+                              controller: _nickNameController,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFFF4F4F4),
+                                fontWeight: FontWeight.w400
+                              ),
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: '7글자까지 입력 가능해요',
+                                hintStyle: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF33393F),
+                                ),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(vertical: 10.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 64),
-                Expanded(
-                  child: SizedBox(
-                    height: 48,
+                  const SizedBox(height: 32,),
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
+                      _selectDate(); // 바텀시트
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Padding(
+                             padding: EdgeInsets.only(left: 24.0,),
+                              child: Text(
+                                "생년월일",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xFFFFFFFF),
+                                  fontWeight: FontWeight.w600
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 4,
+                            ),
+                            Text(
+                              '*',
+                              style: TextStyle(
+                                color: Color(0xFFF15A2B),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 24.0, right: 24),
+                          child: Container(
+                            height: 44,
+                            width: double.infinity,
+                            padding: const EdgeInsets.only(
+                              left: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF57616A),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: TextFormField(
+                              enabled: false,
+                              decoration: const InputDecoration(
+                                hintText: '생년월일을 선택해 주세요',
+                                hintStyle: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF33393F),
+                                ),
+                                isDense: true,
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(vertical: 10.0), // 세로 패딩 설정
+                              ),
+                              controller: _birthdayController,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Color(0xFFF4F4F4),
+                                fontWeight: FontWeight.w400
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 32,),
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 24.0,),
+                              child: Text(
+                                "성별",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0xFFFFFFFF),
+                                    fontWeight: FontWeight.w600
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 4,
+                            ),
+                            Text(
+                              '*',
+                              style: TextStyle(
+                                color: Color(0xFFF15A2B),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 24.0, right: 24),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
+                                  setState(() {
+                                    selectedGender = '남'; // 남성 선택
+                                    genderUpdateValue = true;
+                                  });
+                                },
+                                child: Container(
+                                  height: 44,
+                                  width: contentsWidth * 0.48,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: selectedGender == '남'
+                                        ? const Color(0xFFF15A2B) // 선택된 색상
+                                        : const Color(0xFF57616A), // 기본 색상
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "남",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: selectedGender == '남' ? Colors.white : const Color(0xFF33393F),
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
+                                  setState(() {
+                                    selectedGender = '여'; // 여성 선택
+                                    genderUpdateValue = true;
+                                  });
+                                },
+                                child: Container(
+                                  height: 44,
+                                  width: contentsWidth * 0.48,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: selectedGender == '여'
+                                      ? const Color(0xFFF15A2B) // 선택된 색상
+                                      : const Color(0xFF57616A), // 기본 색상
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "여",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: selectedGender == '여' ? Colors.white : const Color(0xFF33393F),
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 64),
+                  SizedBox(
+                    height: 100,
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -362,22 +371,22 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                       onPressed: () async {
                         if (nickUpdateValue & birthdayUpdateValue & genderUpdateValue) {
                           logger.d("닉네임 : $nickName / 생년월일 : ${_birthdayController.text} / 성별 : $selectedGender");
+                          signUp = await viewModel.appleSignUpPostAPI(context, nickName, _birthdayController.text, selectedGender!);
+
+                          logger.d("apple sign up : $signUp");
+
+                          if (signUp) {
+                          // 상태 업데이트를 제거하고 바로 네비게이션 수행
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const MyAppPage()
+                              ), (route) => false,
+                            );
+                          }
                         } else {
                           return;
                         }
-                        // userProfileUpdate = await viewModel.userProfileUpdateAPI(context, sendData, nickname, mainTitle);
-                        // logger.d("profile update : $userProfileUpdate");
-                  
-                        //if (userProfileUpdate) {
-                          // 상태 업데이트를 제거하고 바로 네비게이션 수행
-                          //Navigator.pushAndRemoveUntil(
-                            //context,
-                            //MaterialPageRoute(
-                                //builder: (context) =>
-                                //const MyAppPage(initialIndex: 3)),
-                                //(route) => false,
-                          //);
-                        //}
                       },
                       child: Text(
                         '가입',
@@ -391,10 +400,10 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                       ),
                     ),
                   ),
-                ),
-              ]
+                ]
+              ),
             ),
-          ),
+        ),
         ),
     );
   }

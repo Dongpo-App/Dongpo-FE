@@ -200,6 +200,41 @@ class LoginViewModel {
       throw LoginViewModelException("Error occurred: $e");
     }
   }
+
+  Future<bool> appleSignUpPostAPI(BuildContext context, String nickName, String birthday, String gender) async {
+    final data = {
+      "nickName": nickName,
+      "birthday": birthday,
+      "gender": gender
+    };
+
+    final url = Uri.parse('$serverUrl');
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode(data);
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonData = json.decode(response.body);
+        Map<String, dynamic> user = jsonData['data'];
+
+        return true;
+      } else if (response.statusCode == 401) {
+        logger.d("status code : ${response.statusCode}");
+        await reissue(context);
+        return appleSignUpPostAPI(context, nickName, birthday, gender);
+      } else {
+        // 실패
+        logger.d("Fail to load $data. status code : ${response.statusCode}");
+        // 실패
+        throw LoginViewModelException(
+            "Fail to load. status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      logger.d("error : $e");
+      throw LoginViewModelException("Error occurred: $e");
+    }
+  }
 }
 
 // login 예외 클래스 정의

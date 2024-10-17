@@ -61,8 +61,9 @@ class CommunityPageState extends State<CommunityPage> {
     setState(() {});
   }
 
-  void getRecommendStore() {
+  void getRecommendStore() async {
     if (recommendStoreCategory == "나이") {
+      // _recommendStore = await viewModel.recommendStoreGetAPI(context);
       _recommendStore = [
         RecommendStore.fromMap({
           "id": 3,
@@ -84,6 +85,7 @@ class CommunityPageState extends State<CommunityPage> {
         }),
       ];
     } else {
+      // _recommendStore = await viewModel.recommendStoreGetAPI(context);
       _recommendStore = [
         RecommendStore.fromMap({
           "id": 3,
@@ -359,7 +361,6 @@ class CommunityPageState extends State<CommunityPage> {
                                         ),
                                       ]
                                     ),
-
                                   ],
                                 ),
                               ),
