@@ -57,8 +57,8 @@ class _SplashPageState extends State<SplashPage> {
   Future<bool> _validRefreshToken() async {
     logger.d("_validRefreshToken() 진입");
     // 리프레쉬 토큰 유무 확인
-    String? refreshToken =
-        await storage.read(key: 'refreshToken'); // 토큰 없음 -> 로그인 화면
+    String? refreshToken = await storage.read(key: 'refreshToken');
+    if (refreshToken == null) return false; // 토큰 없음 -> 로그인 화면
 
     final url = Uri.parse('$serverUrl/auth/reissue');
     final header = {'Content-Type': 'application/json'};
