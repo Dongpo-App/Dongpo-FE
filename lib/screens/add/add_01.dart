@@ -34,6 +34,7 @@ class _AddPageState extends State<AddPage> {
   late ValueNotifier<String> _addressNotifier;
   String _address = '';
   bool _isCameraMoving = false; // 카메라 이동 상태를 추적하기 위한 변수
+  bool startAddPage = false;
 
   @override
   void initState() {
@@ -80,6 +81,7 @@ class _AddPageState extends State<AddPage> {
                   onMapReady: (controller) {
                     // 맵이 준비되었을 때 컨트롤러 초기화
                     logger.d("controller : ${controller.hashCode}");
+                    startAddPage = true;
                     _onMapReady(controller);
                     _mapController.updateCamera(
                       NCameraUpdate.fromCameraPosition(
@@ -96,7 +98,7 @@ class _AddPageState extends State<AddPage> {
                   },
                   onCameraIdle: () {
                     // 카메라가 멈췄을 때 주소 업데이트
-                    if (_isCameraMoving) {
+                    if (_isCameraMoving && startAddPage) {
                       _isCameraMoving = false;
                       _updateAddress();
                     }
