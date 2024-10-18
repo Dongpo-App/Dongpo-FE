@@ -68,6 +68,8 @@ class _LoginPageState extends State<LoginPage> {
                           builder: (context) => const MyAppPage()
                       ),
                     );
+                  } else {
+                    httpStatusCode409();
                   }
                 },
                 child: Container(
@@ -113,6 +115,8 @@ class _LoginPageState extends State<LoginPage> {
                             builder: (context) => const MyAppPage()),
                       );
                     }
+                  } else {
+                    httpStatusCode409();
                   }
                 },
                 child: Container(
@@ -159,6 +163,8 @@ class _LoginPageState extends State<LoginPage> {
                             builder: (context) => const MyAppPage()),
                       );
                     }
+                  } else {
+                    httpStatusCode409();
                   }
                 },
                 child: Container(
@@ -204,11 +210,85 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+
+              ),
+            ),
+            SizedBox(height: 24,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: InkWell(
+                onTap: () async {
+                  httpStatusCode409();
+                },
+                child: Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFFFF),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                        12.0), // 이미지가 컨테이너 경계를 넘지 않도록 둥근 모서리 설정
+                    child: Text(
+                      "http 409 Alert 예시",
+                    ),
+                  ),
+                ),
+
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void httpStatusCode409() {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: const Color(0xffF15A2B)
+      ),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.white
+        ),
+      ),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "로그인 실패",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "이미 등록된 이메일이에요",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      actions: [
+        Center(child: okButton),
+      ],
+    );
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

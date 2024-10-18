@@ -188,12 +188,17 @@ class LoginViewModel {
         logger.d("status code : ${response.statusCode}");
         await reissue(context);
         return tokenAPI(context);
+      } else if (response.statusCode == 409) {
+        logger.d("status code : ${response.statusCode} / 사용자 이메일이 중복됩니다.");
+
+        return false;
       } else {
         // 실패
         logger.d("Fail to load $data. status code : ${response.statusCode}");
         // 실패
         throw LoginViewModelException(
-            "Fail to load. status code: ${response.statusCode}");
+          "Fail to load. status code: ${response.statusCode}"
+        );
       }
     } catch (e) {
       logger.d("error : $e");

@@ -203,7 +203,8 @@ class _MainPageState extends State<MainPage>
                         await _moveCamera(target);
                         await _searchStoreCurrentLocation(target);
                         logger.d(
-                            "검색 이후 마커 생성 : sample ${myDataList.isEmpty ? "no sample" : myDataList[0]}");
+                          "검색 이후 마커 생성 : sample ${myDataList.isEmpty ? "no sample" : myDataList[0]}"
+                        );
                       }
                     },
                     child: Container(
@@ -226,11 +227,18 @@ class _MainPageState extends State<MainPage>
                           const SizedBox(width: 8.0),
                           Text(
                             _searchBarInnerText,
-                            style: TextStyle(
-                                fontSize: 14, color: Colors.grey[400]),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF767676),
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                           const Spacer(),
-                          const Icon(Icons.search),
+                          const Icon(
+                            Icons.search,
+                            color: Color(0xFF767676),
+                            size: 24,
+                          ),
                         ],
                       ),
                     ),
@@ -242,11 +250,11 @@ class _MainPageState extends State<MainPage>
                   child: SlideTransition(
                     position: _offsetAnimation, // 슬라이더 애니메이션 적용
                     child: Container(
-                      padding: const EdgeInsets.all(25),
+                      padding: const EdgeInsets.only(top: 24, left: 24),
                       height: 200, // 튀어나오는 부분을 포함한 전체 높이
-                      width: 500,
                       decoration: const BoxDecoration(
                         color: Colors.white,
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,8 +267,9 @@ class _MainPageState extends State<MainPage>
                             ),
                           ),
                           Container(
-                            margin: const EdgeInsets.only(top: 10),
+                            margin: const EdgeInsets.only(top: 24),
                             height: 90,
+                            width: double.infinity,
                             child: ListView.builder(
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
@@ -282,15 +291,16 @@ class _MainPageState extends State<MainPage>
                                         );
                                       },
                                       child: Container(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            10, 20, 20, 20),
+                                        padding: const EdgeInsets.all(20),
                                         decoration: BoxDecoration(
-                                          color: Colors.grey[200],
+                                          color: Color(0xFFF4F4F4),
                                           borderRadius:
-                                              BorderRadius.circular(10),
+                                              BorderRadius.circular(12),
                                         ),
                                         height: 100,
+                                        width: 220,
                                         child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
                                           children: [
                                             const SizedBox(
                                               height: 30,
@@ -301,32 +311,35 @@ class _MainPageState extends State<MainPage>
                                                     'assets/images/rakoon.png'),
                                               ),
                                             ),
+                                            SizedBox(width: 8,),
                                             Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   '${myDataList[idx].name}',
                                                   style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                      fontWeight: FontWeight.w600,
+                                                      fontSize: 16,
+                                                  ),
                                                 ),
-                                                const SizedBox(height: 10),
+                                                const SizedBox(height: 4),
                                                 const Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.start,
                                                   children: [
                                                     Icon(
-                                                      Icons.location_on_rounded,
-                                                      size: 13,
+                                                      Icons.lightbulb_outline_rounded,
+                                                      size: 12,
                                                       color: Color(0xffF15A2B),
                                                     ),
+                                                    const SizedBox(width: 4),
                                                     Text(
                                                       '영업 가능성 있어요!',
                                                       style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w100,
-                                                        fontSize: 10,
+                                                        fontWeight: FontWeight.w600 ,
+                                                        fontSize: 12 ,
+                                                        color: Color(0xFF767676),
                                                       ),
                                                     ),
                                                   ],
@@ -382,7 +395,11 @@ class _MainPageState extends State<MainPage>
                         children: [
                           Text(
                             "해당 위치로 재검색",
-                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white
+                            ),
                           ),
                           SizedBox(width: 8.0),
                           Icon(Icons.refresh, color: Colors.white, size: 16.0),
@@ -397,14 +414,15 @@ class _MainPageState extends State<MainPage>
                     builder: (context, child) {
                       return Positioned(
                         bottom: _locationBtn.value,
-                        left: 10.0,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(12),
-                              foregroundColor: Colors.blue,
-                              backgroundColor: WidgetStateColor.resolveWith(
-                                  (states) => Colors.white)),
+                            elevation: 8,
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(4),
+                            foregroundColor: Color(0xFF003ACE),
+                            backgroundColor: WidgetStateColor.resolveWith(
+                              (states) => Colors.white)
+                          ),
                           onPressed: () async {
                             NLatLng target = await _getCurrentNLatLng();
                             _userMarker.setPosition(target);
@@ -426,12 +444,17 @@ class _MainPageState extends State<MainPage>
                       right: 0,
                       child: Center(
                         child: IconButton(
-                            onPressed: () {
-                              _toggleBottomSheet();
-                              //현재 위치 위도경도 기준으로해서 리스트 받아온거 기본정보 띄우는 함수 만들어야함
-                              //ex)) 게시판의 제목
-                            },
-                            icon: const Icon(Icons.menu)),
+                          onPressed: () {
+                            _toggleBottomSheet();
+                            //현재 위치 위도경도 기준으로해서 리스트 받아온거 기본정보 띄우는 함수 만들어야함
+                            //ex)) 게시판의 제목
+                          },
+                          icon: const Icon(
+                            Icons.remove,
+                            size: 36,
+                            color: Color(0xFF767676),
+                          )
+                        ),
                       ),
                     );
                   },

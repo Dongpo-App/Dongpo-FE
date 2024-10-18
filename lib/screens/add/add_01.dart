@@ -127,7 +127,7 @@ class _AddPageState extends State<AddPage> {
                             elevation: 8,
                             shape: const CircleBorder(),
                             padding: const EdgeInsets.all(4),
-                            foregroundColor: Colors.blue,
+                            foregroundColor: Color(0xFF003ACE),
                             backgroundColor: WidgetStateColor.resolveWith(
                                 (states) => Colors.white)),
                         onPressed: _moveToCurrentLocation,
