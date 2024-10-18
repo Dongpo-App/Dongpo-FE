@@ -24,18 +24,25 @@ class _MainPhotoState extends State<MainPhoto> {
       height: 120,
       color: Colors.white,
       child: imageList.isEmpty
-          ? const Center(child: Text('등록된 이미지가 아직 없습니다!')) // 이미지가 없을 때 로딩 표시
-          : ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: imageList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  width: 200,
-                  margin: const EdgeInsets.fromLTRB(20, 0, 10, 10),
-                  child: imageList[index], // 이미지 리스트에서 이미지를 가져옴
-                );
-              },
+        ? const Center(
+          child: Text(
+            '등록된 이미지가 아직 없습니다!',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600
             ),
+          )
+        ) // 이미지가 없을 때 로딩 표시
+        : ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: imageList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                width: 200,
+                child: imageList[index], // 이미지 리스트에서 이미지를 가져옴
+              );
+            },
+          ),
     );
   }
 

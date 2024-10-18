@@ -9,29 +9,55 @@ class MainTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
               storeData?.name ?? '이름이 없습니다',
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const Spacer(),
-            IconButton(
-                onPressed: () {},
-                icon: const Icon(CupertinoIcons.arrow_up_right_diamond_fill,
-                    color: Color(0xffF15A2B)))
+            Column(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                      size: 24,
+                      CupertinoIcons.arrow_up_right_diamond_fill,
+                      color: Color(0xffF15A2B)
+                  )
+                ),
+                const Text(
+                  "{A}m",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            )
           ],
         ),
-        const Text("{A} M"),
         const Row(
           children: [
             Icon(
-              Icons.location_on_outlined,
+              Icons.lightbulb_outline_rounded,
+              size: 16,
               color: Color(0xffF15A2B),
             ),
-            Text("A(영업 가능성이 높아요!)")
+            SizedBox(width: 8,),
+            Text(
+              "A(영업 가능성이 높아요!)",
+              style: TextStyle(
+                color: Color(0xFF767676),
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+            )
           ],
         )
       ],

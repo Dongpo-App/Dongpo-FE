@@ -42,14 +42,15 @@ class AddStorePageState extends State<AddStorePage> {
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context); //뒤로가기
-            },
-            icon: const Icon(
-              Icons.chevron_left,
-              size: 24,
-              color: Color(0xFF767676),
-            )),
+          onPressed: () {
+            Navigator.pop(context); //뒤로가기
+          },
+          icon: const Icon(
+            Icons.chevron_left,
+            size: 24,
+            color: Color(0xFF767676),
+          ),
+        ),
       ),
       body: _userAddStore.isEmpty
           ? const Center(
