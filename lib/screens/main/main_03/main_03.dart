@@ -145,9 +145,10 @@ class _StoreInfoState extends State<StoreInfo> {
                                   Navigator.pop(context);
                                 },
                                 icon : const Icon(
-                                CupertinoIcons.xmark,
-                                size: 24,
-                              ),
+                                  CupertinoIcons.xmark,
+                                  size: 24,
+                                  color: Color(0xFF767676),
+                                ),
                               )
                             ],
                           ),
@@ -254,12 +255,12 @@ class _StoreInfoState extends State<StoreInfo> {
               //리뷰 갯수, 버튼
               UserAction(idx: widget.idx),
               const SizedBox(
-                height: 30,
+                height: 96,
               ),
               //방문인증
               const BangMoon(),
               const SizedBox(
-                height: 40,
+                height: 96,
               ),
               //리뷰 관련
               ShowReview(idx: widget.idx),

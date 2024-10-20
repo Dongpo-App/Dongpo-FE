@@ -474,13 +474,15 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-                      height: 44,
-                      width: contentsWidth * 0.48,
-                      child: _bathSelected('있음', 1)),
+                    height: 44,
+                    width: contentsWidth * 0.48,
+                    child: _bathSelected('있음', 1)
+                  ),
                   SizedBox(
-                      height: 44,
-                      width: contentsWidth * 0.48,
-                      child: _bathSelected('없음 ', 2)),
+                    height: 44,
+                    width: contentsWidth * 0.48,
+                    child: _bathSelected('없음 ', 2)
+                  ),
                 ],
               ),
               //가게 등록버튼

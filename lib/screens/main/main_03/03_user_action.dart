@@ -1,10 +1,14 @@
+import 'dart:ui';
+
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
+import 'package:flutter/painting.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+
+import '../../login/login_view_model.dart';
 
 //북마크, 리뷰 댓글
 //만약 내가 북마크를 해놓은 상태라면
@@ -30,48 +34,74 @@ class _UserActionState extends State<UserAction> {
   }
 
   bool _selected = false;
-  static const storage = FlutterSecureStorage();
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(
           onPressed: () {},
           icon: const Icon(
             Icons.chat,
-            
+            color: Color(0xFF767676),
+            size: 24,
           ),
         ),
-        const Text("리뷰"),
-        const SizedBox(
-          width: 10,
+        const Text(
+          "(A)리뷰 수",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Color(0xFF767676)
+          ),
         ),
-        const Text("|", style: TextStyle(fontSize: 21)),
+        const SizedBox(
+          width: 16,
+        ),
+        const Text(
+          "|", 
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF767676)
+          )
+        ),
         //북마크 추가를 기존에 했었다면
         _selected
-            ? IconButton(
-                onPressed: () {
-                  setState(() {
-                    _selected = false;
-                  });
-                  removeBookMark();
-                },
-                icon: const Icon(Icons.bookmark_added),
-                style: ButtonStyle(
-                    iconColor: WidgetStateColor.resolveWith(
-                        (states) => Colors.orange)),
+          ? IconButton(
+            onPressed: () {
+              setState(() {
+                _selected = false;
+              });
+              removeBookMark();
+            },
+            icon: const Icon(
+              Icons.bookmark_rounded,
+              size: 24,
+            ),
+            style: ButtonStyle(
+              iconColor: WidgetStateColor.resolveWith(
+                (states) => Color(0xffF15A2B)
               )
-            : IconButton(
-                onPressed: () {
-                  setState(() {
-                    _selected = true;
-                  });
-                  addBookMark();
-                },
-                icon: const Icon(Icons.bookmark),
-              ),
-        const Text("북마크 추가"),
+            ),
+          )
+          : IconButton(
+            onPressed: () {
+              setState(() {
+                _selected = true;
+              });
+              addBookMark();
+            },
+            icon: const Icon(
+              Icons.bookmark_rounded,
+              size: 24,
+              color: Color(0xFF767676),
+            ),
+          ),
+        const Text(
+          "(A)북마크 수"
+        ),
       ],
     );
   }

@@ -8,83 +8,124 @@ class BangMoon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 전체 화면 너비
+    final screenWidth = MediaQuery.of(context).size.width;
+    // 좌우 마진 제외
+    final contentsWidth = screenWidth - 48;
+
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const Text(
         '방문에 성공하셨나요?',
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
       ),
+      SizedBox(height: 24,),
       Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           //방문 성공 컨테이너
           Container(
-            padding: const EdgeInsets.all(10.0),
-            margin: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+            height: 48,
+            width: contentsWidth * 0.48,
             decoration: BoxDecoration(
-                color: Colors.green[200],
-                borderRadius: BorderRadius.circular(10.0)),
-            child: Row(
+              color: Color(0x3313C925),
+              borderRadius: BorderRadius.circular(12.0)
+            ),
+            child: const Row(
               children: [
-                Icon(color: Colors.green[700], Icons.sentiment_satisfied_alt),
-                const SizedBox(
-                  width: 10,
+                SizedBox(width: 8,),
+                Icon(
+                  size: 24,
+                  color: Color(0xFF10AA1F),
+                  Icons.sentiment_satisfied_alt
                 ),
-                const Text(
-                  '방문 성공 A명',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                SizedBox(
+                  width: 8,
                 ),
-                const SizedBox(
-                  width: 20,
-                )
+                Text(
+                  '방문 성공 ',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                Text(
+                  'A명',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
           //방문 실패 컨테이너
           Container(
-            padding: const EdgeInsets.all(10.0),
-            margin: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+            height: 48,
+            width: contentsWidth * 0.48,
             decoration: BoxDecoration(
-                color: Colors.red[200],
-                borderRadius: BorderRadius.circular(10.0)),
-            child: Row(
+              color: Color(0x33C91E13),
+              borderRadius: BorderRadius.circular(12.0)
+            ),
+            child: const Row(
               children: [
+                SizedBox(width: 8,),
                 Icon(
-                  color: Colors.red[800],
+                  color: Color(0xFFAD271F),
                   Icons.sentiment_dissatisfied_outlined,
+                  size: 24,
                 ),
-                const SizedBox(
-                  width: 10,
+                SizedBox(
+                  width: 8,
                 ),
-                const Text('방문 실패 A명',
-                    style:
-                        TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                const SizedBox(
-                  width: 20,
-                )
+                Text(
+                  '방문 실패 ',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                Text(
+                  'A명',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
         ],
       ),
+      SizedBox(height: 24,),
       Container(
-        padding: const EdgeInsets.all(10.0),
-        margin: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+        height: 44,
+        width: double.infinity,
         child: ElevatedButton(
           onPressed: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (BuildContext context) => const SecondPage()));
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => const SecondPage()
+              )
+            );
           },
           style: ElevatedButton.styleFrom(
+            elevation: 0,
             shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10))),
-            minimumSize: const Size(double.infinity, 40),
+              borderRadius: BorderRadius.all(Radius.circular(12))
+            ),
             backgroundColor: const Color(0xffF15A2B),
           ),
           child: const Text(
             '방문 인증 하러가기',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+              fontWeight: FontWeight.w600
+            ),
           ),
         ),
       )
@@ -114,10 +155,36 @@ class _SecondPageState extends State<SecondPage> {
 
   @override
   Widget build(BuildContext context) {
+    // 전체 화면 너비
+    final screenWidth = MediaQuery.of(context).size.width;
+    // 좌우 마진 제외
+    final contentsWidth = screenWidth - 48;
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('가게 방문 인증 '),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
         centerTitle: true,
+        title: const Text(
+          "가게 방문 인증",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context); //뒤로가기
+          },
+          icon: const Icon(
+            Icons.chevron_left,
+            size: 24,
+            color: Color(0xFF767676),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -137,26 +204,31 @@ class _SecondPageState extends State<SecondPage> {
           Expanded(
             flex: 1,
             child: Container(
-              margin: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(),
+              padding: EdgeInsets.all(24),
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                ),
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Row(
                     children: [
-                      SizedBox(
-                        width: 23,
-                      ),
                       Text(
                         '가게 방문 인증',
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 30),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24
+                        ),
                       ),
                     ],
                   ),
+                  SizedBox(height: 16,),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       //방문 성공 버튼
                       GestureDetector(
@@ -167,33 +239,39 @@ class _SecondPageState extends State<SecondPage> {
                           });
                         },
                         child: Container(
-                          padding: const EdgeInsets.all(10.0),
-                          margin: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+                          height: 48,
+                          width: contentsWidth * 0.48,
                           decoration: BoxDecoration(
                               color: okValue == 1
-                                  ? Colors.green[200]
-                                  : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(10.0)),
+                                  ? Color(0x3313C925)
+                                  : Color(0xFFF4F4F4),
+                              borderRadius: BorderRadius.circular(12.0)),
                           child: Row(
                             children: [
+                              SizedBox(width: 8,),
                               Icon(
-                                  color: okValue == 1
-                                      ? Colors.green[700]
-                                      : Colors.grey,
-                                  Icons.sentiment_satisfied_alt),
+                                color: okValue == 1
+                                  ? Color(0xFF10AA1F)
+                                  : Color(0xFF767676),
+                                Icons.sentiment_satisfied_alt,
+                                size: 24,
+                              ),
                               const SizedBox(
-                                width: 10,
+                                width: 8,
                               ),
                               Text(
                                 '방문 성공',
                                 style: okValue == 1
-                                    ? const TextStyle(
-                                        fontWeight: FontWeight.bold)
-                                    : null,
+                                  ? const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600
+                                  )
+                                  : const TextStyle(
+                                    fontSize: 14,
+                                    color: Color(0xFF767676),
+                                    fontWeight: FontWeight.w400,
+                                  )
                               ),
-                              const SizedBox(
-                                width: 20,
-                              )
                             ],
                           ),
                         ),
@@ -207,68 +285,79 @@ class _SecondPageState extends State<SecondPage> {
                           });
                         },
                         child: Container(
-                          padding: const EdgeInsets.all(10.0),
-                          margin: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+                          height: 48,
+                          width: contentsWidth * 0.48,
                           decoration: BoxDecoration(
-                              color: noValue == 1
-                                  ? Colors.red[200]
-                                  : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(10.0)),
+                            color: noValue == 1
+                              ? Color(0x33C91E13)
+                              : Color(0xFFF4F4F4),
+                          borderRadius: BorderRadius.circular(12.0)),
                           child: Row(
                             children: [
+                              SizedBox(width: 8,),
                               Icon(
+                                size: 24,
                                 color: noValue == 1
-                                    ? Colors.red[800]
-                                    : Colors.grey,
+                                    ? Color(0xFFAD271F)
+                                    : Color(0xFF767676),
                                 Icons.sentiment_dissatisfied_outlined,
                               ),
                               const SizedBox(
-                                width: 10,
+                                width: 8,
                               ),
-                              Text('방문 실패',
-                                  style: noValue == 1
-                                      ? const TextStyle(
-                                          fontWeight: FontWeight.bold)
-                                      : null),
-                              const SizedBox(
-                                width: 20,
-                              )
+                              Text(
+                                '방문 실패',
+                                style: noValue == 1
+                                    ? const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600
+                                    )
+                                    : const TextStyle(
+                                      fontSize: 14,
+                                      color: Color(0xFF767676),
+                                      fontWeight: FontWeight.w400,
+                                    )
+                              ),
                             ],
                           ),
                         ),
                       ),
                     ],
                   ),
+                  SizedBox(height: 16,),
                   Container(
-                    padding: const EdgeInsets.all(10.0),
-                    margin: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                    height: 44,
+                    width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
                         (okValue == 1 || noValue == 1)
-                            ? showAlertDialog(context, okValue, noValue)
-                            : null;
+                          ? showAlertDialog(context, okValue, noValue)
+                          : null;
 
                         //방문 인증 메서드 구현
                       },
                       style: ElevatedButton.styleFrom(
+                        elevation: 0,
                         splashFactory: (okValue == 0 && noValue == 0)
                             ? NoSplash.splashFactory
                             : InkSplash.splashFactory,
                         shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        minimumSize: const Size(double.infinity, 40),
+                          borderRadius: BorderRadius.all(Radius.circular(12))
+                        ),
                         backgroundColor: (okValue == 1 || noValue == 1)
                             ? const Color(0xffF15A2B)
-                            : Colors.grey[100],
+                            : const Color(0xFFF4F4F4),
                       ),
                       child: Text(
-                        '방문인증',
+                        '방문 인증',
                         style: TextStyle(
-                            color: (okValue == 1 || noValue == 1)
-                                ? Colors.white
-                                : Colors.grey,
-                            fontWeight: FontWeight.bold),
+                          color: (okValue == 1 || noValue == 1)
+                            ? Colors.white
+                            : Color(0xFF767676),
+                          fontWeight: (okValue == 1 || noValue == 1)
+                            ? FontWeight.w600
+                            : FontWeight.w400,
+                        ),
                       ),
                     ),
                   )

@@ -31,6 +31,11 @@ class _ShowReviewState extends State<ShowReview> {
 //여기서 부터 화면
   @override
   Widget build(BuildContext context) {
+    // 전체 화면 너비
+    final screenWidth = MediaQuery.of(context).size.width;
+    // 좌우 마진 제외
+    final contentsWidth = screenWidth - 48;
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,11 +43,14 @@ class _ShowReviewState extends State<ShowReview> {
         children: [
           const Text(
             "리뷰 A개",
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600
+            ),
           ),
+          SizedBox(height: 24,),
           Container(
-            padding: const EdgeInsets.all(10.0),
-            margin: const EdgeInsets.fromLTRB(10, 20, 10, 0),
+            width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
                 showModalBottomSheet(
@@ -54,7 +62,7 @@ class _ShowReviewState extends State<ShowReview> {
                       return SizedBox(
                         height: MediaQuery.of(context).size.height * 0.8,
                         child: Container(
-                          margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                          padding: EdgeInsets.all(24),
                           child: Column(
                             children: [
                               //상단 1
@@ -63,21 +71,25 @@ class _ShowReviewState extends State<ShowReview> {
                                   const Text(
                                     "방문 후기를 알려주세요",
                                     style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 30),
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 24
+                                    ),
                                   ),
                                   const Spacer(),
                                   IconButton(
                                     onPressed: () {
                                       _showConfirmationDialog(context);
                                     },
-                                    icon: const Icon(CupertinoIcons.xmark,
-                                        color: Colors.black, size: 30),
+                                    icon: const Icon(
+                                      CupertinoIcons.xmark,
+                                      color: Color(0xFF767676),
+                                      size: 24
+                                    ),
                                   )
                                 ],
                               ),
                               const SizedBox(
-                                height: 20,
+                                height: 24,
                               ),
                               //별점 RatingBar //상단 2
                               Row(
@@ -89,7 +101,7 @@ class _ShowReviewState extends State<ShowReview> {
                                     glowRadius: 1,
                                     glow: false,
                                     itemPadding: EdgeInsets.zero,
-                                    itemSize: 60,
+                                    itemSize: 56,
                                     itemBuilder: (context, _) => const Icon(
                                       Icons.star,
                                       color: Color(0xffF15A2B),
@@ -104,21 +116,33 @@ class _ShowReviewState extends State<ShowReview> {
                                 ],
                               ),
                               const SizedBox(
-                                height: 20,
+                                height: 24,
                               ),
                               //사진 첨부 텍스트 //상단 3
                               const Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
                                     "사진 첨부",
                                     style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600
+                                    ),
                                   ),
-                                  Text(" 최대 3개까지 선택 가능해요"),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  Text(
+                                    " 최대 3개까지 선택 가능해요",
+                                    style: TextStyle(
+                                      color: Color(0xFF767676),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ],
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 8),
                               // 사진 첨부 버튼과 이미지 미리보기 //상단 4
                               Row(
                                 children: List.generate(
@@ -128,7 +152,7 @@ class _ShowReviewState extends State<ShowReview> {
                                     width: 80,
                                     height: 80,
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
                                           color: index < _pickedImgs.length
                                               ? Colors.transparent
@@ -150,7 +174,7 @@ class _ShowReviewState extends State<ShowReview> {
                                 ),
                               ),
                               const SizedBox(
-                                height: 20,
+                                height: 16,
                               ),
                               //텍스트 필드 (200글자 이내로 작성해주세요!) //상단 5
                               SizedBox(
@@ -160,30 +184,47 @@ class _ShowReviewState extends State<ShowReview> {
                                   maxLength: 200,
                                   maxLines: 4,
                                   decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
+                                    border: OutlineInputBorder(
+                                      borderRadius:
+                                        BorderRadius.all(Radius.circular(12)),
+                                      borderSide: BorderSide(
+                                        width: 1,
+                                        color: Color(0xFF767676),
+                                      ),
+                                    ),
                                     hintText: '200 글자 이내로 적어주세요!',
+                                    hintStyle: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xFF767676),
+                                    ),
                                   ),
                                 ),
                               ),
 
                               //바닥에 리뷰 등록 버튼 (form전송)
-                              ElevatedButton(
-                                onPressed: () async {
-                                  await _addReview(_reviewController.text,
-                                      _pickedImgs, _rating);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: const Size(double.infinity, 50),
-                                  shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10))),
-                                  backgroundColor: const Color(0xffF15A2B),
-                                ),
-                                child: const Text(
-                                  "리뷰 등록",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white),
+                              Container(
+                                height: 44,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    await _addReview(_reviewController.text,
+                                        _pickedImgs, _rating);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    minimumSize: const Size(double.infinity, 50),
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(12))),
+                                    backgroundColor: const Color(0xffF15A2B),
+                                  ),
+                                  child: const Text(
+                                    "리뷰 등록",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
@@ -195,15 +236,19 @@ class _ShowReviewState extends State<ShowReview> {
                 );
               },
               style: ElevatedButton.styleFrom(
+                elevation: 0,
                 shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                minimumSize: const Size(double.infinity, 40),
+                  borderRadius: BorderRadius.all(Radius.circular(12))
+                ),
                 backgroundColor: const Color(0xffF15A2B),
               ),
               child: const Text(
                 '리뷰 등록',
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600
+                ),
               ),
             ),
           ),

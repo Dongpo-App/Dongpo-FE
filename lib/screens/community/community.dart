@@ -1,5 +1,5 @@
 import 'package:dongpo_test/models/community_rack.dart';
-import 'package:dongpo_test/models/recommend_store.dart';
+import 'package:dongpo_test/models/recommend_age_store.dart';
 import 'package:dongpo_test/screens/community/community_view_model.dart';
 import 'package:flutter/material.dart';
 import 'community_top10.dart';
@@ -16,9 +16,9 @@ class CommunityPageState extends State<CommunityPage> {
   String userAge = "20";
   String userGender = "남";
   // 점포 추천 분류
-  String recommendStoreCategory = "나이";
+  String recommendStoreCategory = "age";
   // 점포 추천 데이터
-  List<RecommendStore> _recommendStore = [];
+  List<RecommendAgeStore> _recommendStore = [];
 
   // 커뮤니티 Top 10
   CommunityViewModel viewModel = CommunityViewModel();
@@ -62,50 +62,31 @@ class CommunityPageState extends State<CommunityPage> {
   }
 
   void getRecommendStore() async {
-    if (recommendStoreCategory == "나이") {
+    _recommendStore = [
+      RecommendAgeStore(
+        id : 1,
+        name: "123",
+        address: "12345",
+        gender: "121",
+      ),
+      RecommendAgeStore(
+        id : 1,
+        name: "123",
+        address: "12345",
+        gender: "121",
+      ),
+      RecommendAgeStore(
+        id : 1,
+        name: "123",
+        address: "12345",
+        gender: "121",
+      ),
+    ];
+
+    if (recommendStoreCategory == "age") {
       // _recommendStore = await viewModel.recommendStoreGetAPI(context);
-      _recommendStore = [
-        RecommendStore.fromMap({
-          "id": 3,
-          "name": "써브웨이",
-          "address": "서울시 구로구 고척동",
-          "businessPotential": "영업 가능성 높아요",
-        }),
-        RecommendStore.fromMap({
-          "id": 2,
-          "name": "노랑통닭",
-          "address": "서울시 구로구 고척동",
-          "businessPotential": "영업 가능성 낮아요",
-        }),
-        RecommendStore.fromMap({
-          "id": 9,
-          "name": "전주맛집",
-          "address": "서울시 구로구 고척동",
-          "businessPotential": "영업 가능성 높아요",
-        }),
-      ];
     } else {
       // _recommendStore = await viewModel.recommendStoreGetAPI(context);
-      _recommendStore = [
-        RecommendStore.fromMap({
-          "id": 3,
-          "name": "청년다방",
-          "address": "서울시 구로구 고척동",
-          "businessPotential": "영업 가능성 낮아요",
-        }),
-        RecommendStore.fromMap({
-          "id": 2,
-          "name": "test2",
-          "address": "서울시 구로구 경인로",
-          "businessPotential": "영업 가능성 낮아요",
-        }),
-        RecommendStore.fromMap({
-          "id": 9,
-          "name": "빽다방",
-          "address": "서울시 구로구 고척동",
-          "businessPotential": "영업 가능성 높아요",
-        }),
-      ];
     }
   }
 
@@ -189,7 +170,7 @@ class CommunityPageState extends State<CommunityPage> {
                     Container(
                       margin: const EdgeInsets.only(top: 24, bottom: 24),
                       child: Text(
-                        recommendStoreCategory == "나이"
+                        recommendStoreCategory == "age"
                         ? "$userAge대 추천 가게"
                         : "$userGender성 추천 가게",
                         style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
@@ -201,7 +182,7 @@ class CommunityPageState extends State<CommunityPage> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              recommendStoreCategory = '나이'; // 나이 선택
+                              recommendStoreCategory = 'age'; // 나이 선택
                               getRecommendStore();
                             });
                           },
@@ -209,10 +190,10 @@ class CommunityPageState extends State<CommunityPage> {
                             height: 30,
                             width: 58,
                             decoration: BoxDecoration(
-                              color: recommendStoreCategory == '나이'
+                              color: recommendStoreCategory == 'age'
                                 ? const Color(0xFFF15A2B) // 선택된 색상
                                 : Colors.transparent, // 기본 색상
-                              border: recommendStoreCategory == '나이'
+                              border: recommendStoreCategory == 'age'
                                 ? null // 선택된 상태에서는 테두리 없음
                                 : Border.all(
                                     color: const Color(0xFF767676), // 기본 테두리 색상
@@ -225,7 +206,7 @@ class CommunityPageState extends State<CommunityPage> {
                                 "나이",
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: recommendStoreCategory == '나이' ? Colors.white : const Color(0xFF767676),
+                                  color: recommendStoreCategory == 'age' ? Colors.white : const Color(0xFF767676),
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
@@ -236,7 +217,7 @@ class CommunityPageState extends State<CommunityPage> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              recommendStoreCategory = '성별'; // 성별 선택
+                              recommendStoreCategory = 'gender'; // 성별 선택
                               getRecommendStore();
                             });
                           },
@@ -244,10 +225,10 @@ class CommunityPageState extends State<CommunityPage> {
                             height: 30,
                             width: 58,
                             decoration: BoxDecoration(
-                              color: recommendStoreCategory == '성별'
+                              color: recommendStoreCategory == 'gender'
                                   ? const Color(0xFFF15A2B) // 선택된 색상
                                   : Colors.transparent, // 기본 색상
-                              border: recommendStoreCategory == '성별'
+                              border: recommendStoreCategory == 'gender'
                                   ? null // 선택된 상태에서는 테두리 없음
                                   : Border.all(
                                 color: const Color(0xFF767676), // 기본 테두리 색상
@@ -260,7 +241,7 @@ class CommunityPageState extends State<CommunityPage> {
                                 "성별",
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: recommendStoreCategory == '성별' ? Colors.white : const Color(0xFF767676),
+                                  color: recommendStoreCategory == 'gender' ? Colors.white : const Color(0xFF767676),
                                   fontWeight: FontWeight.w400,
                                 ),
                               ),
@@ -350,7 +331,7 @@ class CommunityPageState extends State<CommunityPage> {
                                             ),
                                             SizedBox(width: 4,),
                                             Text(
-                                              recommendStore.businessPotential,
+                                              recommendStore.address,
                                               style: const TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w600,
