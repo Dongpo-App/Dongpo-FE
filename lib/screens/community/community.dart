@@ -1,5 +1,6 @@
+import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/community_rack.dart';
-import 'package:dongpo_test/models/recommend_age_store.dart';
+import 'package:dongpo_test/models/recommend_store.dart';
 import 'package:dongpo_test/screens/community/community_view_model.dart';
 import 'package:flutter/material.dart';
 import 'community_top10.dart';
@@ -12,16 +13,16 @@ class CommunityPage extends StatefulWidget {
 }
 
 class CommunityPageState extends State<CommunityPage> {
+  CommunityViewModel viewModel = CommunityViewModel();
+
   // 사용자 점포 추천
-  String userAge = "20";
-  String userGender = "남";
+  String userAge = "";
+  String userGender = "";
   // 점포 추천 분류
   String recommendStoreCategory = "age";
   // 점포 추천 데이터
-  List<RecommendAgeStore> _recommendStore = [];
+  List<RecommendResponse> _recommendStore = [];
 
-  // 커뮤니티 Top 10
-  CommunityViewModel viewModel = CommunityViewModel();
   late List<CommunityRank> _storeTop10GetAPI = [
     CommunityRank(
       nickname: "",
@@ -62,32 +63,8 @@ class CommunityPageState extends State<CommunityPage> {
   }
 
   void getRecommendStore() async {
-    _recommendStore = [
-      RecommendAgeStore(
-        id : 1,
-        name: "123",
-        address: "12345",
-        gender: "121",
-      ),
-      RecommendAgeStore(
-        id : 1,
-        name: "123",
-        address: "12345",
-        gender: "121",
-      ),
-      RecommendAgeStore(
-        id : 1,
-        name: "123",
-        address: "12345",
-        gender: "121",
-      ),
-    ];
-
-    if (recommendStoreCategory == "age") {
-      // _recommendStore = await viewModel.recommendStoreGetAPI(context);
-    } else {
-      // _recommendStore = await viewModel.recommendStoreGetAPI(context);
-    }
+    _recommendStore = await viewModel.recommendStoreGetAPI(context, recommendStoreCategory);
+    logger.d("_recommendStore : $_recommendStore");
   }
 
   @override
@@ -160,9 +137,9 @@ class CommunityPageState extends State<CommunityPage> {
               ),
               const SizedBox(height: 40.0),
               Container(
-                color: Color(0xFFFFFFFF),
+                color: const Color(0xFFFFFFFF),
                 width: double.infinity,
-                padding: EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -171,8 +148,8 @@ class CommunityPageState extends State<CommunityPage> {
                       margin: const EdgeInsets.only(top: 24, bottom: 24),
                       child: Text(
                         recommendStoreCategory == "age"
-                        ? "$userAge대 추천 가게"
-                        : "$userGender성 추천 가게",
+                        ? "123대 추천 가게"
+                        : "456성 추천 가게",
                         style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
                       )
                     ),
@@ -250,15 +227,15 @@ class CommunityPageState extends State<CommunityPage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 24,),
+                    const SizedBox(height: 24,),
                     // API 통신으로 받아온 카드 3개 그리기
-                    Container(
+                    SizedBox(
                       height: 400,
                       width: double.infinity,
                       child: ListView.builder(
                         itemCount: _recommendStore.length,
                         itemBuilder: (context, index) {
-                          var recommendStore = _recommendStore[index];
+                          var recommendStore = _recommendStore[0].stores[index];
                           return GestureDetector(
                             onTap: () {
                               // 버튼이 눌리면 해당 점포 상세 페이지로 이동
@@ -294,26 +271,14 @@ class CommunityPageState extends State<CommunityPage> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Row(
-                                          crossAxisAlignment: CrossAxisAlignment.baseline, // 기준선 정렬
-                                          textBaseline: TextBaseline.alphabetic, // 알파벳 기준선 사용
+                                          //crossAxisAlignment: CrossAxisAlignment.baseline, // 기준선 정렬
+                                          //textBaseline: TextBaseline.alphabetic, // 알파벳 기준선 사용
                                           children: [
                                             Text(
                                               recommendStore.name,
                                               style: const TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              // 테스트용
-                                              width: 8,
-                                            ),
-                                            Text(
-                                              "103m",
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400,
-                                                color: Color(0xFF767676),
                                               ),
                                             ),
                                           ],
@@ -324,12 +289,12 @@ class CommunityPageState extends State<CommunityPage> {
                                         ),
                                         Row(
                                           children: [
-                                            Icon(
-                                              Icons.lightbulb_outline_rounded,
-                                              size: 16,
-                                              color: Color(0xFFF15A2B),
-                                            ),
-                                            SizedBox(width: 4,),
+                                            // Icon(
+                                            //   Icons.lightbulb_outline_rounded,
+                                            //   size: 16,
+                                            //   color: Color(0xFFF15A2B),
+                                            // ),
+                                            // SizedBox(width: 4,),
                                             Text(
                                               recommendStore.address,
                                               style: const TextStyle(

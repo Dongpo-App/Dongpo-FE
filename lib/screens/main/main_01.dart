@@ -559,7 +559,7 @@ class _MainPageState extends State<MainPage>
     NLatLng position = await _getCurrentNLatLng();
     // 사용자 위치 아이콘 에셋 지정
     const myLocationIcon =
-        NOverlayImage.fromAssetImage('assets/images/myLocation.png');
+        NOverlayImage.fromAssetImage('assets/images/icon/my_location.png');
     // 마커 객체 생성
     _userMarker = NMarker(
       id: "my_location_marker",
@@ -567,7 +567,7 @@ class _MainPageState extends State<MainPage>
       icon: myLocationIcon,
     );
     // 마커 사이즈 지정 및 지도에 추가
-    _userMarker.setSize(const Size(40, 50));
+    _userMarker.setSize(const Size(40, 40));
     _mapController.addOverlay(_userMarker);
   }
 
