@@ -3,6 +3,7 @@ import 'package:dongpo_test/models/community_rack.dart';
 import 'package:dongpo_test/models/recommend_store.dart';
 import 'package:dongpo_test/screens/community/community_view_model.dart';
 import 'package:flutter/material.dart';
+import '../main/main_03/main_03.dart';
 import 'community_top10.dart';
 
 class CommunityPage extends StatefulWidget {
@@ -21,7 +22,10 @@ class CommunityPageState extends State<CommunityPage> {
   // 점포 추천 분류
   String recommendStoreCategory = "age";
   // 점포 추천 데이터
-  List<RecommendResponse> _recommendStore = [];
+  RecommendResponse recommendResponse = RecommendResponse(stores: [], message: "");
+  List<RecommendStore> recommendList = [];
+  String recommendMessage = "";
+  bool isLoading = false;
 
   late List<CommunityRank> _storeTop10GetAPI = [
     CommunityRank(
@@ -63,8 +67,18 @@ class CommunityPageState extends State<CommunityPage> {
   }
 
   void getRecommendStore() async {
-    _recommendStore = await viewModel.recommendStoreGetAPI(context, recommendStoreCategory);
-    logger.d("_recommendStore : $_recommendStore");
+    setState(() {
+      isLoading = true; // 초기화
+    });
+    recommendResponse = await viewModel.recommendStoreGetAPI(context, recommendStoreCategory);
+    setState(() {
+      recommendList = recommendResponse.stores;
+      recommendMessage = recommendResponse.message;
+      isLoading = false;
+    });
+    logger.d("recommend response : $recommendResponse");
+    logger.d("recommend stores : $recommendList");
+    logger.d("recommend message : $recommendMessage");
   }
 
   @override
@@ -146,11 +160,15 @@ class CommunityPageState extends State<CommunityPage> {
                     // 상단 Text
                     Container(
                       margin: const EdgeInsets.only(top: 24, bottom: 24),
-                      child: Text(
-                        recommendStoreCategory == "age"
-                        ? "123대 추천 가게"
-                        : "456성 추천 가게",
-                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+                      child: isLoading
+                        ? const CircularProgressIndicator()
+                        : Text(
+                          recommendStoreCategory == "age"
+                          ? "$recommendMessage대 추천 가게"
+                          : recommendMessage == "GEN_MALE"
+                            ? "남성 추천 가게"
+                            : "여성 추천 가게",
+                          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
                       )
                     ),
                     Row(
@@ -233,16 +251,17 @@ class CommunityPageState extends State<CommunityPage> {
                       height: 400,
                       width: double.infinity,
                       child: ListView.builder(
-                        itemCount: _recommendStore.length,
+                        itemCount: recommendList.length,
                         itemBuilder: (context, index) {
-                          var recommendStore = _recommendStore[0].stores[index];
+                          var recommendStore = recommendList[index];
                           return GestureDetector(
                             onTap: () {
-                              // 버튼이 눌리면 해당 점포 상세 페이지로 이동
-                              // Navigator.push(context,
-                              //     MaterialPageRoute(builder: (BuildContext context) {
-                              //       return StoreInfo(idx: addStore.id);
-                              //     }));
+                            // 버튼이 눌리면 해당 점포 상세 페이지로 이동
+                              Navigator.push(context,
+                                MaterialPageRoute(builder: (BuildContext context) {
+                                  return StoreInfo(idx: recommendStore.id);
+                                })
+                              );
                             },
                             child: Card(
                               elevation: 0,

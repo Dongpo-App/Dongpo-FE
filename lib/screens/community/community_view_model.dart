@@ -7,7 +7,7 @@ import '../../models/recommend_store.dart';
 import '../login/login_view_model.dart';
 
 class CommunityViewModel {
-  Future<List<RecommendResponse>> recommendStoreGetAPI(BuildContext context, String recommendStoreCategory) async {
+  Future<RecommendResponse> recommendStoreGetAPI(BuildContext context, String recommendStoreCategory) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
@@ -20,13 +20,10 @@ class CommunityViewModel {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(utf8.decode(response.bodyBytes));
-        logger.d("recommend Age jsonData - store : $jsonData");
+        logger.d("recommend jsonData - store : $jsonData");
 
-        final List<dynamic> recommendStoreJson = jsonData['data'];
-
-        logger.d("recommend Age Data - store : $recommendStoreJson");
-
-        return recommendStoreJson.map((item) => RecommendResponse.fromJson(item)).toList();
+        // 전체 응답을 RecommendResponse로 변환
+        return RecommendResponse.fromJson(jsonData);
       } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
         if (context.mounted) await reissue(context);
