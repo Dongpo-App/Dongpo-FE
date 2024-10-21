@@ -95,6 +95,7 @@ flutter:
   # assets 밑에 모든 파일들 사용
   assets:
     - assets/images/
+    - assets/icon/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
