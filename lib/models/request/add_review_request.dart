@@ -6,14 +6,14 @@ class AddReviewRequest {
   AddReviewRequest({
     required this.reviewStar,
     required this.text,
-    this.reviewPics,
+    required this.reviewPics,
   });
 
   Map<String, dynamic> toJson() {
     return {
       'reviewStar': reviewStar,
       'text': text,
-      'reviewPics': reviewPics,
+      'reviewPics': (reviewPics != null) ? reviewPics : [],
     };
   }
 }

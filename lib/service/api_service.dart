@@ -5,6 +5,18 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
+/* 
+api 요청 관련 try catch로 잡아야하는 오류 (추후 작업)
+1. 네트워크 관련
+연결 실패: 서버에 연결할 수 없는 경우(예: 인터넷 연결 끊김, 서버 다운 등).
+타임아웃: 요청이 지정된 시간 내에 완료되지 않는 경우.
+DNS 오류: 도메인 이름을 해석할 수 없는 경우.
+2. http 요청이 잘못됨 
+잘못된 URL: URL이 잘못되어 요청이 실패하는 경우.
+잘못된 요청 형식: HTTP 메서드나 헤더가 잘못된 경우(예: 잘못된 Content-Type).
+SSL/TLS 오류: HTTPS를 사용할 때 인증서 문제로 인해 발생하는 오류.
+*/
+
 class ApiService {
   final storage = const FlutterSecureStorage();
   final serverUrl = "https://ysw123.xyz";
@@ -17,11 +29,16 @@ class ApiService {
     _refreshToken = await storage.read(key: 'refreshToken');
   }
 
+  // json 헤더 생성
   Map<String, String> headers() {
     return {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $_accessToken',
     };
+  }
+
+  void errorLog({required int statusCode, required String message}) {
+    logger.e("code : $statusCode message : $message");
   }
 
   // 토큰 재발급
@@ -38,7 +55,8 @@ class ApiService {
     try {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
-        Map<String, dynamic> decodedData = jsonDecode(response.body);
+        Map<String, dynamic> decodedData =
+            jsonDecode(utf8.decode(response.bodyBytes));
         Map<String, String> token = decodedData['data'];
 
         await storage.write(key: 'accessToken', value: token['accessToken']);
@@ -75,7 +93,7 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final responseData = await http.Response.fromStream(response);
-      final jsonData = jsonDecode(responseData.body);
+      final jsonData = jsonDecode(utf8.decode(responseData.bodyBytes));
 
       // Check if the data contains a list of image URLs
       if (jsonData['data'] is List) {

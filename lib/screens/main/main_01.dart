@@ -2,9 +2,12 @@ import 'package:dongpo_test/models/store_detail.dart';
 import 'package:dongpo_test/models/clickedMarkerInfo.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
+import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/screens/main/main_03/00_marker_title.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
+import 'package:dongpo_test/service/exception/exception.dart';
+import 'package:dongpo_test/service/store_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -47,7 +50,8 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
-  static const storage = FlutterSecureStorage();
+  //static const storage = FlutterSecureStorage();
+  StoreApiService storeService = StoreApiService.instance;
 
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
   late NaverMapController _mapController;
@@ -549,46 +553,59 @@ class _MainPageState extends State<MainPage>
   }
 
   // 카메라 위치 기반으로 근처 가게 검색
-  Future<List<MyData>> _researchFromMe() async {
-    //해당 카메라 기준 위도경도 가져옴
-    final cameraPosition = await _mapController.getCameraPosition();
-    final latitude = cameraPosition.target.latitude;
-    final longitude = cameraPosition.target.longitude;
-    logger.d("researchFromME:$cameraPosition");
-    final accessToken = await storage.read(key: 'accessToken');
+  // Future<List<MyData>> _researchFromMe() async {
+  //   //해당 카메라 기준 위도경도 가져옴
+  //   final cameraPosition = await _mapController.getCameraPosition();
+  //   final latitude = cameraPosition.target.latitude;
+  //   final longitude = cameraPosition.target.longitude;
+  //   logger.d("researchFromME:$cameraPosition");
+  //   final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(
-        '$serverUrl/api/store?longitude=$longitude&latitude=$latitude');
+  //   final url = Uri.parse(
+  //       '$serverUrl/api/store?longitude=$longitude&latitude=$latitude');
 
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
+  //   final headers = {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': 'Bearer $accessToken',
+  //   };
 
-    final response = await http.get(url, headers: headers);
+  //   final response = await http.get(url, headers: headers);
 
-    if (response.statusCode == 200) {
-      logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
-      List jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
-      return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
-    } else if (response.statusCode == 401) {
-      logger.d('token expired! status code : ${response.statusCode}');
-      await reissue(context);
-      return _researchFromMe();
-    } else {
-      logger.e(
-          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-      throw Exception('HTTP ERROR !!! ${response.body}');
-    }
-  }
+  //   if (response.statusCode == 200) {
+  //     logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
+  //     List jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
+  //     return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
+  //   } else if (response.statusCode == 401) {
+  //     logger.d('token expired! status code : ${response.statusCode}');
+  //     await reissue(context);
+  //     return _researchFromMe();
+  //   } else {
+  //     logger.e(
+  //         'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
+  //     throw Exception('HTTP ERROR !!! ${response.body}');
+  //   }
+  // }
 
   Future<void> _searchStoreCurrentLocation(NLatLng target) async {
     // 점포 데이터 받기
     try {
-      List<MyData> storeList = await _researchFromMe();
+      List<MyData> storeList = await storeService.getStoreByCurrentLocation(
+        target.latitude,
+        target.longitude,
+      );
       myDataList = storeList;
       bsAddress = await _reverseGeocode(target);
       _addMarkers(storeList);
+    } on TokenExpiredException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("세션이 만료되었습니다. 다시 로그인해주세요.")));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginPage()));
+      } else {
+        logger.e("Error! while replace to Login page");
+        logger.e("message: $e");
+      }
     } on Exception catch (e) {
       logger.e("Error! message: $e");
     }
@@ -717,7 +734,7 @@ class _MainPageState extends State<MainPage>
   //가게 기본정보 바텀시트
   void _showBottomSheet(BuildContext context, String markerId) async {
     int index = int.parse(markerId);
-    markerInfo = await _getClickedMarkerInfo(context, index);
+    markerInfo = await storeService.getStoreSummary(index);
     showBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -764,36 +781,36 @@ class _MainPageState extends State<MainPage>
     );
   }
 
-  //마커 서버통신
-  Future<MarkerInfo> _getClickedMarkerInfo(
-      BuildContext context, int markerId) async {
-    final url = Uri.parse('$serverUrl/api/store/$markerId/summary');
+  // //마커 서버통신
+  // Future<MarkerInfo> _getClickedMarkerInfo(
+  //     BuildContext context, int markerId) async {
+  //   final url = Uri.parse('$serverUrl/api/store/$markerId/summary');
 
-    final accessToken = await storage.read(key: 'accessToken');
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
+  //   final accessToken = await storage.read(key: 'accessToken');
+  //   final headers = {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': 'Bearer $accessToken',
+  //   };
 
-    final response = await http.get(
-      url,
-      headers: headers,
-    );
+  //   final response = await http.get(
+  //     url,
+  //     headers: headers,
+  //   );
 
-    if (response.statusCode == 200) {
-      logger.d('데이터 통신 성공 !! (Marker) 상태코드 : ${response.statusCode}');
+  //   if (response.statusCode == 200) {
+  //     logger.d('데이터 통신 성공 !! (Marker) 상태코드 : ${response.statusCode}');
 
-      // 단일 객체를 처리하는 부분
-      var jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
-      return MarkerInfo.fromJson(jsonResponse); // 객체로 변환
-    } else if (response.statusCode == 401) {
-      logger.d('token expired! 상태코드 : ${response.statusCode}');
-      await reissue(context); // 토큰 갱신 함수
-      return _getClickedMarkerInfo(context, markerId); // 갱신 후 다시 호출
-    } else {
-      logger.e(
-          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-      throw Exception('HTTP ERROR !!! ${response.body}');
-    }
-  }
+  //     // 단일 객체를 처리하는 부분
+  //     var jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
+  //     return MarkerInfo.fromJson(jsonResponse); // 객체로 변환
+  //   } else if (response.statusCode == 401) {
+  //     logger.d('token expired! 상태코드 : ${response.statusCode}');
+  //     await reissue(context); // 토큰 갱신 함수
+  //     return _getClickedMarkerInfo(context, markerId); // 갱신 후 다시 호출
+  //   } else {
+  //     logger.e(
+  //         'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
+  //     throw Exception('HTTP ERROR !!! ${response.body}');
+  //   }
+  // }
 }
