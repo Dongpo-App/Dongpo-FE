@@ -43,12 +43,11 @@ class _ShowReviewState extends State<ShowReview> {
         children: [
           const Text(
             "리뷰 A개",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
           ),
-          SizedBox(height: 24,),
+          SizedBox(
+            height: 24,
+          ),
           Container(
             width: double.infinity,
             child: ElevatedButton(
@@ -71,20 +70,16 @@ class _ShowReviewState extends State<ShowReview> {
                                   const Text(
                                     "방문 후기를 알려주세요",
                                     style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 24
-                                    ),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 24),
                                   ),
                                   const Spacer(),
                                   IconButton(
                                     onPressed: () {
                                       _showConfirmationDialog(context);
                                     },
-                                    icon: const Icon(
-                                      CupertinoIcons.xmark,
-                                      color: Color(0xFF767676),
-                                      size: 24
-                                    ),
+                                    icon: const Icon(CupertinoIcons.xmark,
+                                        color: Color(0xFF767676), size: 24),
                                   )
                                 ],
                               ),
@@ -125,9 +120,8 @@ class _ShowReviewState extends State<ShowReview> {
                                   Text(
                                     "사진 첨부",
                                     style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600
-                                    ),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
                                   ),
                                   SizedBox(
                                     width: 8,
@@ -186,7 +180,7 @@ class _ShowReviewState extends State<ShowReview> {
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(
                                       borderRadius:
-                                        BorderRadius.all(Radius.circular(12)),
+                                          BorderRadius.all(Radius.circular(12)),
                                       borderSide: BorderSide(
                                         width: 1,
                                         color: Color(0xFF767676),
@@ -212,7 +206,8 @@ class _ShowReviewState extends State<ShowReview> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     elevation: 0,
-                                    minimumSize: const Size(double.infinity, 50),
+                                    minimumSize:
+                                        const Size(double.infinity, 50),
                                     shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(12))),
@@ -221,9 +216,8 @@ class _ShowReviewState extends State<ShowReview> {
                                   child: const Text(
                                     "리뷰 등록",
                                     style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white
-                                    ),
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white),
                                   ),
                                 ),
                               ),
@@ -238,17 +232,15 @@ class _ShowReviewState extends State<ShowReview> {
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12))
-                ),
+                    borderRadius: BorderRadius.all(Radius.circular(12))),
                 backgroundColor: const Color(0xffF15A2B),
               ),
               child: const Text(
                 '리뷰 등록',
                 style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600
-                ),
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -565,14 +557,22 @@ class _ShowReviewState extends State<ShowReview> {
             Text('${reviewList[index].text}'),
             const SizedBox(height: 10),
             SizedBox(
-              height: 100,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: const [
-                  Image(image: AssetImage('assets/images/rakoon.png')),
-                ],
-              ),
-            ),
+                height: 100,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal, // 가로 스크롤
+                  itemCount: reviewList[index].reviewPics?.length ??
+                      0, // 사진 수만큼 아이템 생성
+                  itemBuilder: (context, idx) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.network(
+                        reviewList[index].reviewPics![idx], // 이미지 URL을 가져옴
+                        width: 100, // 각 이미지의 가로 크기 설정
+                        fit: BoxFit.cover, // 이미지가 잘 맞도록 설정
+                      ),
+                    );
+                  },
+                )),
             const SizedBox(height: 20),
             Row(
               children: [
