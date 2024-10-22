@@ -66,9 +66,6 @@ class _MainPageState extends State<MainPage>
   //초기화
   void initState() {
     super.initState();
-    setState(() {
-      isLoading = true; // 초기화
-    });
 
     // 애니메이션 컨트롤러 초기화 (300ms 동안 애니메이션 실행)
     _controller = AnimationController(
@@ -273,7 +270,7 @@ class _MainPageState extends State<MainPage>
                             bsAddress,
                             style: const TextStyle(
                               fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           Container(
@@ -294,8 +291,7 @@ class _MainPageState extends State<MainPage>
                                           MaterialPageRoute(
                                             builder: (context) {
                                               return StoreInfo(
-                                                  idx: idx +
-                                                      1); // 터치하면 해당 가게 상세보기로
+                                                  idx: myDataList[idx].id); // 터치하면 해당 가게 상세보기로
                                             },
                                           ),
                                         );
@@ -619,6 +615,7 @@ class _MainPageState extends State<MainPage>
         logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
         List jsonResponse =
             json.decode(utf8.decode(response.bodyBytes))['data'];
+        logger.d("main_01.dart store data. $jsonResponse");
         return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
       } else if (response.statusCode == 401) {
         logger.d('token expired! status code : ${response.statusCode}');

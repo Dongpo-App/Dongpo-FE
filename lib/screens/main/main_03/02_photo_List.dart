@@ -26,10 +26,11 @@ class _MainPhotoState extends State<MainPhoto> {
       child: imageList.isEmpty
         ? const Center(
           child: Text(
-            '등록된 이미지가 아직 없습니다!',
+            '사진 리뷰가 아직 없는 가게예요',
             style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: Color(0xFF767676)
             ),
           )
         ) // 이미지가 없을 때 로딩 표시
