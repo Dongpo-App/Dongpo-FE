@@ -47,7 +47,6 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
-  static const storage = FlutterSecureStorage();
 
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
   late NaverMapController _mapController;
@@ -103,11 +102,15 @@ class _MainPageState extends State<MainPage>
       parent: _controller,
       curve: Curves.easeInOut,
     ));
+
+    markers = [];
+    logger.d("marker reset $markers");
   }
 
   @override
   void dispose() {
     _controller.dispose(); // 애니메이션 컨트롤러 해제
+    _mapController.dispose();
     super.dispose();
   }
 
@@ -492,11 +495,19 @@ class _MainPageState extends State<MainPage>
   // 기존 마커 삭제 함수
   Future<void> _clearMarkers() async {
     logger.d('마커가 정상적으로 들어왔음 ${markers.length}');
-    for (int i = 0; i < markers.length; i++) {
-      await _mapController.deleteOverlay(NOverlayInfo(
-          type: NOverlayType.marker, id: markers[i].info.id)); // 마커 제거
-    }
-    // _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
+    // for (int i = 0; i < markers.length; i++) {
+    //   await _mapController.deleteOverlay(NOverlayInfo(
+    //       type: NOverlayType.marker, id: markers[i].info.id)); // 마커 제거
+    // }
+    /*
+      해당 코드에서 오류가 난 이유 : 마커를 지우는 기준인 id를 0부터 마커의 수로 함.
+      하지만 마커를 등록할 때는 점포의 id로 사용함.
+      점포의 id와 마커의 수가 다르기 때문에 개별 삭제에 에러가 난 것임.
+      main_01.dart의 기능이 마커 전체 삭제 후 마커 표시를 하는 것이라 이해했기 때문에 특정 id 삭제가 아닌 일괄 삭제로 코드 수정함.
+      특정 id로 마커를 지우고 싶다면 삭제하고 싶은 마커의 점포 id로 지워야 함.
+    */
+    _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
+
     markers.clear(); // 리스트 초기화
     logger.d('마커삭제 테스트 $markers');
   }
@@ -507,6 +518,7 @@ class _MainPageState extends State<MainPage>
     try {
       var defaultMarkerSize = const Size(44, 44);
       await _clearMarkers(); // 기존 마커 제거
+
       for (var data in dataList) {
         NMarker marker = NMarker(
           id: data.id.toString(),
@@ -519,8 +531,9 @@ class _MainPageState extends State<MainPage>
         marker.setOnTapListener((overlay) {
           _onMarkerTapped(marker, data);
         });
-        _mapController.addOverlay(marker);
+
         // 마커 리스트에 추가
+        await _mapController.addOverlay(marker);
         markers.add(marker);
       }
     } catch (e) {

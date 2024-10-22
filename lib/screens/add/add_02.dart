@@ -605,6 +605,9 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       if (response.statusCode == 200) {
         logger.d('성공 보낸 데이터: $data');
         showAlertDialog(context);
+      } else if (response.statusCode == 400) {
+        logger.d("status code : ${response.statusCode}");
+        httpStatusCode400(context);
       } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
         await reissue(context);
@@ -627,8 +630,10 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
         style: TextStyle(color: Colors.white),
       ),
       onPressed: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const MyAppPage()));
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+              builder: (context) => const MyAppPage()),
+        );
       },
     );
 
@@ -636,8 +641,69 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
     // 완료되었을 때 Alert
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.white,
-      title: const Text("등록 성공!"),
-      content: const Text("가게가 성공적으로 등록 완료되었어요!"),
+      title: const Text(
+        "등록 성공",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "가게가 성공적으로 등록 완료되었어요!",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      actions: [
+        Center(child: okButton),
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  httpStatusCode400(BuildContext context) {
+    // set up the button
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(color: Colors.white),
+      ),
+      onPressed: () {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+              builder: (context) => const MyAppPage()),
+        );
+      },
+          );
+
+    // set up the AlertDialog
+    // 완료되었을 때 Alert
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "등록 실패",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "가게와의 거리가 멀어요!",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
       actions: [
         Center(child: okButton),
       ],
