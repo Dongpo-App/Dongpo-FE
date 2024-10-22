@@ -203,8 +203,7 @@ class _MainPageState extends State<MainPage>
                         await _moveCamera(target);
                         await _searchStoreCurrentLocation(target);
                         logger.d(
-                          "검색 이후 마커 생성 : sample ${myDataList.isEmpty ? "no sample" : myDataList[0]}"
-                        );
+                            "검색 이후 마커 생성 : sample ${myDataList.isEmpty ? "no sample" : myDataList[0]}");
                       }
                     },
                     child: Container(
@@ -254,7 +253,9 @@ class _MainPageState extends State<MainPage>
                       height: 200, // 튀어나오는 부분을 포함한 전체 높이
                       decoration: const BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -300,7 +301,8 @@ class _MainPageState extends State<MainPage>
                                         height: 100,
                                         width: 220,
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: [
                                             const SizedBox(
                                               height: 30,
@@ -311,7 +313,9 @@ class _MainPageState extends State<MainPage>
                                                     'assets/images/rakoon.png'),
                                               ),
                                             ),
-                                            SizedBox(width: 8,),
+                                            SizedBox(
+                                              width: 8,
+                                            ),
                                             Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -319,8 +323,8 @@ class _MainPageState extends State<MainPage>
                                                 Text(
                                                   '${myDataList[idx].name}',
                                                   style: const TextStyle(
-                                                      fontWeight: FontWeight.w600,
-                                                      fontSize: 16,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 16,
                                                   ),
                                                 ),
                                                 const SizedBox(height: 4),
@@ -329,7 +333,8 @@ class _MainPageState extends State<MainPage>
                                                       MainAxisAlignment.start,
                                                   children: [
                                                     Icon(
-                                                      Icons.lightbulb_outline_rounded,
+                                                      Icons
+                                                          .lightbulb_outline_rounded,
                                                       size: 12,
                                                       color: Color(0xffF15A2B),
                                                     ),
@@ -337,9 +342,11 @@ class _MainPageState extends State<MainPage>
                                                     Text(
                                                       '영업 가능성 있어요!',
                                                       style: TextStyle(
-                                                        fontWeight: FontWeight.w600 ,
-                                                        fontSize: 12 ,
-                                                        color: Color(0xFF767676),
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 12,
+                                                        color:
+                                                            Color(0xFF767676),
                                                       ),
                                                     ),
                                                   ],
@@ -396,10 +403,9 @@ class _MainPageState extends State<MainPage>
                           Text(
                             "해당 위치로 재검색",
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white
-                            ),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white),
                           ),
                           SizedBox(width: 8.0),
                           Icon(Icons.refresh, color: Colors.white, size: 16.0),
@@ -416,13 +422,12 @@ class _MainPageState extends State<MainPage>
                         bottom: _locationBtn.value,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            elevation: 8,
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(4),
-                            foregroundColor: Color(0xFF003ACE),
-                            backgroundColor: WidgetStateColor.resolveWith(
-                              (states) => Colors.white)
-                          ),
+                              elevation: 8,
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(4),
+                              foregroundColor: Color(0xFF003ACE),
+                              backgroundColor: WidgetStateColor.resolveWith(
+                                  (states) => Colors.white)),
                           onPressed: () async {
                             NLatLng target = await _getCurrentNLatLng();
                             _userMarker.setPosition(target);
@@ -444,17 +449,16 @@ class _MainPageState extends State<MainPage>
                       right: 0,
                       child: Center(
                         child: IconButton(
-                          onPressed: () {
-                            _toggleBottomSheet();
-                            //현재 위치 위도경도 기준으로해서 리스트 받아온거 기본정보 띄우는 함수 만들어야함
-                            //ex)) 게시판의 제목
-                          },
-                          icon: const Icon(
-                            Icons.remove,
-                            size: 36,
-                            color: Color(0xFF767676),
-                          )
-                        ),
+                            onPressed: () {
+                              _toggleBottomSheet();
+                              //현재 위치 위도경도 기준으로해서 리스트 받아온거 기본정보 띄우는 함수 만들어야함
+                              //ex)) 게시판의 제목
+                            },
+                            icon: const Icon(
+                              Icons.remove,
+                              size: 36,
+                              color: Color(0xFF767676),
+                            )),
                       ),
                     );
                   },
@@ -558,7 +562,8 @@ class _MainPageState extends State<MainPage>
   Future<void> _initUserMarker() async {
     NLatLng position = await _getCurrentNLatLng();
     // 사용자 위치 아이콘 에셋 지정
-    const myLocationIcon = NOverlayImage.fromAssetImage('assets/icon/my_location.png');
+    const myLocationIcon =
+        NOverlayImage.fromAssetImage('assets/icon/my_location.png');
     // 마커 객체 생성
     _userMarker = NMarker(
       id: "my_location_marker",
@@ -573,46 +578,57 @@ class _MainPageState extends State<MainPage>
   // 카메라 위치 기반으로 근처 가게 검색
   Future<List<MyData>> _researchFromMe() async {
     //해당 카메라 기준 위도경도 가져옴
-    final cameraPosition = await _mapController.getCameraPosition();
-    final latitude = cameraPosition.target.latitude;
-    final longitude = cameraPosition.target.longitude;
-    logger.d("researchFromME:$cameraPosition");
-    final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse(
-        '$serverUrl/api/store?longitude=$longitude&latitude=$latitude');
+    try {
+      final cameraPosition = await _mapController.getCameraPosition();
+      final latitude = cameraPosition.target.latitude;
+      final longitude = cameraPosition.target.longitude;
+      logger.d("researchFromME:$cameraPosition");
+      final accessToken = await storage.read(key: 'accessToken');
 
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
+      final url = Uri.parse(
+          '$serverUrl/api/store?longitude=$longitude&latitude=$latitude');
 
-    final response = await http.get(url, headers: headers);
+      final headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      };
 
-    if (response.statusCode == 200) {
-      logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
-      List jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
-      return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
-    } else if (response.statusCode == 401) {
-      logger.d('token expired! status code : ${response.statusCode}');
-      await reissue(context);
-      return _researchFromMe();
-    } else {
-      logger.e(
-          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-      throw Exception('HTTP ERROR !!! ${response.body}');
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
+        List jsonResponse =
+            json.decode(utf8.decode(response.bodyBytes))['data'];
+        return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
+      } else if (response.statusCode == 401) {
+        logger.d('token expired! status code : ${response.statusCode}');
+        await reissue(context);
+        return _researchFromMe();
+      } else {
+        logger.e(
+            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
+        throw Exception('HTTP ERROR !!! ${response.body}');
+      }
+    } catch (e) {
+      // TODO
+      logger.d('Error in _researchFromMe method 에러내용 : $e');
+      throw {logger.d('Error !! ')};
     }
   }
 
   Future<void> _searchStoreCurrentLocation(NLatLng target) async {
     // 점포 데이터 받기
+
     try {
       List<MyData> storeList = await _researchFromMe();
+
       myDataList = storeList;
       bsAddress = await _reverseGeocode(target);
+
       _addMarkers(storeList);
-    } on Exception catch (e) {
-      logger.e("Error! message: $e");
+    } catch (e) {
+      logger.d('_searchStoreCurrentLocation 함수 오류 ');
     }
   }
 
