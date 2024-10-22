@@ -3,9 +3,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
 
-class MainTitle2 extends StatelessWidget {
+class MainTitle2 extends StatefulWidget {
   final int idx;
   const MainTitle2({super.key, required this.idx});
+
+  @override
+  State<MainTitle2> createState() => _MainTitle2State();
+}
+
+class _MainTitle2State extends State<MainTitle2> {
+  late final SetOpenPossbility;
+
+  @override
+  void initState() {
+    super.initState();
+    SetOpenPossbility = getOpenPossibility();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,17 +39,27 @@ class MainTitle2 extends StatelessWidget {
           ],
         ),
         const Text("{A} M"),
-        const Row(
+        Row(
           children: [
             Icon(
               Icons.location_on_outlined,
               color: Color(0xffF15A2B),
             ),
-            Text("A(영업 가능성이 높아요!)")
+            Text(
+              SetOpenPossbility ? "영업 가능성이 높아요!" : "영업 가능성이 있어요!",
+            )
           ],
         )
       ],
     );
+  }
+
+  bool getOpenPossibility() {
+    if (storeData?.openPossibility == "HIGH") {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 

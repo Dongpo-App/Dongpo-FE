@@ -48,60 +48,52 @@ class _UserActionState extends State<UserAction> {
             size: 24,
           ),
         ),
-        const Text(
-          "(A)리뷰 수",
+        Text(
+          "${storeData?.reviews.length}",
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: Color(0xFF767676)
-          ),
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Color(0xFF767676)),
         ),
         const SizedBox(
           width: 16,
         ),
-        const Text(
-          "|", 
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF767676)
-          )
-        ),
+        const Text("|",
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF767676))),
         //북마크 추가를 기존에 했었다면
         _selected
-          ? IconButton(
-            onPressed: () {
-              setState(() {
-                _selected = false;
-              });
-              removeBookMark();
-            },
-            icon: const Icon(
-              Icons.bookmark_rounded,
-              size: 24,
-            ),
-            style: ButtonStyle(
-              iconColor: WidgetStateColor.resolveWith(
-                (states) => Color(0xffF15A2B)
+            ? IconButton(
+                onPressed: () {
+                  setState(() {
+                    _selected = false;
+                  });
+                  removeBookMark();
+                },
+                icon: const Icon(
+                  Icons.bookmark_rounded,
+                  size: 24,
+                ),
+                style: ButtonStyle(
+                    iconColor: WidgetStateColor.resolveWith(
+                        (states) => Color(0xffF15A2B))),
               )
-            ),
-          )
-          : IconButton(
-            onPressed: () {
-              setState(() {
-                _selected = true;
-              });
-              addBookMark();
-            },
-            icon: const Icon(
-              Icons.bookmark_rounded,
-              size: 24,
-              color: Color(0xFF767676),
-            ),
-          ),
-        const Text(
-          "(A)북마크 수"
-        ),
+            : IconButton(
+                onPressed: () {
+                  setState(() {
+                    _selected = true;
+                  });
+                  addBookMark();
+                },
+                icon: const Icon(
+                  Icons.bookmark_rounded,
+                  size: 24,
+                  color: Color(0xFF767676),
+                ),
+              ),
+        const Text("(A)북마크 수"),
       ],
     );
   }

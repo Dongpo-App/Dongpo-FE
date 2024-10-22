@@ -41,9 +41,6 @@ class StoreInfo extends StatefulWidget {
 
 class _StoreInfoState extends State<StoreInfo> {
   BookmarkViewModel viewModel = BookmarkViewModel();
-  // 로딩
-  bool isLoading = false;
-
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
   }
@@ -58,15 +55,12 @@ class _StoreInfoState extends State<StoreInfo> {
 
   // 비동기 메서드로 가게 정보를 가져옴
   Future<void> _fetchStoreDetails() async {
-    setState(() {
-      isLoading = true; // 초기화
-    });
     try {
       final data = await _storeSangse(); // 비동기 호출
-
+      logger.d(
+          'StoreData Test : ${data.visitSuccessfulCount} : ${data.visitFailCount}');
       setState(() {
         storeData = data; // 가져온 데이터를 myStoreList에 할당
-        isLoading = false;
       });
     } catch (e) {
       logger.e('가게 정보 불러오는데 뭔가 잘못됌 에러 사유: $e'); // 에러 처리
@@ -123,117 +117,120 @@ class _StoreInfoState extends State<StoreInfo> {
             onPressed: () {
               //신고 기능 구현
               showModalBottomSheet(
-              context: context,
-              builder: (context) {
-                return StatefulBuilder(
-                    builder: (BuildContext context, StateSetter setState) {
-                  return Container(
-                    color: Colors.white,
-                    padding: const EdgeInsets.only(top: 24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Row(
-                            children: [
-                              const Text(
-                                "가게에 문제가 있나요?",
+                  context: context,
+                  builder: (context) {
+                    return StatefulBuilder(
+                        builder: (BuildContext context, StateSetter setState) {
+                      return Container(
+                        color: Colors.white,
+                        padding: const EdgeInsets.only(top: 24),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24.0),
+                              child: Row(
+                                children: [
+                                  const Text(
+                                    "가게에 문제가 있나요?",
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                    onPressed: () {
+                                      setState(() => value = 0);
+                                      Navigator.pop(context);
+                                    },
+                                    icon: const Icon(
+                                      CupertinoIcons.xmark,
+                                      size: 24,
+                                      color: Color(0xFF767676),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 24.0),
+                              child: Text(
+                                "항목에 알맞게 선택해주세요.",
                                 style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
-                              const Spacer(),
-                              IconButton(
-                                onPressed: () {
-                                  setState(() => value = 0);
-                                  Navigator.pop(context);
-                                },
-                                icon : const Icon(
-                                  CupertinoIcons.xmark,
-                                  size: 24,
-                                  color: Color(0xFF767676),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Text(
-                            "항목에 알맞게 선택해주세요.",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
                             ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: SizedBox(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                _radioBtn('없어진 가게에요', 1, setState),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                _radioBtn('위치가 틀려요', 2, setState),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                _radioBtn('부적절한 정보가 포함되어 있어요', 3, setState),
-                              ],
+                            const SizedBox(
+                              height: 40,
                             ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              logger.d("사용하고있는 값 : ${widget.idx}");
-                              (value == 0) ? null : storeReport(value);
-                              // 신고 api 추가
-                            },
-                            style: ElevatedButton.styleFrom(
-                              splashFactory: (value == 0) // 아무것도 터치 안했으면
-                                ? NoSplash.splashFactory //스플레시 효과 비활성화
-                                : InkSplash.splashFactory, //스플레시 효과 활성화
-                              minimumSize: const Size(double.infinity, 40),
-                              shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(0))
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24.0),
+                              child: SizedBox(
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    _radioBtn('없어진 가게에요', 1, setState),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    _radioBtn('위치가 틀려요', 2, setState),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    _radioBtn('부적절한 정보가 포함되어 있어요', 3, setState),
+                                  ],
+                                ),
                               ),
-                              backgroundColor: value != 0
-                                ? const Color(0xffF15A2B)
-                                : const Color(0xFFF4F4F4),
                             ),
-                            child: Text(
-                              "가게 신고",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                                color: (value > 0)
-                                  ? Colors.white
-                                  : const Color(0xFF767676),
-                              ),
-                            )
-                          ),
+                            const SizedBox(
+                              height: 40,
+                            ),
+                            Expanded(
+                              child: ElevatedButton(
+                                  onPressed: () {
+                                    logger.d("사용하고있는 값 : ${widget.idx}");
+                                    (value == 0) ? null : storeReport(value);
+                                    // 신고 api 추가
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    splashFactory: (value == 0) // 아무것도 터치 안했으면
+                                        ? NoSplash.splashFactory //스플레시 효과 비활성화
+                                        : InkSplash.splashFactory, //스플레시 효과 활성화
+                                    minimumSize:
+                                        const Size(double.infinity, 40),
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(0))),
+                                    backgroundColor: value != 0
+                                        ? const Color(0xffF15A2B)
+                                        : const Color(0xFFF4F4F4),
+                                  ),
+                                  child: Text(
+                                    "가게 신고",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                      color: (value > 0)
+                                          ? Colors.white
+                                          : const Color(0xFF767676),
+                                    ),
+                                  )),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                });
-              });
+                      );
+                    });
+                  });
             },
             icon: const Icon(
               Icons.warning_rounded,
@@ -244,48 +241,46 @@ class _StoreInfoState extends State<StoreInfo> {
         ],
       ),
       body: storeData == null // storeData가 null인 경우 로딩 표시
-        ? const Center(child: CircularProgressIndicator())
-        : isLoading
           ? const Center(child: CircularProgressIndicator())
           : Container(
-            margin: const EdgeInsets.all(24),
-            child: ListView(
-              children: [
-                //제목, 영업가능성, 거리
-                MainTitle(idx: widget.idx),
-                //사진
-                const SizedBox(
-                  height: 24,
-                ),
-                const MainPhoto(),
-                const SizedBox(
-                  height: 32,
-                ),
-                //리뷰 갯수, 버튼
-                UserAction(idx: widget.idx),
-                const SizedBox(
-                  height: 96,
-                ),
-                //방문인증
-                const BangMoon(),
-                const SizedBox(
-                  height: 96,
-                ),
-                //리뷰 관련
-                ShowReview(idx: widget.idx),
-                const SizedBox(
-                  height: 80,
-                ),
-                //가게정보
-                const GageJungbo(),
-                const SizedBox(
-                  height: 80,
-                ),
-                //이 가게 단골 손님
-                const DanGolGuest(),
-              ],
+              margin: const EdgeInsets.all(24),
+              child: ListView(
+                children: [
+                  //제목, 영업가능성, 거리
+                  MainTitle(idx: widget.idx),
+                  //사진
+                  const SizedBox(
+                    height: 24,
+                  ),
+                  const MainPhoto(),
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  //리뷰 갯수, 버튼
+                  UserAction(idx: widget.idx),
+                  const SizedBox(
+                    height: 96,
+                  ),
+                  //방문인증
+                  const BangMoon(),
+                  const SizedBox(
+                    height: 96,
+                  ),
+                  //리뷰 관련
+                  ShowReview(idx: widget.idx),
+                  const SizedBox(
+                    height: 80,
+                  ),
+                  //가게정보
+                  const GageJungbo(),
+                  const SizedBox(
+                    height: 80,
+                  ),
+                  //이 가게 단골 손님
+                  const DanGolGuest(),
+                ],
+              ),
             ),
-          ),
     );
   }
 
@@ -303,19 +298,18 @@ class _StoreInfoState extends State<StoreInfo> {
         style: ElevatedButton.styleFrom(
           elevation: 0,
           minimumSize: const Size(double.infinity, 40),
-          backgroundColor:
-            (value == index) ? const Color(0xFFF15A2B) : const Color(0xFFF4F4F4),
+          backgroundColor: (value == index)
+              ? const Color(0xFFF15A2B)
+              : const Color(0xFFF4F4F4),
           shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12))
-          ),
+              borderRadius: BorderRadius.all(Radius.circular(12))),
         ),
         child: Text(
           text,
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: (value == index) ? Colors.white : const Color(0xFF767676)
-          ),
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: (value == index) ? Colors.white : const Color(0xFF767676)),
         ),
       ),
     );

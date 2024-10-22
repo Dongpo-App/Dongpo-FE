@@ -41,8 +41,8 @@ class _ShowReviewState extends State<ShowReview> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const Text(
-            "리뷰 A개",
+          Text(
+            "리뷰 ${reviewList.length}개",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
           ),
           SizedBox(
@@ -460,7 +460,7 @@ class _ShowReviewState extends State<ShowReview> {
       if (response.statusCode == 200) {
         showAlertDialog(context);
       }
-    } on Exception catch (e) {
+    } catch (e) {
       // TODO
     }
   }
