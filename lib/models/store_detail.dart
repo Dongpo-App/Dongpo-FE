@@ -15,6 +15,8 @@ class StoreSangse {
   final List<Review> reviews;
   final String openPossibility;
   final bool isBookmarked;
+  final int? visitSuccessfulCount;
+  final int? visitFailCount;
 
   StoreSangse({
     required this.id,
@@ -33,6 +35,8 @@ class StoreSangse {
     required this.reviews,
     required this.openPossibility,
     required this.isBookmarked,
+    this.visitFailCount,
+    this.visitSuccessfulCount,
   });
 
   factory StoreSangse.fromJson(Map<String, dynamic> json) {
@@ -61,6 +65,8 @@ class StoreSangse {
           : [],
       openPossibility: json['openPossibility'] as String,
       isBookmarked: json['isBookmarked'] as bool,
+      visitFailCount: json['visitFailCount'] as int?,
+      visitSuccessfulCount: json['visitSuccessfulCount'] as int?,
     );
   }
 }

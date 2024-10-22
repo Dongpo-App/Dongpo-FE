@@ -2,9 +2,22 @@ import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class MainTitle extends StatelessWidget {
+class MainTitle extends StatefulWidget {
   final int idx;
   const MainTitle({super.key, required this.idx});
+
+  @override
+  State<MainTitle> createState() => _MainTitleState();
+}
+
+class _MainTitleState extends State<MainTitle> {
+  late final SetOpenPossbility;
+
+  @override
+  void initState() {
+    super.initState();
+    SetOpenPossbility = getOpenPossibility();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +37,11 @@ class MainTitle extends StatelessWidget {
             Column(
               children: [
                 IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                      size: 24,
-                      CupertinoIcons.arrow_up_right_diamond_fill,
-                      color: Color(0xffF15A2B)
-                  )
-                ),
+                    onPressed: () {},
+                    icon: const Icon(
+                        size: 24,
+                        CupertinoIcons.arrow_up_right_diamond_fill,
+                        color: Color(0xffF15A2B))),
                 const Text(
                   "{A}m",
                   style: TextStyle(
@@ -42,16 +53,18 @@ class MainTitle extends StatelessWidget {
             )
           ],
         ),
-        const Row(
+        Row(
           children: [
             Icon(
               Icons.lightbulb_outline_rounded,
               size: 16,
               color: Color(0xffF15A2B),
             ),
-            SizedBox(width: 8,),
+            SizedBox(
+              width: 8,
+            ),
             Text(
-              "A(영업 가능성이 높아요!)",
+              SetOpenPossbility ? "영업 가능성이 높아요!" : "영업 가능성이 있어요!",
               style: TextStyle(
                 color: Color(0xFF767676),
                 fontSize: 14,
@@ -62,5 +75,13 @@ class MainTitle extends StatelessWidget {
         )
       ],
     );
+  }
+
+  bool getOpenPossibility() {
+    if (storeData?.openPossibility == "HIGH") {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -21,7 +22,9 @@ class BangMoon extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
-      SizedBox(height: 24,),
+      SizedBox(
+        height: 24,
+      ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -30,17 +33,17 @@ class BangMoon extends StatelessWidget {
             height: 48,
             width: contentsWidth * 0.48,
             decoration: BoxDecoration(
-              color: Color(0x3313C925),
-              borderRadius: BorderRadius.circular(12.0)
-            ),
-            child: const Row(
+                color: Color(0x3313C925),
+                borderRadius: BorderRadius.circular(12.0)),
+            child: Row(
               children: [
-                SizedBox(width: 8,),
-                Icon(
-                  size: 24,
-                  color: Color(0xFF10AA1F),
-                  Icons.sentiment_satisfied_alt
+                SizedBox(
+                  width: 8,
                 ),
+                Icon(
+                    size: 24,
+                    color: Color(0xFF10AA1F),
+                    Icons.sentiment_satisfied_alt),
                 SizedBox(
                   width: 8,
                 ),
@@ -52,7 +55,7 @@ class BangMoon extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'A명',
+                  '${storeData?.visitSuccessfulCount ?? 0} 회',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -66,12 +69,13 @@ class BangMoon extends StatelessWidget {
             height: 48,
             width: contentsWidth * 0.48,
             decoration: BoxDecoration(
-              color: Color(0x33C91E13),
-              borderRadius: BorderRadius.circular(12.0)
-            ),
-            child: const Row(
+                color: Color(0x33C91E13),
+                borderRadius: BorderRadius.circular(12.0)),
+            child: Row(
               children: [
-                SizedBox(width: 8,),
+                SizedBox(
+                  width: 8,
+                ),
                 Icon(
                   color: Color(0xFFAD271F),
                   Icons.sentiment_dissatisfied_outlined,
@@ -88,7 +92,7 @@ class BangMoon extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'A명',
+                  '${storeData?.visitFailCount ?? 0} 회',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -99,33 +103,29 @@ class BangMoon extends StatelessWidget {
           ),
         ],
       ),
-      SizedBox(height: 24,),
+      SizedBox(
+        height: 24,
+      ),
       Container(
         height: 44,
         width: double.infinity,
         child: ElevatedButton(
           onPressed: () {
             Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => const SecondPage()
-              )
-            );
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => const SecondPage()));
           },
           style: ElevatedButton.styleFrom(
             elevation: 0,
             shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12))
-            ),
+                borderRadius: BorderRadius.all(Radius.circular(12))),
             backgroundColor: const Color(0xffF15A2B),
           ),
           child: const Text(
             '방문 인증 하러가기',
             style: TextStyle(
-              fontSize: 14,
-              color: Colors.white,
-              fontWeight: FontWeight.w600
-            ),
+                fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ),
       )
@@ -220,13 +220,13 @@ class _SecondPageState extends State<SecondPage> {
                       Text(
                         '가게 방문 인증',
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 24
-                        ),
+                            fontWeight: FontWeight.w600, fontSize: 24),
                       ),
                     ],
                   ),
-                  SizedBox(height: 16,),
+                  SizedBox(
+                    height: 16,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -248,30 +248,29 @@ class _SecondPageState extends State<SecondPage> {
                               borderRadius: BorderRadius.circular(12.0)),
                           child: Row(
                             children: [
-                              SizedBox(width: 8,),
+                              SizedBox(
+                                width: 8,
+                              ),
                               Icon(
                                 color: okValue == 1
-                                  ? Color(0xFF10AA1F)
-                                  : Color(0xFF767676),
+                                    ? Color(0xFF10AA1F)
+                                    : Color(0xFF767676),
                                 Icons.sentiment_satisfied_alt,
                                 size: 24,
                               ),
                               const SizedBox(
                                 width: 8,
                               ),
-                              Text(
-                                '방문 성공',
-                                style: okValue == 1
-                                  ? const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600
-                                  )
-                                  : const TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xFF767676),
-                                    fontWeight: FontWeight.w400,
-                                  )
-                              ),
+                              Text('방문 성공',
+                                  style: okValue == 1
+                                      ? const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600)
+                                      : const TextStyle(
+                                          fontSize: 14,
+                                          color: Color(0xFF767676),
+                                          fontWeight: FontWeight.w400,
+                                        )),
                             ],
                           ),
                         ),
@@ -288,13 +287,15 @@ class _SecondPageState extends State<SecondPage> {
                           height: 48,
                           width: contentsWidth * 0.48,
                           decoration: BoxDecoration(
-                            color: noValue == 1
-                              ? Color(0x33C91E13)
-                              : Color(0xFFF4F4F4),
-                          borderRadius: BorderRadius.circular(12.0)),
+                              color: noValue == 1
+                                  ? Color(0x33C91E13)
+                                  : Color(0xFFF4F4F4),
+                              borderRadius: BorderRadius.circular(12.0)),
                           child: Row(
                             children: [
-                              SizedBox(width: 8,),
+                              SizedBox(
+                                width: 8,
+                              ),
                               Icon(
                                 size: 24,
                                 color: noValue == 1
@@ -305,34 +306,33 @@ class _SecondPageState extends State<SecondPage> {
                               const SizedBox(
                                 width: 8,
                               ),
-                              Text(
-                                '방문 실패',
-                                style: noValue == 1
-                                    ? const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600
-                                    )
-                                    : const TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFF767676),
-                                      fontWeight: FontWeight.w400,
-                                    )
-                              ),
+                              Text('방문 실패',
+                                  style: noValue == 1
+                                      ? const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600)
+                                      : const TextStyle(
+                                          fontSize: 14,
+                                          color: Color(0xFF767676),
+                                          fontWeight: FontWeight.w400,
+                                        )),
                             ],
                           ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 16,),
+                  SizedBox(
+                    height: 16,
+                  ),
                   Container(
                     height: 44,
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
                         (okValue == 1 || noValue == 1)
-                          ? showAlertDialog(context, okValue, noValue)
-                          : null;
+                            ? showAlertDialog(context, okValue, noValue)
+                            : null;
 
                         //방문 인증 메서드 구현
                       },
@@ -342,8 +342,8 @@ class _SecondPageState extends State<SecondPage> {
                             ? NoSplash.splashFactory
                             : InkSplash.splashFactory,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(12))
-                        ),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(12))),
                         backgroundColor: (okValue == 1 || noValue == 1)
                             ? const Color(0xffF15A2B)
                             : const Color(0xFFF4F4F4),
@@ -352,11 +352,11 @@ class _SecondPageState extends State<SecondPage> {
                         '방문 인증',
                         style: TextStyle(
                           color: (okValue == 1 || noValue == 1)
-                            ? Colors.white
-                            : Color(0xFF767676),
+                              ? Colors.white
+                              : Color(0xFF767676),
                           fontWeight: (okValue == 1 || noValue == 1)
-                            ? FontWeight.w600
-                            : FontWeight.w400,
+                              ? FontWeight.w600
+                              : FontWeight.w400,
                         ),
                       ),
                     ),
