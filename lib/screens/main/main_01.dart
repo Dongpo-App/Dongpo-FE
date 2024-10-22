@@ -141,7 +141,7 @@ class _MainPageState extends State<MainPage>
                     await _moveCamera(_userMarker.position);
                     await _searchStoreCurrentLocation(_userMarker.position);
                     logger.d(
-                        "초기 마커 생성 sample : ${myDataList.isEmpty ? "no sample" : myDataList[0]}");
+                        "초기 마커 생성 sample : ${myDataList.isEmpty ? "마커가 안들어있음" : myDataList[0]}");
                     setState(() {
                       _showReSearchButton = false;
                     });
@@ -585,7 +585,7 @@ class _MainPageState extends State<MainPage>
       final longitude = cameraPosition.target.longitude;
       logger.d("researchFromME:$cameraPosition");
       final accessToken = await storage.read(key: 'accessToken');
-
+      logger.d('_researchFromMe() http통신 전 ');
       final url = Uri.parse(
           '$serverUrl/api/store?longitude=$longitude&latitude=$latitude');
 
