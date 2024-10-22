@@ -15,7 +15,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final loginViewModel = LoginViewModel(AppleKakaoNaverLogin());
-  bool isLogined = false;
+  String responseStatusCode = "";
   bool isLogouted = false;
 
   // Future<void> loginsfa() async {}
@@ -49,8 +49,8 @@ class _LoginPageState extends State<LoginPage> {
               child: InkWell(
                 onTap: () async {
                   // 애플 로그인을 터치했을 때 로직(로그인 -> secureStorage에 토큰, 플랫폼 저장 -> 네비게이션 페이지로 이동)
-                  isLogined = await loginViewModel.appleLogin(context);
-                  if (isLogined) {
+                  responseStatusCode = await loginViewModel.appleLogin(context);
+                  if (responseStatusCode == "200") {
                     // 로그인플랫폼 & 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
                     await storage.write(
                         key: 'accessToken', value: loginViewModel.accessToken);
@@ -68,7 +68,13 @@ class _LoginPageState extends State<LoginPage> {
                           builder: (context) => const MyAppPage()
                       ),
                     );
-                  } else {
+                  } else if (responseStatusCode == "401") {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          builder: (context) => const AppleUserInfoPage()
+                      ),
+                    );
+                  } else if (responseStatusCode == "409") {
                     httpStatusCode409();
                   }
                 },
@@ -96,8 +102,8 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  isLogined = await loginViewModel.naverLogin(context);
-                  if (isLogined) {
+                  responseStatusCode = await loginViewModel.naverLogin(context);
+                  if (responseStatusCode == "200") {
                     // 로그인플랫폼 & 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
                     await storage.write(
                         key: 'accessToken', value: loginViewModel.accessToken);
@@ -143,8 +149,8 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  isLogined = await loginViewModel.kakaoLogin(context);
-                  if (isLogined) {
+                  responseStatusCode = await loginViewModel.kakaoLogin(context);
+                  if (responseStatusCode == "200") {
                     // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
                     await storage.write(
                         key: 'accessToken', value: loginViewModel.accessToken);

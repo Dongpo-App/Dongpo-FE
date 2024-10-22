@@ -29,7 +29,7 @@ class _MyPageState extends State<MyPage> {
 
   // 로그아웃 관련
   final loginViewModel = LoginViewModel(AppleKakaoNaverLogin());
-  bool isLogouted = false;
+  String isLogouted = "";
 
   // 사용자 정보 관련
   MyPageViewModel viewModel = MyPageViewModel();
@@ -397,7 +397,7 @@ class _MyPageState extends State<MyPage> {
                           }
                           isLogouted =
                               await loginViewModel.logout(loginPlatform);
-                          if (isLogouted) {
+                          if (isLogouted == "logout") {
                             // FlutterSecureStorage에 있는 token 삭제
                             await storage.delete(key: 'accessToken');
                             await storage.delete(key: 'refreshToken');
@@ -435,7 +435,7 @@ class _MyPageState extends State<MyPage> {
                           }
                           isLogouted =
                               await loginViewModel.logout(loginPlatform);
-                          if (isLogouted) {
+                          if (isLogouted == "logout") {
                             // FlutterSecureStorage에 있는 token 삭제
                             await storage.delete(key: 'accessToken');
                             await storage.delete(key: 'refreshToken');

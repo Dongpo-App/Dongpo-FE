@@ -65,7 +65,26 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Image.asset('assets/images/login.png'),
+                  Stack(
+                    alignment: Alignment.topLeft,
+                    children: [
+                      Image.asset(
+                        'assets/images/login.png',
+                        width: screenWidth, // 전체 너비 사용
+                        fit: BoxFit.cover, // 이미지를 잘라내지 않고 채움
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(
+                          Icons.chevron_left,
+                          size: 24,
+                          color: Color(0xFFFFFFFF),
+                        ),
+                      ),
+                    ],
+                  ),
                   SizedBox(
                     height: screenHeight * 0.08,
                   ),

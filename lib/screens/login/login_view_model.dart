@@ -51,13 +51,13 @@ Future<void> reissue(BuildContext context) async {
       await storage.write(key: 'refreshToken', value: token['refreshToken']);
     } else if (response.statusCode == 401) {
       final loginViewModel = LoginViewModel(AppleKakaoNaverLogin());
-      bool isLogouted = false;
+      String isLogouted = "";
 
       String? loginPlatform = await storage.read(key: 'loginPlatform');
       logger.d("reissue : loginPlatform - ${loginPlatform}");
 
       isLogouted = await loginViewModel.logout(loginPlatform);
-      if (isLogouted) {
+      if (isLogouted == "logout") {
         // FlutterSecureStorage에 있는 token 삭제
         await storage.delete(key: 'accessToken');
         await storage.delete(key: 'refreshToken');
@@ -84,7 +84,7 @@ Future<void> reissue(BuildContext context) async {
 
 class LoginViewModel {
   final SocialLogin _socialLogin;
-  bool isLogined = false;
+  String responseStatusCode = "";
   bool isLogouted = false;
   // 네이버, 카카오 토큰
   String? socialToken;
@@ -99,35 +99,33 @@ class LoginViewModel {
 
   LoginViewModel(this._socialLogin);
 
-  Future<bool> kakaoLogin(BuildContext context) async {
+  Future<String> kakaoLogin(BuildContext context) async {
     socialToken = await _socialLogin.isKakaoLogin();
     if (socialToken != null) {
       // 카카오 로그인이 성공함
       loginPlatform = LoginPlatform.kakao;
-      isLogined = (await tokenAPI(context))!;
-      return isLogined;
+      responseStatusCode = (await tokenAPI(context))!;
+      return responseStatusCode;
     } else {
       logger.d("kakao login fail");
-      isLogined = false;
-      return isLogined;
+      return responseStatusCode;
     }
   }
 
-  Future<bool> naverLogin(BuildContext context) async {
+  Future<String> naverLogin(BuildContext context) async {
     socialToken = await _socialLogin.isNaverLogin();
     if (socialToken != null) {
       // 네이버 로그인 성공함
       loginPlatform = LoginPlatform.naver;
-      isLogined = (await tokenAPI(context))!;
-      return isLogined;
+      responseStatusCode = (await tokenAPI(context))!;
+      return responseStatusCode;
     } else {
       logger.d("naver login fail");
-      isLogined = false;
-      return isLogined;
+      return responseStatusCode;
     }
   }
 
-  Future<bool> appleLogin(BuildContext context) async {
+  Future<String> appleLogin(BuildContext context) async {
     final appleLoginToken = await _socialLogin.isAppleLogin();
     if (appleLoginToken != null) {
       // 애플 로그인 성공함
@@ -135,28 +133,27 @@ class LoginViewModel {
       identityToken = appleLoginToken["identityToken"];
       authorizationCode = appleLoginToken["authorizationCode"];
 
-      isLogined = (await tokenAPI(context))!;
-      return isLogined;
-    } else {
-      isLogined = false;
-      return isLogined;
+      responseStatusCode = (await tokenAPI(context))!;
+      return responseStatusCode;
+    } else {;
+      return responseStatusCode;
     }
   }
 
-  Future<bool> logout(String? loginPlatformString) async {
+  Future<String> logout(String? loginPlatformString) async {
     LoginPlatform loginPlatform = LoginPlatformExtension.fromString(
         loginPlatformString); // String -> enum
     isLogouted = await _socialLogin.isLogout(loginPlatform);
     if (isLogouted) {
       // 로그아웃 성공
       loginPlatform = LoginPlatform.none;
-      isLogined = false;
-      return isLogouted;
+      responseStatusCode = "logout";
+      return responseStatusCode;
     }
-    return false;
+    return responseStatusCode;
   }
 
-  Future<bool?> tokenAPI(BuildContext context) async {
+  Future<String> tokenAPI(BuildContext context) async {
     logger.d("loginPlatform : $loginPlatform");
     Map<String, String> data;
 
@@ -184,7 +181,7 @@ class LoginViewModel {
         accessToken = token['accessToken'];
         refreshToken = token['refreshToken'];
 
-        return true;
+        return response.statusCode.toString();
       } else if (response.statusCode == 401) {
         logger.d("apple user sign up.");
 
@@ -195,15 +192,13 @@ class LoginViewModel {
         await storage.write(key: 'email', value: token['email']);
         Map<String, String> allValues = await storage.readAll();
 
-        logger.d("apple login 401 $allValues");
+        logger.d("apple user sign up : $allValues");
 
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const AppleUserInfoPage()),
-        );
+        return response.statusCode.toString();
       } else if (response.statusCode == 409) {
         logger.d("status code : ${response.statusCode} / 사용자 이메일이 중복됩니다.");
 
-        return false;
+        return response.statusCode.toString();
       } else {
         // 실패
         logger.d("Fail to load $data. status code : ${response.statusCode}");
