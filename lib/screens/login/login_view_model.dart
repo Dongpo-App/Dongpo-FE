@@ -2,13 +2,10 @@ import 'dart:convert';
 import 'package:dongpo_test/screens/login/social_login.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'apple_kakao_naver_login.dart';
-import 'apple_user_info_page.dart';
 import 'login.dart';
 import 'login_platform.dart';
 
@@ -133,7 +130,7 @@ class LoginViewModel {
       identityToken = appleLoginToken["identityToken"];
       authorizationCode = appleLoginToken["authorizationCode"];
 
-      responseStatusCode = (await tokenAPI(context))!;
+      responseStatusCode = await tokenAPI(context);
       return responseStatusCode;
     } else {;
       return responseStatusCode;
@@ -213,7 +210,7 @@ class LoginViewModel {
     }
   }
 
-  Future<bool> appleSignUpPostAPI(BuildContext context, String nickName, String birthday, String gender) async {
+  Future<String> appleSignUpPostAPI(BuildContext context, String nickName, String birthday, String gender) async {
     final socialId = await storage.read(key: 'socialId');
     final email = await storage.read(key: 'email');
 
@@ -243,11 +240,11 @@ class LoginViewModel {
         accessToken = token['accessToken'];
         refreshToken = token['refreshToken'];
 
-        return true;
+        return response.statusCode.toString();
       } else if (response.statusCode == 409) {
         logger.d("status code : ${response.statusCode}");
 
-        return false;
+        return response.statusCode.toString();
       } else {
         // 실패
         logger.d("Fail to load $data. status code : ${response.statusCode}");

@@ -35,8 +35,8 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
   bool birthdayUpdateValue = false;
   bool genderUpdateValue = false;
 
-  // 회원가입 성공
-  bool signUp = false;
+  // 회원가입 API 결과
+  String signUp = "";
 
   @override
   void dispose() {
@@ -393,7 +393,7 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                           signUp = await viewModel.appleSignUpPostAPI(context, nickName, _birthdayController.text, selectedGender!);
                           logger.d("apple sign up : $signUp");
 
-                          if (signUp) {
+                          if (signUp == "200") {
                             // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
                             await storage.write(key: 'accessToken', value: viewModel.accessToken);
                             await storage.write(key: 'refreshToken', value: viewModel.refreshToken);
@@ -408,8 +408,8 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                               ), (route) => false,
                             );
                           }
-                        } else {
-                          return;
+                        } else if (signUp == "409"){
+                          httpStatusCode409();
                         }
                       },
                       child: Text(
@@ -512,5 +512,53 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
     final DateFormat serverFormater = DateFormat('yyyy-MM-dd');
     final DateTime displayDate = displayFormater.parse(date);
     return _birthdayController.text = serverFormater.format(displayDate);
+  }
+
+  void httpStatusCode409() {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0,
+          backgroundColor: const Color(0xffF15A2B)
+      ),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.white
+        ),
+      ),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "로그인 실패",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "이미 등록된 이메일이에요",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      actions: [
+        Center(child: okButton),
+      ],
+    );
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }
