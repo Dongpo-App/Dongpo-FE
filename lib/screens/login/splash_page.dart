@@ -28,7 +28,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     const String topImage = "assets/images/login.png";
-    //const String iconImage = "assets/images/icon.png";
+    //const String iconImage = "assets/images/icons.png";
 
     double screenHeight = MediaQuery.of(context).size.height;
 

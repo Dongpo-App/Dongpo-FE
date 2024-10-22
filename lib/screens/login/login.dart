@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
                         value: loginViewModel.loginPlatform.name);
                     Map<String, String> allData = await storage.readAll();
                     logger.d("secure storage apple read : $allData");
-                    // 애플 로그인은 사용자 정보를 입력하는 페이지로 넘어가야 함
+
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
                           builder: (context) => const MyAppPage()

@@ -60,10 +60,16 @@ class _MainPageState extends State<MainPage>
   late Animation<double> _buttonAnimation; // 버튼 애니메이션 선언
   late Animation<double> _locationBtn;
 
+  // 로딩
+  bool isLoading = false;
+
   @override
   //초기화
   void initState() {
     super.initState();
+    setState(() {
+      isLoading = true; // 초기화
+    });
 
     // 애니메이션 컨트롤러 초기화 (300ms 동안 애니메이션 실행)
     _controller = AnimationController(
@@ -152,7 +158,7 @@ class _MainPageState extends State<MainPage>
                         Navigator.pop(context);
                         _selectedMarker!.setIcon(
                             const NOverlayImage.fromAssetImage(
-                                'assets/images/defaultMarker.png'));
+                                'assets/icons/default_marker.png'));
                         _selectedMarker = null;
                         // 추가로 바텀 시트도 닫히게 해야함
                       });
@@ -499,14 +505,14 @@ class _MainPageState extends State<MainPage>
   void _addMarkers(List<MyData> dataList) async {
     //여러개 마커 담는 리스트
     try {
-      var defaultMarkerSize = const Size(32, 40);
+      var defaultMarkerSize = const Size(44, 44);
       await _clearMarkers(); // 기존 마커 제거
       for (var data in dataList) {
         NMarker marker = NMarker(
           id: data.id.toString(),
           position: NLatLng(data.latitude, data.longitude),
           icon: const NOverlayImage.fromAssetImage(
-              'assets/images/defaultMarker.png'),
+              'assets/icons/default_marker.png'),
         );
         //마커 사이즈 조절
         marker.setSize(defaultMarkerSize);
@@ -528,13 +534,13 @@ class _MainPageState extends State<MainPage>
     setState(() {
       if (_selectedMarker != null) {
         _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage(
-            'assets/images/defaultMarker.png'));
+            'assets/icons/default_marker.png'));
       }
       _selectedMarker = marker;
     });
     try {
       marker.setIcon(const NOverlayImage.fromAssetImage(
-          'assets/images/clickedMarker.png'));
+          'assets/icons/clicked_marker.png'));
 
       //해당 위치로 이동
       logger.d("클릭된 마커 id =  ${marker.info.id}");
@@ -563,7 +569,7 @@ class _MainPageState extends State<MainPage>
     NLatLng position = await _getCurrentNLatLng();
     // 사용자 위치 아이콘 에셋 지정
     const myLocationIcon =
-        NOverlayImage.fromAssetImage('assets/icon/my_location.png');
+        NOverlayImage.fromAssetImage('assets/icons/my_location.png');
     // 마커 객체 생성
     _userMarker = NMarker(
       id: "my_location_marker",
@@ -611,7 +617,6 @@ class _MainPageState extends State<MainPage>
         throw Exception('HTTP ERROR !!! ${response.body}');
       }
     } catch (e) {
-      // TODO
       logger.d('Error in _researchFromMe method 에러내용 : $e');
       throw {logger.d('Error !! ')};
     }

@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'apple_kakao_naver_login.dart';
+import 'apple_user_info_page.dart';
 import 'login.dart';
 import 'login_platform.dart';
 
@@ -103,7 +104,7 @@ class LoginViewModel {
     if (socialToken != null) {
       // 카카오 로그인이 성공함
       loginPlatform = LoginPlatform.kakao;
-      isLogined = await tokenAPI(context);
+      isLogined = (await tokenAPI(context))!;
       return isLogined;
     } else {
       logger.d("kakao login fail");
@@ -117,7 +118,7 @@ class LoginViewModel {
     if (socialToken != null) {
       // 네이버 로그인 성공함
       loginPlatform = LoginPlatform.naver;
-      isLogined = await tokenAPI(context);
+      isLogined = (await tokenAPI(context))!;
       return isLogined;
     } else {
       logger.d("naver login fail");
@@ -134,7 +135,7 @@ class LoginViewModel {
       identityToken = appleLoginToken["identityToken"];
       authorizationCode = appleLoginToken["authorizationCode"];
 
-      isLogined = await tokenAPI(context);
+      isLogined = (await tokenAPI(context))!;
       return isLogined;
     } else {
       isLogined = false;
@@ -155,7 +156,7 @@ class LoginViewModel {
     return false;
   }
 
-  Future<bool> tokenAPI(BuildContext context) async {
+  Future<bool?> tokenAPI(BuildContext context) async {
     logger.d("loginPlatform : $loginPlatform");
     Map<String, String> data;
 
@@ -185,9 +186,20 @@ class LoginViewModel {
 
         return true;
       } else if (response.statusCode == 401) {
-        logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return tokenAPI(context);
+        logger.d("apple user sign up.");
+
+        Map<String, dynamic> jsonData = json.decode(response.body);
+        Map<String, dynamic> token = jsonData['data'];
+
+        await storage.write(key: 'socialId', value: token['socialId']);
+        await storage.write(key: 'email', value: token['email']);
+        Map<String, String> allValues = await storage.readAll();
+
+        logger.d("apple login 401 $allValues");
+
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const AppleUserInfoPage()),
+        );
       } else if (response.statusCode == 409) {
         logger.d("status code : ${response.statusCode} / 사용자 이메일이 중복됩니다.");
 
@@ -207,13 +219,18 @@ class LoginViewModel {
   }
 
   Future<bool> appleSignUpPostAPI(BuildContext context, String nickName, String birthday, String gender) async {
+    final socialId = await storage.read(key: 'socialId');
+    final email = await storage.read(key: 'email');
+
     final data = {
-      "nickName": nickName,
+      "nickname": nickName,
       "birthday": birthday,
-      "gender": gender
+      "gender": gender,
+      "socialId": socialId,
+      "email": email
     };
 
-    final url = Uri.parse('$serverUrl');
+    final url = Uri.parse('$serverUrl/auth/apple/continue');
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode(data);
 
@@ -221,13 +238,21 @@ class LoginViewModel {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
         Map<String, dynamic> jsonData = json.decode(response.body);
-        Map<String, dynamic> user = jsonData['data'];
+        Map<String, dynamic> token = jsonData['data'];
+
+        // FlutterSecureStorage에 있는 token 삭제
+        await storage.delete(key: 'socialId');
+        await storage.delete(key: 'email');
+
+        // 서버에서 발급받은 토큰
+        accessToken = token['accessToken'];
+        refreshToken = token['refreshToken'];
 
         return true;
-      } else if (response.statusCode == 401) {
+      } else if (response.statusCode == 409) {
         logger.d("status code : ${response.statusCode}");
-        await reissue(context);
-        return appleSignUpPostAPI(context, nickName, birthday, gender);
+
+        return false;
       } else {
         // 실패
         logger.d("Fail to load $data. status code : ${response.statusCode}");

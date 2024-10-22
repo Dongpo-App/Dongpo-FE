@@ -41,6 +41,9 @@ class StoreInfo extends StatefulWidget {
 
 class _StoreInfoState extends State<StoreInfo> {
   BookmarkViewModel viewModel = BookmarkViewModel();
+  // 로딩
+  bool isLoading = false;
+
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
   }
@@ -55,11 +58,15 @@ class _StoreInfoState extends State<StoreInfo> {
 
   // 비동기 메서드로 가게 정보를 가져옴
   Future<void> _fetchStoreDetails() async {
+    setState(() {
+      isLoading = true; // 초기화
+    });
     try {
       final data = await _storeSangse(); // 비동기 호출
 
       setState(() {
         storeData = data; // 가져온 데이터를 myStoreList에 할당
+        isLoading = false;
       });
     } catch (e) {
       logger.e('가게 정보 불러오는데 뭔가 잘못됌 에러 사유: $e'); // 에러 처리
@@ -238,45 +245,47 @@ class _StoreInfoState extends State<StoreInfo> {
       ),
       body: storeData == null // storeData가 null인 경우 로딩 표시
         ? const Center(child: CircularProgressIndicator())
-        : Container(
-          margin: const EdgeInsets.all(24),
-          child: ListView(
-            children: [
-              //제목, 영업가능성, 거리
-              MainTitle(idx: widget.idx),
-              //사진
-              const SizedBox(
-                height: 24,
-              ),
-              const MainPhoto(),
-              const SizedBox(
-                height: 32,
-              ),
-              //리뷰 갯수, 버튼
-              UserAction(idx: widget.idx),
-              const SizedBox(
-                height: 96,
-              ),
-              //방문인증
-              const BangMoon(),
-              const SizedBox(
-                height: 96,
-              ),
-              //리뷰 관련
-              ShowReview(idx: widget.idx),
-              const SizedBox(
-                height: 80,
-              ),
-              //가게정보
-              const GageJungbo(),
-              const SizedBox(
-                height: 80,
-              ),
-              //이 가게 단골 손님
-              const DanGolGuest(),
-            ],
+        : isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Container(
+            margin: const EdgeInsets.all(24),
+            child: ListView(
+              children: [
+                //제목, 영업가능성, 거리
+                MainTitle(idx: widget.idx),
+                //사진
+                const SizedBox(
+                  height: 24,
+                ),
+                const MainPhoto(),
+                const SizedBox(
+                  height: 32,
+                ),
+                //리뷰 갯수, 버튼
+                UserAction(idx: widget.idx),
+                const SizedBox(
+                  height: 96,
+                ),
+                //방문인증
+                const BangMoon(),
+                const SizedBox(
+                  height: 96,
+                ),
+                //리뷰 관련
+                ShowReview(idx: widget.idx),
+                const SizedBox(
+                  height: 80,
+                ),
+                //가게정보
+                const GageJungbo(),
+                const SizedBox(
+                  height: 80,
+                ),
+                //이 가게 단골 손님
+                const DanGolGuest(),
+              ],
+            ),
           ),
-        ),
     );
   }
 

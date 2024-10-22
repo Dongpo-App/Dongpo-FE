@@ -287,7 +287,7 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                                 onTap: () {
                                   HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
                                   setState(() {
-                                    selectedGender = '남'; // 남성 선택
+                                    selectedGender = 'GEN_MALE'; // 남성 선택
                                     genderUpdateValue = true;
                                   });
                                 },
@@ -296,7 +296,7 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                                   width: contentsWidth * 0.48,
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: selectedGender == '남'
+                                    color: selectedGender == 'GEN_MALE'
                                         ? const Color(0xFFF15A2B) // 선택된 색상
                                         : const Color(0xFF57616A), // 기본 색상
                                     borderRadius: BorderRadius.circular(12),
@@ -306,7 +306,7 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                                       "남",
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: selectedGender == '남' ? Colors.white : const Color(0xFF33393F),
+                                        color: selectedGender == 'GEN_MALE' ? Colors.white : const Color(0xFF33393F),
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
@@ -317,7 +317,7 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                                 onTap: () {
                                   HapticFeedback.mediumImpact(); // 터치 시 진동 효과 제공
                                   setState(() {
-                                    selectedGender = '여'; // 여성 선택
+                                    selectedGender = 'GEN_FEMALE'; // 여성 선택
                                     genderUpdateValue = true;
                                   });
                                 },
@@ -326,7 +326,7 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                                   width: contentsWidth * 0.48,
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: selectedGender == '여'
+                                    color: selectedGender == 'GEN_FEMALE'
                                       ? const Color(0xFFF15A2B) // 선택된 색상
                                       : const Color(0xFF57616A), // 기본 색상
                                     borderRadius: BorderRadius.circular(12),
@@ -336,7 +336,7 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                                       "여",
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: selectedGender == '여' ? Colors.white : const Color(0xFF33393F),
+                                        color: selectedGender == 'GEN_FEMALE' ? Colors.white : const Color(0xFF33393F),
                                         fontWeight: FontWeight.w400,
                                       ),
                                     ),
@@ -372,11 +372,16 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                         if (nickUpdateValue & birthdayUpdateValue & genderUpdateValue) {
                           logger.d("닉네임 : $nickName / 생년월일 : ${_birthdayController.text} / 성별 : $selectedGender");
                           signUp = await viewModel.appleSignUpPostAPI(context, nickName, _birthdayController.text, selectedGender!);
-
                           logger.d("apple sign up : $signUp");
 
                           if (signUp) {
-                          // 상태 업데이트를 제거하고 바로 네비게이션 수행
+                            // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
+                            await storage.write(key: 'accessToken', value: viewModel.accessToken);
+                            await storage.write(key: 'refreshToken', value: viewModel.refreshToken);
+                            await storage.write(key: 'loginPlatform', value: viewModel.loginPlatform.name);
+                            Map<String, String> allData = await storage.readAll();
+                            logger.d("secure storage apple read : $allData");
+
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(

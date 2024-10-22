@@ -25,6 +25,7 @@ class CommunityPageState extends State<CommunityPage> {
   RecommendResponse recommendResponse = RecommendResponse(stores: [], message: "");
   List<RecommendStore> recommendList = [];
   String recommendMessage = "";
+  // 로딩
   bool isLoading = false;
 
   late List<CommunityRank> _storeTop10GetAPI = [
@@ -193,7 +194,7 @@ class CommunityPageState extends State<CommunityPage> {
                                 : Border.all(
                                     color: const Color(0xFF767676), // 기본 테두리 색상
                                     width: 1, // 테두리 두께
-                                ),
+                                  ),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Center(
@@ -283,7 +284,6 @@ class CommunityPageState extends State<CommunityPage> {
                                       AssetImage('assets/images/icon.png'),
                                     ),
                                     const SizedBox(
-                                      // 테스트용
                                       width: 30,
                                     ),
                                     Column(

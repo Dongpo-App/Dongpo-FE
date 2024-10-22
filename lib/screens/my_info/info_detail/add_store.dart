@@ -14,6 +14,8 @@ class AddStorePage extends StatefulWidget {
 
 class AddStorePageState extends State<AddStorePage> {
   AddStoreViewModel viewModel = AddStoreViewModel();
+  // 로딩
+  bool isLoading = false;
 
   late List<UserAddStore> _userAddStore = [];
 
@@ -24,8 +26,13 @@ class AddStorePageState extends State<AddStorePage> {
   }
 
   void getUserAddStore() async {
+    setState(() {
+      isLoading = true; // 초기화
+    });
     _userAddStore = await viewModel.userAddStoreGetAPI(context);
-    setState(() {});
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -58,77 +65,79 @@ class AddStorePageState extends State<AddStorePage> {
                 "",
               ),
             )
-          : Padding(
-              padding: const EdgeInsets.only(top: 24),
-              child: ListView.builder(
-                itemCount: _userAddStore.length,
-                itemBuilder: (context, index) {
-                  var addStore = _userAddStore[index];
-                  return GestureDetector(
-                    onTap: () {
-                      // 버튼이 눌리면 해당 점포 상세 페이지로 이동
-                      Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                          return StoreInfo(idx: addStore.id);
-                      }));
-                    },
-                    child: Card(
-                      elevation: 0,
-                      color: const Color(0xFFFFFFFF),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 24),
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const CircleAvatar(
-                              radius: 18,
-                              backgroundImage:
-                                  AssetImage('assets/images/icon.png'),
-                            ),
-                            const SizedBox(
-                              // 테스트용
-                              width: 30,
-                            ),
-                            Expanded(
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      addStore.name,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      // 테스트용
-                                      height: 4,
-                                    ),
-                                    Text(
-                                      addStore.address,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                      maxLines: 1, // 한 줄로 제한
-                                      overflow: TextOverflow.ellipsis, // 줄임표 (...) 추가
-                                    ),
-                                  ]
+          : isLoading
+            ? const CircularProgressIndicator()
+            : Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: ListView.builder(
+                  itemCount: _userAddStore.length,
+                  itemBuilder: (context, index) {
+                    var addStore = _userAddStore[index];
+                    return GestureDetector(
+                      onTap: () {
+                        // 버튼이 눌리면 해당 점포 상세 페이지로 이동
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return StoreInfo(idx: addStore.id);
+                        }));
+                      },
+                      child: Card(
+                        elevation: 0,
+                        color: const Color(0xFFFFFFFF),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 24),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const CircleAvatar(
+                                radius: 18,
+                                backgroundImage:
+                                    AssetImage('assets/images/icon.png'),
                               ),
-                            )
-                          ],
+                              const SizedBox(
+                                // 테스트용
+                                width: 30,
+                              ),
+                              Expanded(
+                                child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        addStore.name,
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        // 테스트용
+                                        height: 4,
+                                      ),
+                                      Text(
+                                        addStore.address,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        maxLines: 1, // 한 줄로 제한
+                                        overflow: TextOverflow.ellipsis, // 줄임표 (...) 추가
+                                      ),
+                                    ]
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
     );
   }
 }
