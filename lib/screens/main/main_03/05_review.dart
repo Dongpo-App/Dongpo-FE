@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
+import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/store_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -173,12 +175,32 @@ class _ShowReviewState extends State<ShowReview> {
                                 //바닥에 리뷰 등록 버튼 (form전송)
                                 ElevatedButton(
                                   onPressed: () async {
-                                    await storeService.addReview(
-                                      id: storeId,
-                                      reviewText: _reviewController.text,
-                                      images: _pickedImgs,
-                                      rating: _rating,
-                                    );
+                                    try {
+                                      await storeService.addReview(
+                                        id: storeId,
+                                        reviewText: _reviewController.text,
+                                        images: _pickedImgs,
+                                        rating: _rating,
+                                      );
+                                    } on TokenExpiredException catch (e) {
+                                      if (mounted) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                                content: Text(
+                                                    "세션이 만료되었습니다. 다시 로그인해주세요.")));
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginPage()));
+                                      } else {
+                                        logger.e(
+                                            "Error! while replace to Login page");
+                                        logger.e("message: $e");
+                                      }
+                                    } on Exception catch (e) {
+                                      logger.e("Error! message: $e");
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     minimumSize:

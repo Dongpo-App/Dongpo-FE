@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dongpo_test/service/store_service.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class GageAddSangsea extends StatefulWidget {
 }
 
 class _GageAddSangseaState extends State<GageAddSangsea> {
+  StoreApiService storeService = StoreApiService.instance;
   String openTime = '00:00';
   String closeTime = '00:00';
   int bathSelected = 0; //화장실 라디오 버튼

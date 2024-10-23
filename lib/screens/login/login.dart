@@ -1,8 +1,8 @@
+import 'package:dongpo_test/models/login_status_enum.dart';
 import 'package:dongpo_test/screens/login/apple_kakao_naver_login.dart';
+import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
-import 'package:dongpo_test/main.dart';
 import 'login_view_model.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,6 +14,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final loginViewModel = LoginViewModel(AppleKakaoNaverLogin());
+  LoginApiService loginService = LoginApiService.instance;
   bool isLogined = false;
   bool isLogouted = false;
 
@@ -47,25 +48,36 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  // 애플 로그인을 터치했을 때 로직(로그인 -> secureStorage에 토큰, 플랫폼 저장 -> 네비게이션 페이지로 이동)
-                  isLogined = await loginViewModel.appleLogin(context);
-                  if (isLogined) {
-                    // 로그인플랫폼 & 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
-                    await storage.write(
-                        key: 'accessToken', value: loginViewModel.accessToken);
-                    await storage.write(
-                        key: 'refreshToken',
-                        value: loginViewModel.refreshToken);
-                    await storage.write(
-                        key: 'loginPlatform',
-                        value: loginViewModel.loginPlatform.name);
-                    Map<String, String> allData = await storage.readAll();
-                    logger.d("secure storage apple read : $allData");
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                          builder: (context) => const MyAppPage()),
-                    );
+                  LoginStatus status = await loginService.appleLogin();
+                  if (status == LoginStatus.success) {
+                    if (mounted) {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MyAppPage()));
+                    }
+                  } else if (status == LoginStatus.duplicateEmail) {
+                    // httpStatusCode409();
                   }
+                  // // 애플 로그인을 터치했을 때 로직(로그인 -> secureStorage에 토큰, 플랫폼 저장 -> 네비게이션 페이지로 이동)
+                  // isLogined = await loginViewModel.appleLogin(context);
+                  // if (isLogined) {
+                  //   // 로그인플랫폼 & 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
+                  //   await storage.write(
+                  //       key: 'accessToken', value: loginViewModel.accessToken);
+                  //   await storage.write(
+                  //       key: 'refreshToken',
+                  //       value: loginViewModel.refreshToken);
+                  //   await storage.write(
+                  //       key: 'loginPlatform',
+                  //       value: loginViewModel.loginPlatform.name);
+                  //   Map<String, String> allData = await storage.readAll();
+                  //   logger.d("secure storage apple read : $allData");
+                  //   Navigator.of(context).pushReplacement(
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const MyAppPage()),
+                  //   );
+                  // }
                 },
                 child: Container(
                   height: 44,
@@ -91,26 +103,37 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  isLogined = await loginViewModel.naverLogin(context);
-                  if (isLogined) {
-                    // 로그인플랫폼 & 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
-                    await storage.write(
-                        key: 'accessToken', value: loginViewModel.accessToken);
-                    await storage.write(
-                        key: 'refreshToken',
-                        value: loginViewModel.refreshToken);
-                    await storage.write(
-                        key: 'loginPlatform',
-                        value: loginViewModel.loginPlatform.name);
-                    Map<String, String> allData = await storage.readAll();
-                    logger.d("secure storage naver read : $allData");
+                  LoginStatus status = await loginService.naverLogin();
+                  if (status == LoginStatus.success) {
                     if (mounted) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (context) => const MyAppPage()),
-                      );
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MyAppPage()));
                     }
+                  } else if (status == LoginStatus.duplicateEmail) {
+                    // httpStatusCode409();
                   }
+                  // isLogined = await loginViewModel.naverLogin(context);
+                  // if (isLogined) {
+                  //   // 로그인플랫폼 & 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
+                  //   await storage.write(
+                  //       key: 'accessToken', value: loginViewModel.accessToken);
+                  //   await storage.write(
+                  //       key: 'refreshToken',
+                  //       value: loginViewModel.refreshToken);
+                  //   await storage.write(
+                  //       key: 'loginPlatform',
+                  //       value: loginViewModel.loginPlatform.name);
+                  //   Map<String, String> allData = await storage.readAll();
+                  //   logger.d("secure storage naver read : $allData");
+                  //   if (mounted) {
+                  //     Navigator.of(context).pushReplacement(
+                  //       MaterialPageRoute(
+                  //           builder: (context) => const MyAppPage()),
+                  //     );
+                  //   }
+                  // }
                 },
                 child: Container(
                   height: 44,
@@ -136,27 +159,38 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  isLogined = await loginViewModel.kakaoLogin(context);
-                  if (isLogined) {
-                    // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
-                    await storage.write(
-                        key: 'accessToken', value: loginViewModel.accessToken);
-                    await storage.write(
-                        key: 'refreshToken',
-                        value: loginViewModel.refreshToken);
-                    await storage.write(
-                        key: 'loginPlatform',
-                        value: loginViewModel.loginPlatform.name);
-                    Map<String, String> allData = await storage.readAll();
-                    logger.d("secure storage kakao read : $allData");
-                    // 메인페이지로 이동
+                  LoginStatus status = await loginService.kakaoLogin();
+                  if (status == LoginStatus.success) {
                     if (mounted) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                            builder: (context) => const MyAppPage()),
-                      );
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MyAppPage()));
                     }
+                  } else if (status == LoginStatus.duplicateEmail) {
+                    // httpStatusCode409();
                   }
+                  // isLogined = await loginViewModel.kakaoLogin(context);
+                  // if (isLogined) {
+                  //   // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
+                  //   await storage.write(
+                  //       key: 'accessToken', value: loginViewModel.accessToken);
+                  //   await storage.write(
+                  //       key: 'refreshToken',
+                  //       value: loginViewModel.refreshToken);
+                  //   await storage.write(
+                  //       key: 'loginPlatform',
+                  //       value: loginViewModel.loginPlatform.name);
+                  //   Map<String, String> allData = await storage.readAll();
+                  //   logger.d("secure storage kakao read : $allData");
+                  //   // 메인페이지로 이동
+                  //   if (mounted) {
+                  //     Navigator.of(context).pushReplacement(
+                  //       MaterialPageRoute(
+                  //           builder: (context) => const MyAppPage()),
+                  //     );
+                  //   }
+                  // }
                 },
                 child: Container(
                   height: 44,

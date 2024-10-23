@@ -26,7 +26,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
     await loadToken();
 
     // 이미지 S3에 업로드
-    if (images != []) {
+    if (images.isNotEmpty) {
       imageUrls = await uploadImages(images);
     }
     // S3로부터 받은 url List와 리뷰 데이터 전송
