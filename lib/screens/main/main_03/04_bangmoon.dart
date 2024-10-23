@@ -114,7 +114,7 @@ class BangMoon extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => const SecondPage()));
+                    builder: (BuildContext context) => const BangMoonPage()));
           },
           style: ElevatedButton.styleFrom(
             elevation: 0,
@@ -134,14 +134,14 @@ class BangMoon extends StatelessWidget {
 }
 
 // 방문 인증 페이지
-class SecondPage extends StatefulWidget {
-  const SecondPage({super.key});
+class BangMoonPage extends StatefulWidget {
+  const BangMoonPage({super.key});
 
   @override
-  State<SecondPage> createState() => _SecondPageState();
+  State<BangMoonPage> createState() => _BangMoonPageState();
 }
 
-class _SecondPageState extends State<SecondPage> {
+class _BangMoonPageState extends State<BangMoonPage> {
   late NaverMapController _mapController;
   int okValue = 0;
   int noValue = 0;
@@ -150,7 +150,6 @@ class _SecondPageState extends State<SecondPage> {
   //초기화
   void initState() {
     super.initState();
-    _moveToCurrentLocation();
   }
 
   @override
@@ -193,6 +192,7 @@ class _SecondPageState extends State<SecondPage> {
             child: NaverMap(
               onMapReady: (controller) {
                 _onMapReady(controller);
+                _SetMyMarkerAndStoreMarker();
               },
               options: const NaverMapViewOptions(
                 zoomGesturesEnable: false,
@@ -374,23 +374,46 @@ class _SecondPageState extends State<SecondPage> {
     _mapController = controller;
   }
 
-  Future<void> _moveToCurrentLocation() async {
+  Future<void> _SetMyMarkerAndStoreMarker() async {
+    //내위치로 화면 이동
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       final myLocation = NLatLng(position.latitude, position.longitude);
+      final storeLocation = NLatLng(storeData!.latitude, storeData!.longitude);
 
-      const myLocationIcon =
-          NOverlayImage.fromAssetImage('assets/images/myLocation.png');
-
+      //내위치 마커 추가
       NMarker myLocationMarker = NMarker(
         id: "my_location_marker",
         position: myLocation,
-        icon: myLocationIcon,
+        icon:
+            const NOverlayImage.fromAssetImage('assets/icons/my_location.png'),
+      );
+
+      //가게 마커도 추가
+      NMarker storeLocationMarker = NMarker(
+        id: "store_location_marker",
+        position: storeLocation,
+        icon:
+            const NOverlayImage.fromAssetImage('assets/icons/my_location.png'),
+      );
+
+      //가게 기준 500m 반경 원 추가
+      NCircleOverlay circleOverlay = NCircleOverlay(
+        id: 'circleOverlay',
+        center: storeLocation,
+        radius: 100,
+        color: Colors.blue.withOpacity(0.3), // 투명한 파란색 원
+        outlineWidth: 2,
+        outlineColor: Colors.blue,
       );
 
       myLocationMarker.setSize(const Size(40, 50));
       _mapController.addOverlay(myLocationMarker);
+      _mapController.addOverlay(circleOverlay);
+
+      storeLocationMarker.setSize(const Size(40, 50));
+      _mapController.addOverlay(storeLocationMarker);
 
       _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
@@ -411,6 +434,7 @@ class _SecondPageState extends State<SecondPage> {
     Widget okButton = TextButton(
       child: const Text("OK"),
       onPressed: () {
+        // 해당가게로 다시 돌아가기
         logger.d('하이');
         Navigator.pop(context);
         Navigator.pop(context);
