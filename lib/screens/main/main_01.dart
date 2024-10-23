@@ -13,7 +13,6 @@ import 'main_02.dart';
 import 'package:dongpo_test/api_key.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:dongpo_test/main.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:dongpo_test/screens/add/add_01.dart';
@@ -126,6 +125,7 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: FutureBuilder<String>(
         future: checkPermission(),
         builder: (context, snapshot) {
@@ -143,6 +143,7 @@ class _MainPageState extends State<MainPage>
                   onMapReady: (controller) async {
                     logger.d("controller : ${controller.hashCode}");
                     _onMapReady(controller);
+                    await _clearMarkers(); // 기존 마커 제거
                     await _initUserMarker();
                     await _moveCamera(_userMarker.position);
                     await _searchStoreCurrentLocation(_userMarker.position);
@@ -174,6 +175,7 @@ class _MainPageState extends State<MainPage>
                     }
                   },
                   options: const NaverMapViewOptions(
+                    pickTolerance: 16, // 마커나 오버레이에 정확하게 닿지 않더라도, 설정된 픽셀 범위 내에 있으면 터치로 인식
                     locationButtonEnable: false, // 위치 버튼 표시 여부 설정
                     minZoom: 15, //쵀대 줄일 수 있는 크기?
                     maxZoom: 18, //최대 당길 수 있는 크기
@@ -491,29 +493,17 @@ class _MainPageState extends State<MainPage>
   // 기존 마커 삭제 함수
   Future<void> _clearMarkers() async {
     logger.d('마커가 정상적으로 들어왔음 ${markers.length}');
-    // for (int i = 0; i < markers.length; i++) {
-    //   await _mapController.deleteOverlay(NOverlayInfo(
-    //       type: NOverlayType.marker, id: markers[i].info.id)); // 마커 제거
-    // }
-    /*
-      해당 코드에서 오류가 난 이유 : 마커를 지우는 기준인 id를 0부터 마커의 수로 함.
-      하지만 마커를 등록할 때는 점포의 id로 사용함.
-      점포의 id와 마커의 수가 다르기 때문에 개별 삭제에 에러가 난 것임.
-      main_01.dart의 기능이 마커 전체 삭제 후 마커 표시를 하는 것이라 이해했기 때문에 특정 id 삭제가 아닌 일괄 삭제로 코드 수정함.
-      특정 id로 마커를 지우고 싶다면 삭제하고 싶은 마커의 점포 id로 지워야 함.
-    */
-    _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
+    await _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
 
     markers.clear(); // 리스트 초기화
-    logger.d('마커삭제 테스트 $markers');
+    logger.d('마커 전체 삭제 : $markers');
   }
 
   // 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
   void _addMarkers(List<MyData> dataList) async {
     //여러개 마커 담는 리스트
     try {
-      var defaultMarkerSize = const Size(44, 44);
-      await _clearMarkers(); // 기존 마커 제거
+      var defaultMarkerSize = const Size(24, 24);
 
       for (var data in dataList) {
         NMarker marker = NMarker(
@@ -522,12 +512,16 @@ class _MainPageState extends State<MainPage>
           icon: const NOverlayImage.fromAssetImage(
               'assets/icons/default_marker.png'),
         );
+        // 확인용 logger
+        logger.i("marker ${marker.info.id}  : ${data.latitude} & ${data.longitude}");
+
         //마커 사이즈 조절
         marker.setSize(defaultMarkerSize);
-        marker.setOnTapListener((overlay) {
+
+        // 마커 클릭
+         marker.setOnTapListener((overlay) {
           _onMarkerTapped(marker, data);
         });
-
         // 마커 리스트에 추가
         await _mapController.addOverlay(marker);
         markers.add(marker);
@@ -549,7 +543,7 @@ class _MainPageState extends State<MainPage>
     });
     try {
       marker.setIcon(const NOverlayImage.fromAssetImage(
-          'assets/icons/clicked_marker.png'));
+        'assets/icons/clicked_marker.png'));
 
       //해당 위치로 이동
       logger.d("클릭된 마커 id =  ${marker.info.id}");
@@ -585,6 +579,7 @@ class _MainPageState extends State<MainPage>
       position: position,
       icon: myLocationIcon,
     );
+    _userMarker.setZIndex(100);
     // 마커 사이즈 지정 및 지도에 추가
     _userMarker.setSize(const Size(24, 24));
     _mapController.addOverlay(_userMarker);
@@ -769,9 +764,12 @@ class _MainPageState extends State<MainPage>
 
   //가게 기본정보 바텀시트
   void _showBottomSheet(BuildContext context, String markerId) async {
+    bool _isNavigating = false;
+
     int index = int.parse(markerId);
     markerInfo = await _getClickedMarkerInfo(context, index);
     showBottomSheet(
+      backgroundColor: Colors.white,
       context: context,
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
@@ -782,32 +780,43 @@ class _MainPageState extends State<MainPage>
           snap: true,
           snapAnimationDuration: const Duration(milliseconds: 300),
           builder: (context, scrollController) {
-            return SingleChildScrollView(
-              controller: scrollController,
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 15),
-                decoration: const BoxDecoration(),
-                child: Column(
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return StoreInfo(idx: index);
-                      })),
-                      child: const Icon(Icons.menu),
-                    ),
-                    MainTitle2(
-                      idx: index,
-                    ),
-                    //사진
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    const MainPhoto2(),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                  ],
+            return NotificationListener<ScrollNotification>(
+              onNotification: (scrollNotification) {
+                logger.i("scrollNotification : ${scrollNotification.metrics.pixels}");
+                if (scrollNotification.metrics.pixels >= 0 && !_isNavigating) {
+                  _isNavigating = true; // 플래그 설정
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return StoreInfo(idx: index); // 이동할 페이지
+                  })).then((_) {
+                    _isNavigating = false; // 돌아올 때 플래그 해제
+                  });
+                  return true;
+                }
+                return false;
+              },
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  decoration: const BoxDecoration(),
+                  child: Column(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            Navigator.pop(context); //뒤로가기
+                          },
+                          icon: const Icon(
+                              size: 36,
+                              Icons.remove,
+                              color: Color(0xff767676)
+                          )
+                      ),
+                      MainTitle2(idx: index),
+                      const SizedBox(height: 30),
+                      const MainPhoto2(),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             );
