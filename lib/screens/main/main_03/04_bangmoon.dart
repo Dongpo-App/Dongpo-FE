@@ -189,16 +189,39 @@ class _BangMoonPageState extends State<BangMoonPage> {
         children: [
           Expanded(
             flex: 2,
-            child: NaverMap(
-              onMapReady: (controller) {
-                _onMapReady(controller);
-                _SetMyMarkerAndStoreMarker();
-              },
-              options: const NaverMapViewOptions(
-                zoomGesturesEnable: false,
-                minZoom: 16,
-                scrollGesturesEnable: false,
-              ),
+            child: Stack(
+              children: [
+                NaverMap(
+                  onMapReady: (controller) {
+                    _onMapReady(controller);
+                    _SetMyMarkerAndStoreMarker();
+                  },
+                  options: const NaverMapViewOptions(
+                    zoomGesturesEnable: false,
+                    minZoom: 16,
+                    scrollGesturesEnable: false,
+                  ),
+                ),
+                SizedBox(
+                  height: screenWidth,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            elevation: 8,
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(4),
+                            foregroundColor: Color(0xFF003ACE),
+                            backgroundColor: WidgetStateColor.resolveWith(
+                                (states) => Colors.white)),
+                        onPressed: _checkBangMoon,
+                        child: const Icon(Icons.my_location),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -331,10 +354,8 @@ class _BangMoonPageState extends State<BangMoonPage> {
                     child: ElevatedButton(
                       onPressed: () {
                         (okValue == 1 || noValue == 1)
-                            ? showAlertDialog(context, okValue, noValue)
+                            ? _checkDistance()
                             : null;
-
-                        //방문 인증 메서드 구현
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
@@ -426,6 +447,54 @@ class _BangMoonPageState extends State<BangMoonPage> {
     } catch (e) {
       // 에러 발생 시 로그 출력
       logger.d("Error in _moveToCurrentLocation: $e");
+    }
+  }
+
+  void _checkDistance() async {
+    Position myPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    //int로 형변환
+    int checkMeter = Geolocator.distanceBetween(storeData!.latitude,
+            storeData!.longitude, myPosition.latitude, myPosition.longitude)
+        .floor();
+
+    logger.d('두 개의 거리 차이는 = $checkMeter M');
+    //만약 사용자와 가게 거리가 100미터 이내이면 방문인증 시작
+    if (checkMeter <= 100) {
+      _checkBangMoon();
+      logger.d('_checkBangMoon실행');
+    }
+    //아니라면 100미터 이내에 와야된다하고 경고 후 내위치 보여주기
+    else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('인증 실패'),
+            content: const Text('가게와의 거리가 멀어요! '),
+            actions: [
+              TextButton(
+                child: const Text("확인"),
+                onPressed: () {
+                  // 해당가게로 다시 돌아가기
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _checkBangMoon() {
+    //서버 통신
+    bool setTrueFaileValue;
+    if (okValue == 1) {
+      setTrueFaileValue = true;
+    } else {
+      setTrueFaileValue = false;
     }
   }
 
