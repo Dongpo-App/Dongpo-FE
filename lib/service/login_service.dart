@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:dongpo_test/models/login_status_enum.dart';
+import 'package:dongpo_test/models/login_response.dart';
+import 'package:dongpo_test/models/request/apple_signup_request.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
@@ -13,13 +14,15 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
   LoginApiService._privateConstructor();
   static final LoginApiService instance = LoginApiService._privateConstructor();
 
-  Future<LoginStatus> _tokenSubmit({
+  static String? email;
+
+  Future<LoginResponse> _tokenSubmit({
     required String loginPlatform,
     required String accessToken,
     String? authCode,
   }) async {
     final url = Uri.parse("$serverUrl/auth/$loginPlatform");
-    final headers = {'Content-Type': 'application/json'};
+    final headers = this.headers(false);
     final body = jsonEncode(loginPlatform == "apple"
         ? {
             "identityToken": accessToken,
@@ -46,26 +49,38 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
         storage.write(key: "loginPlatform", value: loginPlatform);
         storage.write(key: 'accessToken', value: accessToken);
         storage.write(key: 'refreshToken', value: refreshToken);
-        return LoginStatus.success;
+        return LoginResponse(
+            statusCode: response.statusCode, message: "success");
+      } else if (response.statusCode == 401) {
+        // 애플 로그인시 추가 정보
+        logger.w(
+            "code: ${response.statusCode} body: ${decodedResponse.toString()}");
+        Map<String, dynamic> data = decodedResponse['data'];
+        email = data['email'];
+        logger.d("userData: $data");
+        return LoginResponse(
+            statusCode: response.statusCode,
+            message: "additional info required for signup",
+            data: data);
       } else if (response.statusCode == 409) {
         logger.w(
             "code: ${response.statusCode} body: ${decodedResponse.toString()}");
-        return LoginStatus.duplicateEmail;
+        return LoginResponse(
+            statusCode: response.statusCode, message: "duplicated email");
       } else {
-        // 토큰 여부는 이미 스플래시 페이지 에서 했음
         // 통신 실패
         logger.w(
             "code: ${response.statusCode} body: ${decodedResponse.toString()}");
-        return LoginStatus.serverError;
+        return LoginResponse(statusCode: response.statusCode, message: "error");
       }
     } catch (e) {
       logger.e("토큰 전송 실패 : $e");
-      return LoginStatus.unknownError;
+      return LoginResponse(statusCode: 500, message: "error");
     }
   }
 
   @override
-  Future<LoginStatus> appleLogin() async {
+  Future<LoginResponse> appleLogin() async {
     try {
       final AuthorizationCredentialAppleID appleID =
           await SignInWithApple.getAppleIDCredential(
@@ -88,11 +103,11 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
         );
       } else {
         logger.w("Apple login failed: no identity token");
-        return LoginStatus.serverError;
+        return LoginResponse(statusCode: 500);
       }
     } catch (e) {
       logger.e(e);
-      return LoginStatus.unknownError;
+      return LoginResponse(statusCode: 500);
     }
   }
 
@@ -103,7 +118,7 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
   }
 
   @override
-  Future<LoginStatus> kakaoLogin() async {
+  Future<LoginResponse> kakaoLogin() async {
     OAuthToken oauthToken;
     //카카오톡 실행 가능 여부 확인
     if (await isKakaoTalkInstalled()) {
@@ -115,7 +130,7 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
         logger.e("kakaoTalk login error: $e");
         if (e is PlatformException && e.code == "CANCELED") {
           // 로그인 취소
-          return LoginStatus.canceled;
+          return LoginResponse(statusCode: 400);
         }
         // 카카오톡에 연결된 계정이 없는 경우
         try {
@@ -124,7 +139,7 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
               "kakaoAccount login accessToken: ${oauthToken.accessToken.toString()}");
         } catch (e) {
           logger.e("kakaoAccount login error: $e");
-          return LoginStatus.unknownError;
+          return LoginResponse(statusCode: 500);
         }
       }
     } else {
@@ -135,7 +150,7 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
             "kakaoAccount login accessToken: ${oauthToken.accessToken.toString()}");
       } catch (e) {
         logger.e("kakaoAccount login error: $e");
-        return LoginStatus.unknownError;
+        return LoginResponse(statusCode: 500);
       }
     }
 
@@ -144,7 +159,7 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
   }
 
   @override
-  Future<LoginStatus> naverLogin() async {
+  Future<LoginResponse> naverLogin() async {
     NaverAccessToken token;
     try {
       NaverLoginResult result = await FlutterNaverLogin.logIn();
@@ -153,7 +168,7 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
       logger.d("naver login accessToken: ${token.accessToken}");
     } catch (e) {
       logger.e("naver login error: $e");
-      return LoginStatus.unknownError;
+      return LoginResponse(statusCode: 500);
     }
 
     return await _tokenSubmit(
@@ -191,6 +206,48 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
       default:
         logger.d("$platform is Unauthorized platform");
         return true;
+    }
+  }
+
+  @override
+  Future<LoginResponse> appleSignup(AppleSignupRequest request) async {
+    final url = Uri.parse("$serverUrl/auth/apple/continue");
+    final headers = this.headers(false);
+    final body = jsonEncode(request.toJson());
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+      final decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
+      if (response.statusCode == 200) {
+        logger.d(
+            "code: ${response.statusCode} body: ${decodedResponse.toString()}");
+        Map<String, dynamic> data = decodedResponse['data'];
+
+        String accessToken = data['accessToken'];
+        String refreshToken = data['refreshToken'];
+        logger.d("accessToken: $accessToken");
+        logger.d("refreshToken: $refreshToken");
+
+        await storage.write(key: 'accessToken', value: accessToken);
+        await storage.write(key: 'refreshToken', value: refreshToken);
+        await storage.write(key: 'loginPlatform', value: "apple");
+
+        return LoginResponse(
+            statusCode: response.statusCode, message: "success");
+      } else if (response.statusCode == 409) {
+        logger.w(
+            "code: ${response.statusCode} body: ${decodedResponse.toString()}");
+        return LoginResponse(
+            statusCode: response.statusCode, message: "duplicated email");
+      } else {
+        // 통신 실패
+        logger.w(
+            "code: ${response.statusCode} body: ${decodedResponse.toString()}");
+        return LoginResponse(statusCode: response.statusCode, message: "error");
+      }
+    } catch (e) {
+      logger.e("애플 회원 가입 실패 : $e");
+      return LoginResponse(statusCode: 500, message: "error");
     }
   }
 }

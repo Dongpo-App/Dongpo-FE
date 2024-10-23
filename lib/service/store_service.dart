@@ -31,7 +31,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
     }
     // S3로부터 받은 url List와 리뷰 데이터 전송
     final url = Uri.parse("$serverUrl/api/store/review/$id");
-    Map<String, String> headers = this.headers();
+    Map<String, String> headers = this.headers(true);
     final requestbody = jsonEncode(AddReviewRequest(
       reviewStar: rating,
       text: reviewText,
@@ -57,7 +57,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
         if (reissued) {
           // 재발급 성공시 다시 요청
           await loadToken();
-          headers = this.headers();
+          headers = this.headers(true);
           final retryResponse =
               await http.post(url, headers: headers, body: requestbody);
           decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
@@ -106,7 +106,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
     await loadToken();
 
     final url = Uri.parse("$serverUrl/api/store");
-    Map<String, String> headers = this.headers();
+    Map<String, String> headers = this.headers(true);
     final body = jsonEncode(storeInfo.toJson());
 
     try {
@@ -128,7 +128,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
         if (reissued) {
           // 재발급 성공시 다시 요청
           await loadToken();
-          headers = this.headers();
+          headers = this.headers(true);
           final retryResponse =
               await http.post(url, headers: headers, body: body);
           decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
@@ -169,7 +169,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
     await loadToken();
 
     final url = Uri.parse("$serverUrl/api/store/$id");
-    Map<String, String> headers = this.headers();
+    Map<String, String> headers = this.headers(true);
 
     final response = await http.delete(url, headers: headers);
 
@@ -183,7 +183,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
         if (reissued) {
           // 토큰 재발급 성공
           await loadToken();
-          headers = this.headers();
+          headers = this.headers(true);
           final retryResponse = await http.delete(url, headers: headers);
           if (retryResponse.statusCode == 200) {
             // 요청 성공
@@ -221,7 +221,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
     await loadToken(); // storage로부터 토큰 가져오기
 
     final url = Uri.parse('$serverUrl/api/store?latitude=$lat&longitude=$lng');
-    Map<String, String> headers = this.headers();
+    Map<String, String> headers = this.headers(true);
 
     try {
       final response = await http.get(url, headers: headers);
@@ -243,7 +243,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
         if (reissued) {
           // 재발급 성공시 다시 요청 보내기
           await loadToken();
-          headers = this.headers();
+          headers = this.headers(true);
           final retryResponse = await http.get(url, headers: headers);
           decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
           if (retryResponse.statusCode == 200) {
@@ -287,7 +287,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
     await loadToken();
 
     final url = Uri.parse("$serverUrl/api/store/$id");
-    Map<String, String> headers = this.headers();
+    Map<String, String> headers = this.headers(true);
 
     try {
       final response = await http.get(url, headers: headers);
@@ -309,7 +309,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
         if (reissued) {
           // 재발급 성공시 다시 요청 보내기
           await loadToken();
-          headers = this.headers();
+          headers = this.headers(true);
           final retryResponse = await http.get(url, headers: headers);
           decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
           if (retryResponse.statusCode == 200) {
@@ -349,7 +349,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
     await loadToken();
     final url = Uri.parse('$serverUrl/api/store/$id/summary');
 
-    Map<String, String> headers = this.headers();
+    Map<String, String> headers = this.headers(true);
 
     try {
       final response = await http.get(url, headers: headers);
@@ -368,7 +368,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
         final reissued = await reissueToken();
         if (reissued) {
           await loadToken();
-          headers = this.headers();
+          headers = this.headers(true);
           final retryResponse = await http.get(url, headers: headers);
           decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
 

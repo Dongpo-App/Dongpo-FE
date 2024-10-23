@@ -1,4 +1,4 @@
-import 'package:dongpo_test/models/login_status_enum.dart';
+import 'package:dongpo_test/models/login_response.dart';
 import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
@@ -44,15 +44,25 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  LoginStatus status = await loginService.appleLogin();
-                  if (status == LoginStatus.success) {
+                  LoginResponse response = await loginService.appleLogin();
+                  if (response.statusCode == 200) {
                     if (mounted) {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const MyAppPage()));
                     }
-                  } else if (status == LoginStatus.duplicateEmail) {
+                  } else if (response.statusCode == 401) {
+                    // 추가 정보 입력
+                    if (mounted) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AppleUserInfoPage(
+                                    userData: response.data,
+                                  )));
+                    }
+                  } else if (response.statusCode == 409) {
                     httpStatusCode409();
                   }
                 },
@@ -80,15 +90,15 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  LoginStatus status = await loginService.naverLogin();
-                  if (status == LoginStatus.success) {
+                  LoginResponse response = await loginService.naverLogin();
+                  if (response.statusCode == 200) {
                     if (mounted) {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const MyAppPage()));
                     }
-                  } else if (status == LoginStatus.duplicateEmail) {
+                  } else if (response.statusCode == 409) {
                     httpStatusCode409();
                   }
                 },
@@ -116,15 +126,15 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  LoginStatus status = await loginService.kakaoLogin();
-                  if (status == LoginStatus.success) {
+                  LoginResponse response = await loginService.kakaoLogin();
+                  if (response.statusCode == 200) {
                     if (mounted) {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => const MyAppPage()));
                     }
-                  } else if (status == LoginStatus.duplicateEmail) {
+                  } else if (response.statusCode == 409) {
                     httpStatusCode409();
                   }
                 },
@@ -155,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                 onTap: () async {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                        builder: (context) => const AppleUserInfoPage()),
+                        builder: (context) => AppleUserInfoPage()),
                   );
                 },
                 child: Container(

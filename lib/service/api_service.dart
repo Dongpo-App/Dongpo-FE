@@ -30,11 +30,15 @@ class ApiService {
   }
 
   // json 헤더 생성
-  Map<String, String> headers() {
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $_accessToken',
-    };
+  Map<String, String> headers(bool withAccessToken) {
+    return withAccessToken // true -> accessToken 추가
+        ? {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $_accessToken',
+          }
+        : {
+            'Content-Type': 'application/json',
+          };
   }
 
   void errorLog({required int statusCode, required String message}) {

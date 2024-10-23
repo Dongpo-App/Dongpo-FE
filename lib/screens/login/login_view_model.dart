@@ -51,7 +51,7 @@ Future<void> reissue(BuildContext context) async {
       String isLogouted = "";
 
       String? loginPlatform = await storage.read(key: 'loginPlatform');
-      logger.d("reissue : loginPlatform - ${loginPlatform}");
+      logger.d("reissue : loginPlatform - $loginPlatform");
 
       isLogouted = await loginViewModel.logout(loginPlatform);
       if (isLogouted == "logout") {
@@ -65,7 +65,7 @@ Future<void> reissue(BuildContext context) async {
           // 로그인 페이지로 전환
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(builder: (context) => const LoginPage()),
             (route) => false, // 모든 이전 페이지 제거
           );
         }
@@ -101,7 +101,7 @@ class LoginViewModel {
     if (socialToken != null) {
       // 카카오 로그인이 성공함
       loginPlatform = LoginPlatform.kakao;
-      responseStatusCode = (await tokenAPI(context))!;
+      responseStatusCode = (await tokenAPI(context));
       return responseStatusCode;
     } else {
       logger.d("kakao login fail");
@@ -114,7 +114,7 @@ class LoginViewModel {
     if (socialToken != null) {
       // 네이버 로그인 성공함
       loginPlatform = LoginPlatform.naver;
-      responseStatusCode = (await tokenAPI(context))!;
+      responseStatusCode = (await tokenAPI(context));
       return responseStatusCode;
     } else {
       logger.d("naver login fail");
@@ -132,7 +132,7 @@ class LoginViewModel {
 
       responseStatusCode = await tokenAPI(context);
       return responseStatusCode;
-    } else {;
+    } else {
       return responseStatusCode;
     }
   }
@@ -154,10 +154,10 @@ class LoginViewModel {
     logger.d("loginPlatform : $loginPlatform");
     Map<String, String> data;
 
-    if (loginPlatform.name == "apple"){
+    if (loginPlatform.name == "apple") {
       data = {
-        "identityToken" : identityToken ?? "",
-        "authorizationCode" : authorizationCode ?? "",
+        "identityToken": identityToken ?? "",
+        "authorizationCode": authorizationCode ?? "",
       };
     } else {
       data = {
@@ -201,8 +201,7 @@ class LoginViewModel {
         logger.d("Fail to load $data. status code : ${response.statusCode}");
         // 실패
         throw LoginViewModelException(
-          "Fail to load. status code: ${response.statusCode}"
-        );
+            "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
       logger.d("error : $e");
@@ -210,7 +209,8 @@ class LoginViewModel {
     }
   }
 
-  Future<String> appleSignUpPostAPI(BuildContext context, String nickName, String birthday, String gender) async {
+  Future<String> appleSignUpPostAPI(BuildContext context, String nickName,
+      String birthday, String gender) async {
     final socialId = await storage.read(key: 'socialId');
     final email = await storage.read(key: 'email');
 
