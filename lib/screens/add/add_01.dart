@@ -87,7 +87,6 @@ class _AddPageState extends State<AddPage> {
                   onMapReady: (controller) {
                     // 맵이 준비되었을 때 컨트롤러 초기화
                     logger.d("controller : ${controller.hashCode}");
-                    startAddPage = true;
                     _onMapReady(controller);
                     _mapController.updateCamera(
                       NCameraUpdate.fromCameraPosition(
@@ -97,6 +96,7 @@ class _AddPageState extends State<AddPage> {
                         ),
                       ),
                     );
+                    startAddPage = true;
                     _isCameraMoving = false;
                   },
                   onCameraChange: (reason, animated) {
@@ -138,7 +138,7 @@ class _AddPageState extends State<AddPage> {
                             elevation: 8,
                             shape: const CircleBorder(),
                             padding: const EdgeInsets.all(4),
-                            foregroundColor: Color(0xFF003ACE),
+                            foregroundColor: const Color(0xFF003ACE),
                             backgroundColor: WidgetStateColor.resolveWith(
                                 (states) => Colors.white)),
                         onPressed: _moveToCurrentLocation,

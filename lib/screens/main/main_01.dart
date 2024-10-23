@@ -546,7 +546,8 @@ class _MainPageState extends State<MainPage>
     });
 
     try {
-      marker.setIcon(const NOverlayImage.fromAssetImage('assets/icons/clicked_marker.png'));
+      marker.setIcon(const NOverlayImage.fromAssetImage(
+          'assets/icons/clicked_marker.png'));
 
       //해당 위치로 이동
       logger.d("클릭된 마커 id =  ${marker.info.id}");

@@ -54,14 +54,14 @@ class ApiService {
 
     final url = Uri.parse("$serverUrl/auth/reissue");
     final headers = {'Content-Type': 'application/json'};
-    final body = {"refreshToken": _refreshToken};
+    final body = jsonEncode({"refreshToken": _refreshToken});
 
     try {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
         Map<String, dynamic> decodedData =
             jsonDecode(utf8.decode(response.bodyBytes));
-        Map<String, String> token = decodedData['data'];
+        Map<String, dynamic> token = decodedData['data'];
 
         await storage.write(key: 'accessToken', value: token['accessToken']);
         await storage.write(key: 'refreshToken', value: token['refreshToken']);
