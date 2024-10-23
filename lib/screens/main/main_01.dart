@@ -3,7 +3,6 @@ import 'package:dongpo_test/models/clickedMarkerInfo.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:dongpo_test/screens/login/login.dart';
-import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/screens/main/main_03/00_marker_title.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
@@ -94,7 +93,7 @@ class _MainPageState extends State<MainPage>
       curve: Curves.easeInOut,
     ));
 
-    //내 위치 버튼 애니메이션 설정
+    // 내 위치 버튼 애니메이션 설정
     _locationBtn = Tween<double>(
       begin: 85.0,
       end: 210.0,
@@ -547,8 +546,7 @@ class _MainPageState extends State<MainPage>
     });
 
     try {
-      marker.setIcon(const NOverlayImage.fromAssetImage(
-          'assets/icons/clicked_marker.png'));
+      marker.setIcon(const NOverlayImage.fromAssetImage('assets/icons/clicked_marker.png'));
 
       //해당 위치로 이동
       logger.d("클릭된 마커 id =  ${marker.info.id}");

@@ -35,19 +35,20 @@ class RecommendStore {
 // 전체 응답을 처리할 클래스 추가
 class RecommendResponse {
   late final List<RecommendStore> stores;
-  late final String message;
+  late final String recommendationCategory;
 
   RecommendResponse({
     required this.stores,
-    required this.message,
+    required this.recommendationCategory,
   });
 
   factory RecommendResponse.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] as Map<String, dynamic>;
     return RecommendResponse(
-      stores: (json['data'] as List)
+      stores: (data['recommendStores'] as List)
           .map((storeJson) => RecommendStore.fromJson(storeJson))
           .toList(),
-      message: json['message'],
+      recommendationCategory: data['recommendationCategory'],
     );
   }
 
@@ -55,7 +56,7 @@ class RecommendResponse {
   List<RecommendStore> getStores(){
     return stores;
   }
-  String getMessage(){
-    return message;
+  String getRecommendationCategory(){
+    return recommendationCategory;
   }
 }

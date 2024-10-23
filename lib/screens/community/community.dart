@@ -22,7 +22,7 @@ class CommunityPageState extends State<CommunityPage> {
   // 점포 추천 분류
   String recommendStoreCategory = "age";
   // 점포 추천 데이터
-  RecommendResponse recommendResponse = RecommendResponse(stores: [], message: "");
+  RecommendResponse recommendResponse = RecommendResponse(stores: [], recommendationCategory: "");
   List<RecommendStore> recommendList = [];
   String recommendMessage = "";
   // 로딩
@@ -74,7 +74,7 @@ class CommunityPageState extends State<CommunityPage> {
     recommendResponse = await viewModel.recommendStoreGetAPI(context, recommendStoreCategory);
     setState(() {
       recommendList = recommendResponse.stores;
-      recommendMessage = recommendResponse.message;
+      recommendMessage = recommendResponse.recommendationCategory;
       isLoading = false;
     });
     logger.d("recommend response : $recommendResponse");
