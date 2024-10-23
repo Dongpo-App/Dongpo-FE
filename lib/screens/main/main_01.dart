@@ -2,9 +2,12 @@ import 'package:dongpo_test/models/store_detail.dart';
 import 'package:dongpo_test/models/clickedMarkerInfo.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
+import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/screens/main/main_03/00_marker_title.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
+import 'package:dongpo_test/service/exception/exception.dart';
+import 'package:dongpo_test/service/store_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -13,7 +16,6 @@ import 'main_02.dart';
 import 'package:dongpo_test/api_key.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:dongpo_test/main.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:dongpo_test/screens/add/add_01.dart';
@@ -47,6 +49,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
+  StoreApiService storeService = StoreApiService.instance;
 
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
   late NaverMapController _mapController;
@@ -126,6 +129,7 @@ class _MainPageState extends State<MainPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: FutureBuilder<String>(
         future: checkPermission(),
         builder: (context, snapshot) {
@@ -143,6 +147,7 @@ class _MainPageState extends State<MainPage>
                   onMapReady: (controller) async {
                     logger.d("controller : ${controller.hashCode}");
                     _onMapReady(controller);
+                    await _clearMarkers(); // 기존 마커 제거
                     await _initUserMarker();
                     await _moveCamera(_userMarker.position);
                     await _searchStoreCurrentLocation(_userMarker.position);
@@ -174,6 +179,8 @@ class _MainPageState extends State<MainPage>
                     }
                   },
                   options: const NaverMapViewOptions(
+                    pickTolerance:
+                        16, // 마커나 오버레이에 정확하게 닿지 않더라도, 설정된 픽셀 범위 내에 있으면 터치로 인식
                     locationButtonEnable: false, // 위치 버튼 표시 여부 설정
                     minZoom: 15, //쵀대 줄일 수 있는 크기?
                     maxZoom: 18, //최대 당길 수 있는 크기
@@ -291,7 +298,8 @@ class _MainPageState extends State<MainPage>
                                           MaterialPageRoute(
                                             builder: (context) {
                                               return StoreInfo(
-                                                  idx: myDataList[idx].id); // 터치하면 해당 가게 상세보기로
+                                                  idx: myDataList[idx]
+                                                      .id); // 터치하면 해당 가게 상세보기로
                                             },
                                           ),
                                         );
@@ -299,7 +307,7 @@ class _MainPageState extends State<MainPage>
                                       child: Container(
                                         padding: const EdgeInsets.all(20),
                                         decoration: BoxDecoration(
-                                          color: Color(0xFFF4F4F4),
+                                          color: const Color(0xFFF4F4F4),
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
@@ -318,7 +326,7 @@ class _MainPageState extends State<MainPage>
                                                     'assets/images/rakoon.png'),
                                               ),
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 8,
                                             ),
                                             Column(
@@ -343,7 +351,7 @@ class _MainPageState extends State<MainPage>
                                                       size: 12,
                                                       color: Color(0xffF15A2B),
                                                     ),
-                                                    const SizedBox(width: 4),
+                                                    SizedBox(width: 4),
                                                     Text(
                                                       '영업 가능성 있어요!',
                                                       style: TextStyle(
@@ -430,7 +438,7 @@ class _MainPageState extends State<MainPage>
                               elevation: 8,
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(4),
-                              foregroundColor: Color(0xFF003ACE),
+                              foregroundColor: const Color(0xFF003ACE),
                               backgroundColor: WidgetStateColor.resolveWith(
                                   (states) => Colors.white)),
                           onPressed: () async {
@@ -491,29 +499,17 @@ class _MainPageState extends State<MainPage>
   // 기존 마커 삭제 함수
   Future<void> _clearMarkers() async {
     logger.d('마커가 정상적으로 들어왔음 ${markers.length}');
-    // for (int i = 0; i < markers.length; i++) {
-    //   await _mapController.deleteOverlay(NOverlayInfo(
-    //       type: NOverlayType.marker, id: markers[i].info.id)); // 마커 제거
-    // }
-    /*
-      해당 코드에서 오류가 난 이유 : 마커를 지우는 기준인 id를 0부터 마커의 수로 함.
-      하지만 마커를 등록할 때는 점포의 id로 사용함.
-      점포의 id와 마커의 수가 다르기 때문에 개별 삭제에 에러가 난 것임.
-      main_01.dart의 기능이 마커 전체 삭제 후 마커 표시를 하는 것이라 이해했기 때문에 특정 id 삭제가 아닌 일괄 삭제로 코드 수정함.
-      특정 id로 마커를 지우고 싶다면 삭제하고 싶은 마커의 점포 id로 지워야 함.
-    */
-    _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
+    await _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
 
     markers.clear(); // 리스트 초기화
-    logger.d('마커삭제 테스트 $markers');
+    logger.d('마커 전체 삭제 : $markers');
   }
 
   // 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
   void _addMarkers(List<MyData> dataList) async {
     //여러개 마커 담는 리스트
     try {
-      var defaultMarkerSize = const Size(44, 44);
-      await _clearMarkers(); // 기존 마커 제거
+      var defaultMarkerSize = const Size(24, 24);
 
       for (var data in dataList) {
         NMarker marker = NMarker(
@@ -522,12 +518,17 @@ class _MainPageState extends State<MainPage>
           icon: const NOverlayImage.fromAssetImage(
               'assets/icons/default_marker.png'),
         );
+        // 확인용 logger
+        logger.i(
+            "marker ${marker.info.id}  : ${data.latitude} & ${data.longitude}");
+
         //마커 사이즈 조절
         marker.setSize(defaultMarkerSize);
+
+        // 마커 클릭
         marker.setOnTapListener((overlay) {
           _onMarkerTapped(marker, data);
         });
-
         // 마커 리스트에 추가
         await _mapController.addOverlay(marker);
         markers.add(marker);
@@ -585,65 +586,36 @@ class _MainPageState extends State<MainPage>
       position: position,
       icon: myLocationIcon,
     );
+    _userMarker.setZIndex(100);
     // 마커 사이즈 지정 및 지도에 추가
     _userMarker.setSize(const Size(24, 24));
     _mapController.addOverlay(_userMarker);
-  }
-
-  // 카메라 위치 기반으로 근처 가게 검색
-  Future<List<MyData>> _researchFromMe() async {
-    //해당 카메라 기준 위도경도 가져옴
-
-    try {
-      final cameraPosition = await _mapController.getCameraPosition();
-      final latitude = cameraPosition.target.latitude;
-      final longitude = cameraPosition.target.longitude;
-      logger.d("researchFromME:$cameraPosition");
-      final accessToken = await storage.read(key: 'accessToken');
-      logger.d('_researchFromMe() http통신 전 ');
-      final url = Uri.parse(
-          '$serverUrl/api/store?longitude=$longitude&latitude=$latitude');
-
-      final headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      };
-
-      final response = await http.get(url, headers: headers);
-
-      if (response.statusCode == 200) {
-        logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
-        List jsonResponse =
-            json.decode(utf8.decode(response.bodyBytes))['data'];
-        logger.d("main_01.dart store data. $jsonResponse");
-        return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
-      } else if (response.statusCode == 401) {
-        logger.d('token expired! status code : ${response.statusCode}');
-        await reissue(context);
-        return _researchFromMe();
-      } else {
-        logger.e(
-            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-        throw Exception('HTTP ERROR !!! ${response.body}');
-      }
-    } catch (e) {
-      logger.d('Error in _researchFromMe method 에러내용 : $e');
-      throw {logger.d('Error !! ')};
-    }
   }
 
   Future<void> _searchStoreCurrentLocation(NLatLng target) async {
     // 점포 데이터 받기
 
     try {
-      List<MyData> storeList = await _researchFromMe();
-
+      List<MyData> storeList = await storeService.getStoreByCurrentLocation(
+        target.latitude,
+        target.longitude,
+      );
       myDataList = storeList;
       bsAddress = await _reverseGeocode(target);
 
       _addMarkers(storeList);
-    } catch (e) {
-      logger.d('_searchStoreCurrentLocation 함수 오류 ');
+    } on TokenExpiredException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("세션이 만료되었습니다. 다시 로그인해주세요.")));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginPage()));
+      } else {
+        logger.e("Error! while replace to Login page");
+        logger.e("message: $e");
+      }
+    } on Exception catch (e) {
+      logger.e("Error! message: $e");
     }
   }
 
@@ -769,9 +741,12 @@ class _MainPageState extends State<MainPage>
 
   //가게 기본정보 바텀시트
   void _showBottomSheet(BuildContext context, String markerId) async {
+    bool isNavigating = false;
+
     int index = int.parse(markerId);
-    markerInfo = await _getClickedMarkerInfo(context, index);
+    markerInfo = await storeService.getStoreSummary(index);
     showBottomSheet(
+      backgroundColor: Colors.white,
       context: context,
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
@@ -782,32 +757,42 @@ class _MainPageState extends State<MainPage>
           snap: true,
           snapAnimationDuration: const Duration(milliseconds: 300),
           builder: (context, scrollController) {
-            return SingleChildScrollView(
-              controller: scrollController,
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 15),
-                decoration: const BoxDecoration(),
-                child: Column(
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return StoreInfo(idx: index);
-                      })),
-                      child: const Icon(Icons.menu),
-                    ),
-                    MainTitle2(
-                      idx: index,
-                    ),
-                    //사진
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    const MainPhoto2(),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                  ],
+            return NotificationListener<ScrollNotification>(
+              onNotification: (scrollNotification) {
+                logger.i(
+                    "scrollNotification : ${scrollNotification.metrics.pixels}");
+                if (scrollNotification.metrics.pixels >= 0 && !isNavigating) {
+                  isNavigating = true; // 플래그 설정
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return StoreInfo(idx: index); // 이동할 페이지
+                  })).then((_) {
+                    isNavigating = false; // 돌아올 때 플래그 해제
+                  });
+                  return true;
+                }
+                return false;
+              },
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  decoration: const BoxDecoration(),
+                  child: Column(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            Navigator.pop(context); //뒤로가기
+                          },
+                          icon: const Icon(
+                              size: 36,
+                              Icons.remove,
+                              color: Color(0xff767676))),
+                      MainTitle2(idx: index),
+                      const SizedBox(height: 30),
+                      const MainPhoto2(),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             );
@@ -817,36 +802,36 @@ class _MainPageState extends State<MainPage>
     );
   }
 
-  //마커 서버통신
-  Future<MarkerInfo> _getClickedMarkerInfo(
-      BuildContext context, int markerId) async {
-    final url = Uri.parse('$serverUrl/api/store/$markerId/summary');
+  // //마커 서버통신
+  // Future<MarkerInfo> _getClickedMarkerInfo(
+  //     BuildContext context, int markerId) async {
+  //   final url = Uri.parse('$serverUrl/api/store/$markerId/summary');
 
-    final accessToken = await storage.read(key: 'accessToken');
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
+  //   final accessToken = await storage.read(key: 'accessToken');
+  //   final headers = {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': 'Bearer $accessToken',
+  //   };
 
-    final response = await http.get(
-      url,
-      headers: headers,
-    );
+  //   final response = await http.get(
+  //     url,
+  //     headers: headers,
+  //   );
 
-    if (response.statusCode == 200) {
-      logger.d('데이터 통신 성공 !! (Marker) 상태코드 : ${response.statusCode}');
+  //   if (response.statusCode == 200) {
+  //     logger.d('데이터 통신 성공 !! (Marker) 상태코드 : ${response.statusCode}');
 
-      // 단일 객체를 처리하는 부분
-      var jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
-      return MarkerInfo.fromJson(jsonResponse); // 객체로 변환
-    } else if (response.statusCode == 401) {
-      logger.d('token expired! 상태코드 : ${response.statusCode}');
-      await reissue(context); // 토큰 갱신 함수
-      return _getClickedMarkerInfo(context, markerId); // 갱신 후 다시 호출
-    } else {
-      logger.e(
-          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-      throw Exception('HTTP ERROR !!! ${response.body}');
-    }
-  }
+  //     // 단일 객체를 처리하는 부분
+  //     var jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
+  //     return MarkerInfo.fromJson(jsonResponse); // 객체로 변환
+  //   } else if (response.statusCode == 401) {
+  //     logger.d('token expired! 상태코드 : ${response.statusCode}');
+  //     await reissue(context); // 토큰 갱신 함수
+  //     return _getClickedMarkerInfo(context, markerId); // 갱신 후 다시 호출
+  //   } else {
+  //     logger.e(
+  //         'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
+  //     throw Exception('HTTP ERROR !!! ${response.body}');
+  //   }
+  // }
 }

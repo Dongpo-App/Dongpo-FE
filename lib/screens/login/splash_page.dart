@@ -28,29 +28,37 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     const String topImage = "assets/images/login.png";
-    //const String iconImage = "assets/images/icons.png";
+    const String spalshImage = "assets/images/splash_page.png";
+    //const String iconImage = "assets/images/icon.png";
 
     double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: const Color(0xFF33393F),
-      body: Center(
-        child: Column(
-          children: [
-            Image.asset(topImage),
-            SizedBox(
-              height: screenHeight * 0.3,
-            ),
-            const Text(
-              "동포",
-              style: TextStyle(
-                color: Color(0xffffffff),
-                fontSize: 60,
-              ),
-            ),
-          ],
+      body: SizedBox(
+        width: screenWidth,
+        child: Image.asset(
+          spalshImage,
+          fit: BoxFit.cover,
         ),
       ),
+      // 추후에 사진의 위 부분을 자른 후 사용
+      //Column(
+      //   children: [
+      //     Image.asset(topImage),
+      //     SizedBox(
+      //       height: screenHeight * 0.3,
+      //     ),
+      //     const Text(
+      //       "동포",
+      //       style: TextStyle(
+      //         color: Color(0xffffffff),
+      //         fontSize: 60,
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
   }
 
@@ -86,7 +94,7 @@ class _SplashPageState extends State<SplashPage> {
         return true;
       } else if (response.statusCode == 401) {
         logger.w(
-            "status : ${response.statusCode} Invalid token. Redirecting to login page.");
+            "code : ${response.statusCode} Invalid token. Redirecting to login page.");
         logger.w("message : ${decodedResponse['message']}");
         // 만료된 토큰 삭제
         await storage.delete(key: 'accessToken');

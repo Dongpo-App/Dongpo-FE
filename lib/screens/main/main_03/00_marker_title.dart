@@ -73,10 +73,19 @@ class MainPhoto2 extends StatefulWidget {
 class _MainPhotoState extends State<MainPhoto2> {
   final List<Image> imageList = [];
 
+  // 로딩
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
+    setState(() {
+      isLoading = true; // 초기화
+    });
     loadPhoto(); // 페이지가 로드될 때 사진을 로드하는 메서드를 호출
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -86,7 +95,9 @@ class _MainPhotoState extends State<MainPhoto2> {
       color: Colors.white,
       child: imageList.isEmpty
           ? const Center(child: Text('등록된 이미지가 아직 없습니다!')) // 이미지가 없을 때 로딩 표시
-          : ListView.builder(
+          : isLoading
+            ? const CircularProgressIndicator()
+            : ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: imageList.length,
               itemBuilder: (BuildContext context, int index) {

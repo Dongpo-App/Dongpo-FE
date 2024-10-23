@@ -3,6 +3,7 @@ import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/models/user_profile.dart';
 import 'package:dongpo_test/screens/my_info/info_detail/add_store.dart';
 import 'package:dongpo_test/screens/my_info/my_page_view_model.dart';
+import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
@@ -25,6 +26,7 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
+  LoginApiService loginService = LoginApiService.instance;
   late TextEditingController nicknameController;
 
   // 로그아웃 관련
@@ -78,7 +80,10 @@ class _MyPageState extends State<MyPage> {
 
   @override
   Widget build(BuildContext context) {
-    double bodyHeight = (MediaQuery.of(context).size.height - AppBar().preferredSize.height - MediaQuery.of(context).viewInsets.bottom) * 0.9;
+    double bodyHeight = (MediaQuery.of(context).size.height -
+            AppBar().preferredSize.height -
+            MediaQuery.of(context).viewInsets.bottom) *
+        0.9;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -385,31 +390,13 @@ class _MyPageState extends State<MyPage> {
                             onAuthFailed: (e) =>
                                 logger.e("네이버맵 인증오류 : $e onAuthFailed"),
                           );
-                          String? loginPlatform =
-                              await storage.read(key: 'loginPlatform');
-                          if (loginPlatform == null) {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginPage()),
-                              (route) => false, // 모든 이전 페이지 제거
-                            );
-                          }
-                          isLogouted =
-                              await loginViewModel.logout(loginPlatform);
-                          if (isLogouted == "logout") {
-                            // FlutterSecureStorage에 있는 token 삭제
-                            await storage.delete(key: 'accessToken');
-                            await storage.delete(key: 'refreshToken');
-                            await storage.delete(key: 'loginPlatform');
-
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginPage()),
-                              (route) => false, // 모든 이전 페이지 제거
-                            );
-                          }
+                          await loginService.logout();
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LoginPage()),
+                            (route) => false, // 모든 이전 페이지 제거
+                          );
                         },
                         child: const Text(
                           '로그아웃',
