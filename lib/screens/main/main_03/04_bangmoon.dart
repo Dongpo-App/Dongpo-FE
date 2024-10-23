@@ -1,8 +1,13 @@
+import 'dart:convert';
+
+import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
+import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dongpo_test/main.dart';
+import 'package:http/http.dart' as http;
 
 class BangMoon extends StatelessWidget {
   const BangMoon({super.key});
@@ -114,7 +119,7 @@ class BangMoon extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) => const SecondPage()));
+                    builder: (BuildContext context) => const BangMoonPage()));
           },
           style: ElevatedButton.styleFrom(
             elevation: 0,
@@ -134,14 +139,14 @@ class BangMoon extends StatelessWidget {
 }
 
 // 방문 인증 페이지
-class SecondPage extends StatefulWidget {
-  const SecondPage({super.key});
+class BangMoonPage extends StatefulWidget {
+  const BangMoonPage({super.key});
 
   @override
-  State<SecondPage> createState() => _SecondPageState();
+  State<BangMoonPage> createState() => _BangMoonPageState();
 }
 
-class _SecondPageState extends State<SecondPage> {
+class _BangMoonPageState extends State<BangMoonPage> {
   late NaverMapController _mapController;
   int okValue = 0;
   int noValue = 0;
@@ -150,7 +155,6 @@ class _SecondPageState extends State<SecondPage> {
   //초기화
   void initState() {
     super.initState();
-    _moveToCurrentLocation();
   }
 
   @override
@@ -190,15 +194,39 @@ class _SecondPageState extends State<SecondPage> {
         children: [
           Expanded(
             flex: 2,
-            child: NaverMap(
-              onMapReady: (controller) {
-                _onMapReady(controller);
-              },
-              options: const NaverMapViewOptions(
-                zoomGesturesEnable: false,
-                minZoom: 16,
-                scrollGesturesEnable: false,
-              ),
+            child: Stack(
+              children: [
+                NaverMap(
+                  onMapReady: (controller) {
+                    _onMapReady(controller);
+                    _SetMyMarkerAndStoreMarker();
+                  },
+                  options: const NaverMapViewOptions(
+                    zoomGesturesEnable: false,
+                    minZoom: 16,
+                    scrollGesturesEnable: false,
+                  ),
+                ),
+                SizedBox(
+                  height: screenWidth,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            elevation: 8,
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(4),
+                            foregroundColor: Color(0xFF003ACE),
+                            backgroundColor: WidgetStateColor.resolveWith(
+                                (states) => Colors.white)),
+                        onPressed: _checkDistance,
+                        child: const Icon(Icons.my_location),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -331,10 +359,8 @@ class _SecondPageState extends State<SecondPage> {
                     child: ElevatedButton(
                       onPressed: () {
                         (okValue == 1 || noValue == 1)
-                            ? showAlertDialog(context, okValue, noValue)
+                            ? _checkDistance()
                             : null;
-
-                        //방문 인증 메서드 구현
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 0,
@@ -374,23 +400,46 @@ class _SecondPageState extends State<SecondPage> {
     _mapController = controller;
   }
 
-  Future<void> _moveToCurrentLocation() async {
+  Future<void> _SetMyMarkerAndStoreMarker() async {
+    //내위치로 화면 이동
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       final myLocation = NLatLng(position.latitude, position.longitude);
+      final storeLocation = NLatLng(storeData!.latitude, storeData!.longitude);
 
-      const myLocationIcon =
-          NOverlayImage.fromAssetImage('assets/images/myLocation.png');
-
+      //내위치 마커 추가
       NMarker myLocationMarker = NMarker(
         id: "my_location_marker",
         position: myLocation,
-        icon: myLocationIcon,
+        icon:
+            const NOverlayImage.fromAssetImage('assets/icons/my_location.png'),
+      );
+
+      //가게 마커도 추가
+      NMarker storeLocationMarker = NMarker(
+        id: "store_location_marker",
+        position: storeLocation,
+        icon:
+            const NOverlayImage.fromAssetImage('assets/icons/my_location.png'),
+      );
+
+      //가게 기준 500m 반경 원 추가
+      NCircleOverlay circleOverlay = NCircleOverlay(
+        id: 'circleOverlay',
+        center: storeLocation,
+        radius: 100,
+        color: Colors.blue.withOpacity(0.3), // 투명한 파란색 원
+        outlineWidth: 2,
+        outlineColor: Colors.blue,
       );
 
       myLocationMarker.setSize(const Size(40, 50));
       _mapController.addOverlay(myLocationMarker);
+      _mapController.addOverlay(circleOverlay);
+
+      storeLocationMarker.setSize(const Size(40, 50));
+      _mapController.addOverlay(storeLocationMarker);
 
       _mapController.updateCamera(
         NCameraUpdate.fromCameraPosition(
@@ -406,32 +455,194 @@ class _SecondPageState extends State<SecondPage> {
     }
   }
 
-  showAlertDialog(BuildContext context, int okValue, int noValue) {
-    // set up the button
-    Widget okButton = TextButton(
-      child: const Text("OK"),
+  void _checkDistance() async {
+    Position myPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    //int로 형변환
+    int checkMeter = Geolocator.distanceBetween(storeData!.latitude,
+            storeData!.longitude, myPosition.latitude, myPosition.longitude)
+        .floor();
+
+    logger.d('두 개의 거리 차이는 = $checkMeter M');
+    //만약 사용자와 가게 거리가 100미터 이내이면 방문인증 시작
+    if (checkMeter <= 100) {
+      _checkBangMoon(myPosition);
+      logger.d('_checkBangMoon실행');
+    }
+    //아니라면 100미터 이내에 와야된다하고 경고 후 내위치 보여주기
+    else {
+      showFailDialog();
+    }
+  }
+
+  void _checkBangMoon(Position myPosition) async {
+    //서버 통신
+    bool setTrueFaileValue;
+    if (okValue == 1) {
+      setTrueFaileValue = true;
+    } else {
+      setTrueFaileValue = false;
+    }
+
+    final accessToken = await storage.read(key: 'accessToken');
+
+    final data = {
+      "latitude": myPosition.latitude, // '방문인증'을 지도에서 누른 기준 사용자의 위도
+      "longitude": myPosition.longitude, // '방문인증'을 지도에서 누른 기준 사용자의 경도
+      "storeId": storeData!.id, // 방문인증 하고자 하는 점포의 id
+      "isVisitSuccessful": setTrueFaileValue // 방문인증 성공 여부 ? true : false
+    };
+
+    final url = Uri.parse('$serverUrl/api/store/visit-cert');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final body = jsonEncode(data);
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        logger.d('성공 보낸 데이터: $data');
+        showSuccessDialog();
+      } else {
+        final errorData = utf8.decode(response.bodyBytes);
+        logger.d('전송 실패 ${response.statusCode} 에러 내용 : $errorData ');
+
+        //실패했을 떄
+      }
+    } catch (e) {
+      logger.d('Error $e');
+    }
+  }
+
+  void showFailDialog() {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0, backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+      ),
       onPressed: () {
-        logger.d('하이');
-        Navigator.pop(context);
-        Navigator.pop(context);
+        Navigator.of(context).pop();
       },
     );
-
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: const Text("방문 인증"),
-      content: const Text("방문 인증이 완료되었습니다. "),
+      backgroundColor: Colors.white,
+      title: const Text(
+        "방문 실패!",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "가게와의 거리가 너무 멀어요!",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
       actions: [
-        okButton,
+        Center(child: okButton),
       ],
     );
 
-    // show the dialog
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return alert;
       },
     );
   }
+
+  void showSuccessDialog() {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0, backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+      ),
+      onPressed: () {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MainPage()), // 1페이지로 이동
+          (Route<dynamic> route) => false, // 모든 이전 스택을 삭제
+        );
+
+        // 1페이지로 이동 후 바로 2페이지로 이동
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => StoreInfo(
+                    idx: storeData!.id,
+                  )), // 2페이지로 이동
+        );
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "인증 성공!",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "방문 인증이 완료되었어요!",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      actions: [
+        Center(child: okButton),
+      ],
+    );
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  // showAlertDialog(BuildContext context, int okValue, int noValue) {
+  //   // set up the button
+  //   Widget okButton = TextButton(
+  //     child: const Text("OK"),
+  //     onPressed: () {
+  //       // 해당가게로 다시 돌아가기
+  //       logger.d('하이');
+  //       Navigator.pop(context);
+  //       Navigator.pop(context);
+  //     },
+  //   );
+
+  //   // set up the AlertDialog
+  //   AlertDialog alert = AlertDialog(
+  //     title: const Text("방문 인증"),
+  //     content: const Text("방문 인증이 완료되었습니다. "),
+  //     actions: [
+  //       okButton,
+  //     ],
+  //   );
+
+  //   // show the dialog
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return alert;
+  //     },
+  //   );
+  // }
 }

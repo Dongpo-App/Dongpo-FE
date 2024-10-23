@@ -74,7 +74,7 @@ class AppleKakaoNaverLogin implements SocialLogin {
       logger.d('애플로그인 요청 시작');
       // 애플 로그인 요청
       final AuthorizationCredentialAppleID appleCredential =
-        await SignInWithApple.getAppleIDCredential(
+          await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
           AppleIDAuthorizationScopes.fullName,
@@ -92,7 +92,7 @@ class AppleKakaoNaverLogin implements SocialLogin {
       String? identityToken = appleCredential.identityToken;
       String? authorizationCode = appleCredential.authorizationCode;
 
-      if (identityToken != null && authorizationCode != null) {
+      if (identityToken != null) {
         return {
           "identityToken": identityToken,
           "authorizationCode": authorizationCode,

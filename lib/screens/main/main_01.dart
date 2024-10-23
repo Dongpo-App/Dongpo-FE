@@ -2,9 +2,12 @@ import 'package:dongpo_test/models/store_detail.dart';
 import 'package:dongpo_test/models/clickedMarkerInfo.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
+import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/screens/main/main_03/00_marker_title.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
+import 'package:dongpo_test/service/exception/exception.dart';
+import 'package:dongpo_test/service/store_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -46,6 +49,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
+  StoreApiService storeService = StoreApiService.instance;
 
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
   late NaverMapController _mapController;
@@ -175,7 +179,8 @@ class _MainPageState extends State<MainPage>
                     }
                   },
                   options: const NaverMapViewOptions(
-                    pickTolerance: 16, // 마커나 오버레이에 정확하게 닿지 않더라도, 설정된 픽셀 범위 내에 있으면 터치로 인식
+                    pickTolerance:
+                        16, // 마커나 오버레이에 정확하게 닿지 않더라도, 설정된 픽셀 범위 내에 있으면 터치로 인식
                     locationButtonEnable: false, // 위치 버튼 표시 여부 설정
                     minZoom: 15, //쵀대 줄일 수 있는 크기?
                     maxZoom: 18, //최대 당길 수 있는 크기
@@ -293,7 +298,8 @@ class _MainPageState extends State<MainPage>
                                           MaterialPageRoute(
                                             builder: (context) {
                                               return StoreInfo(
-                                                  idx: myDataList[idx].id); // 터치하면 해당 가게 상세보기로
+                                                  idx: myDataList[idx]
+                                                      .id); // 터치하면 해당 가게 상세보기로
                                             },
                                           ),
                                         );
@@ -301,7 +307,7 @@ class _MainPageState extends State<MainPage>
                                       child: Container(
                                         padding: const EdgeInsets.all(20),
                                         decoration: BoxDecoration(
-                                          color: Color(0xFFF4F4F4),
+                                          color: const Color(0xFFF4F4F4),
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
@@ -320,7 +326,7 @@ class _MainPageState extends State<MainPage>
                                                     'assets/images/rakoon.png'),
                                               ),
                                             ),
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 8,
                                             ),
                                             Column(
@@ -345,7 +351,7 @@ class _MainPageState extends State<MainPage>
                                                       size: 12,
                                                       color: Color(0xffF15A2B),
                                                     ),
-                                                    const SizedBox(width: 4),
+                                                    SizedBox(width: 4),
                                                     Text(
                                                       '영업 가능성 있어요!',
                                                       style: TextStyle(
@@ -432,7 +438,7 @@ class _MainPageState extends State<MainPage>
                               elevation: 8,
                               shape: const CircleBorder(),
                               padding: const EdgeInsets.all(4),
-                              foregroundColor: Color(0xFF003ACE),
+                              foregroundColor: const Color(0xFF003ACE),
                               backgroundColor: WidgetStateColor.resolveWith(
                                   (states) => Colors.white)),
                           onPressed: () async {
@@ -517,7 +523,7 @@ class _MainPageState extends State<MainPage>
         marker.setSize(defaultMarkerSize);
 
         // 마커 클릭
-         marker.setOnTapListener((overlay) {
+        marker.setOnTapListener((overlay) {
           _onMarkerTapped(marker, data);
         });
         // 마커 리스트에 추가
@@ -542,7 +548,7 @@ class _MainPageState extends State<MainPage>
 
     try {
       marker.setIcon(const NOverlayImage.fromAssetImage(
-        'assets/icons/clicked_marker.png'));
+          'assets/icons/clicked_marker.png'));
 
       //해당 위치로 이동
       logger.d("클릭된 마커 id =  ${marker.info.id}");
@@ -584,60 +590,30 @@ class _MainPageState extends State<MainPage>
     _mapController.addOverlay(_userMarker);
   }
 
-  // 카메라 위치 기반으로 근처 가게 검색
-  Future<List<MyData>> _researchFromMe() async {
-    //해당 카메라 기준 위도경도 가져옴
-
-    try {
-      final cameraPosition = await _mapController.getCameraPosition();
-      final latitude = cameraPosition.target.latitude;
-      final longitude = cameraPosition.target.longitude;
-      logger.d("researchFromME:$cameraPosition");
-      final accessToken = await storage.read(key: 'accessToken');
-      logger.d('_researchFromMe() http통신 전 ');
-      final url = Uri.parse(
-          '$serverUrl/api/store?longitude=$longitude&latitude=$latitude');
-
-      final headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $accessToken',
-      };
-
-      final response = await http.get(url, headers: headers);
-
-      if (response.statusCode == 200) {
-        logger.d('데이터 통신 성공 !! 상태코드 : ${response.statusCode}');
-        List jsonResponse =
-            json.decode(utf8.decode(response.bodyBytes))['data'];
-        logger.d("main_01.dart store data. $jsonResponse");
-        return jsonResponse.map((myData) => MyData.fromJson(myData)).toList();
-      } else if (response.statusCode == 401) {
-        logger.d('token expired! status code : ${response.statusCode}');
-        await reissue(context);
-        return _researchFromMe();
-      } else {
-        logger.e(
-            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-        throw Exception('HTTP ERROR !!! ${response.body}');
-      }
-    } catch (e) {
-      logger.d('Error in _researchFromMe method 에러내용 : $e');
-      throw {logger.d('Error !! ')};
-    }
-  }
-
   Future<void> _searchStoreCurrentLocation(NLatLng target) async {
     // 점포 데이터 받기
 
     try {
-      List<MyData> storeList = await _researchFromMe();
-
+      List<MyData> storeList = await storeService.getStoreByCurrentLocation(
+        target.latitude,
+        target.longitude,
+      );
       myDataList = storeList;
       bsAddress = await _reverseGeocode(target);
 
       _addMarkers(storeList);
-    } catch (e) {
-      logger.d('_searchStoreCurrentLocation 함수 오류 ');
+    } on TokenExpiredException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("세션이 만료되었습니다. 다시 로그인해주세요.")));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const LoginPage()));
+      } else {
+        logger.e("Error! while replace to Login page");
+        logger.e("message: $e");
+      }
+    } on Exception catch (e) {
+      logger.e("Error! message: $e");
     }
   }
 
@@ -763,10 +739,10 @@ class _MainPageState extends State<MainPage>
 
   //가게 기본정보 바텀시트
   void _showBottomSheet(BuildContext context, String markerId) async {
-    bool _isNavigating = false;
+    bool isNavigating = false;
 
     int index = int.parse(markerId);
-    markerInfo = await _getClickedMarkerInfo(context, index);
+    markerInfo = await storeService.getStoreSummary(index);
     showBottomSheet(
       backgroundColor: Colors.white,
       context: context,
@@ -781,13 +757,14 @@ class _MainPageState extends State<MainPage>
           builder: (context, scrollController) {
             return NotificationListener<ScrollNotification>(
               onNotification: (scrollNotification) {
-                logger.i("scrollNotification : ${scrollNotification.metrics.pixels}");
-                if (scrollNotification.metrics.pixels >= 0 && !_isNavigating) {
-                  _isNavigating = true; // 플래그 설정
+                logger.i(
+                    "scrollNotification : ${scrollNotification.metrics.pixels}");
+                if (scrollNotification.metrics.pixels >= 0 && !isNavigating) {
+                  isNavigating = true; // 플래그 설정
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return StoreInfo(idx: index); // 이동할 페이지
                   })).then((_) {
-                    _isNavigating = false; // 돌아올 때 플래그 해제
+                    isNavigating = false; // 돌아올 때 플래그 해제
                   });
                   return true;
                 }
@@ -807,9 +784,7 @@ class _MainPageState extends State<MainPage>
                           icon: const Icon(
                               size: 36,
                               Icons.remove,
-                              color: Color(0xff767676)
-                          )
-                      ),
+                              color: Color(0xff767676))),
                       MainTitle2(idx: index),
                       const SizedBox(height: 30),
                       const MainPhoto2(),
@@ -825,36 +800,36 @@ class _MainPageState extends State<MainPage>
     );
   }
 
-  //마커 서버통신
-  Future<MarkerInfo> _getClickedMarkerInfo(
-      BuildContext context, int markerId) async {
-    final url = Uri.parse('$serverUrl/api/store/$markerId/summary');
+  // //마커 서버통신
+  // Future<MarkerInfo> _getClickedMarkerInfo(
+  //     BuildContext context, int markerId) async {
+  //   final url = Uri.parse('$serverUrl/api/store/$markerId/summary');
 
-    final accessToken = await storage.read(key: 'accessToken');
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
+  //   final accessToken = await storage.read(key: 'accessToken');
+  //   final headers = {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': 'Bearer $accessToken',
+  //   };
 
-    final response = await http.get(
-      url,
-      headers: headers,
-    );
+  //   final response = await http.get(
+  //     url,
+  //     headers: headers,
+  //   );
 
-    if (response.statusCode == 200) {
-      logger.d('데이터 통신 성공 !! (Marker) 상태코드 : ${response.statusCode}');
+  //   if (response.statusCode == 200) {
+  //     logger.d('데이터 통신 성공 !! (Marker) 상태코드 : ${response.statusCode}');
 
-      // 단일 객체를 처리하는 부분
-      var jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
-      return MarkerInfo.fromJson(jsonResponse); // 객체로 변환
-    } else if (response.statusCode == 401) {
-      logger.d('token expired! 상태코드 : ${response.statusCode}');
-      await reissue(context); // 토큰 갱신 함수
-      return _getClickedMarkerInfo(context, markerId); // 갱신 후 다시 호출
-    } else {
-      logger.e(
-          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-      throw Exception('HTTP ERROR !!! ${response.body}');
-    }
-  }
+  //     // 단일 객체를 처리하는 부분
+  //     var jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
+  //     return MarkerInfo.fromJson(jsonResponse); // 객체로 변환
+  //   } else if (response.statusCode == 401) {
+  //     logger.d('token expired! 상태코드 : ${response.statusCode}');
+  //     await reissue(context); // 토큰 갱신 함수
+  //     return _getClickedMarkerInfo(context, markerId); // 갱신 후 다시 호출
+  //   } else {
+  //     logger.e(
+  //         'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
+  //     throw Exception('HTTP ERROR !!! ${response.body}');
+  //   }
+  // }
 }

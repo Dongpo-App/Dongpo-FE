@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
+import 'package:dongpo_test/service/exception/exception.dart';
+import 'package:dongpo_test/service/store_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -21,7 +24,8 @@ class ShowReview extends StatefulWidget {
 
 //사진 관련
 class _ShowReviewState extends State<ShowReview> {
-  static const storage = FlutterSecureStorage();
+  //static const storage = FlutterSecureStorage();
+  StoreApiService storeService = StoreApiService.instance;
   final ImagePicker _picker = ImagePicker();
   List<XFile> _pickedImgs = [];
   int _rating = 0;
@@ -31,6 +35,7 @@ class _ShowReviewState extends State<ShowReview> {
 //여기서 부터 화면
   @override
   Widget build(BuildContext context) {
+    int storeId = widget.idx;
     // 전체 화면 너비
     final screenWidth = MediaQuery.of(context).size.width;
     // 좌우 마진 제외
@@ -43,12 +48,12 @@ class _ShowReviewState extends State<ShowReview> {
         children: [
           Text(
             "리뷰 ${reviewList.length}개",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
           ),
-          SizedBox(
+          const SizedBox(
             height: 24,
           ),
-          Container(
+          SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
@@ -60,168 +65,194 @@ class _ShowReviewState extends State<ShowReview> {
                         builder: (BuildContext context, StateSetter setState) {
                       return SizedBox(
                         height: MediaQuery.of(context).size.height * 0.8,
-                        child: Container(
-                          padding: EdgeInsets.all(24),
-                          child: Column(
-                            children: [
-                              //상단 1
-                              Row(
-                                children: [
-                                  const Text(
-                                    "방문 후기를 알려주세요",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 24),
-                                  ),
-                                  const Spacer(),
-                                  IconButton(
-                                    onPressed: () {
-                                      _showConfirmationDialog(context);
-                                    },
-                                    icon: const Icon(CupertinoIcons.xmark,
-                                        color: Color(0xFF767676), size: 24),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 24,
-                              ),
-                              //별점 RatingBar //상단 2
-                              Row(
-                                children: [
-                                  RatingBar.builder(
-                                    minRating: 0.5,
-                                    direction: Axis.horizontal,
-                                    allowHalfRating: true,
-                                    glowRadius: 1,
-                                    glow: false,
-                                    itemPadding: EdgeInsets.zero,
-                                    itemSize: 56,
-                                    itemBuilder: (context, _) => const Icon(
-                                      Icons.star,
-                                      color: Color(0xffF15A2B),
+                        child: SingleChildScrollView(
+                          child: Container(
+                            padding: const EdgeInsets.all(24),
+                            child: Column(
+                              children: [
+                                //상단 1
+                                Row(
+                                  children: [
+                                    const Text(
+                                      "방문 후기를 알려주세요",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 24),
                                     ),
-                                    onRatingUpdate: (rating) {
-                                      setState(() {
-                                        _rating = rating.floor();
-                                        logger.d(rating);
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 24,
-                              ),
-                              //사진 첨부 텍스트 //상단 3
-                              const Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    "사진 첨부",
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  Text(
-                                    " 최대 3개까지 선택 가능해요",
-                                    style: TextStyle(
-                                      color: Color(0xFF767676),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
+                                    const Spacer(),
+                                    IconButton(
+                                      onPressed: () {
+                                        _showConfirmationDialog(context);
+                                      },
+                                      icon: const Icon(CupertinoIcons.xmark,
+                                          color: Color(0xFF767676), size: 24),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 24,
+                                ),
+                                //별점 RatingBar //상단 2
+                                Row(
+                                  children: [
+                                    RatingBar.builder(
+                                      minRating: 0.5,
+                                      direction: Axis.horizontal,
+                                      allowHalfRating: true,
+                                      glowRadius: 1,
+                                      glow: false,
+                                      itemPadding: EdgeInsets.zero,
+                                      itemSize: 56,
+                                      itemBuilder: (context, _) => const Icon(
+                                        Icons.star,
+                                        color: Color(0xffF15A2B),
+                                      ),
+                                      onRatingUpdate: (rating) {
+                                        setState(() {
+                                          _rating = rating.floor();
+                                          logger.d(rating);
+                                        });
+                                      },
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // 사진 첨부 버튼과 이미지 미리보기 //상단 4
-                              Row(
-                                children: List.generate(
-                                  3,
-                                  (index) => Container(
-                                    margin: const EdgeInsets.all(5),
-                                    width: 80,
-                                    height: 80,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                          color: index < _pickedImgs.length
-                                              ? Colors.transparent
-                                              : Colors.white70,
-                                          width: 1),
-                                      image: index < _pickedImgs.length
-                                          ? DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: FileImage(
-                                                File(_pickedImgs[index].path),
-                                              ),
-                                            )
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 24,
+                                ),
+                                //사진 첨부 텍스트 //상단 3
+                                const Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      "사진 첨부",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      " 최대 3개까지 선택 가능해요",
+                                      style: TextStyle(
+                                        color: Color(0xFF767676),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                // 사진 첨부 버튼과 이미지 미리보기 //상단 4
+                                Row(
+                                  children: List.generate(
+                                    3,
+                                    (index) => Container(
+                                      margin: const EdgeInsets.all(5),
+                                      width: 80,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                            color: index < _pickedImgs.length
+                                                ? Colors.transparent
+                                                : Colors.white70,
+                                            width: 1),
+                                        image: index < _pickedImgs.length
+                                            ? DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: FileImage(
+                                                  File(_pickedImgs[index].path),
+                                                ),
+                                              )
+                                            : null,
+                                      ),
+                                      child: index == _pickedImgs.length
+                                          ? _addPhotoButton(setState)
                                           : null,
                                     ),
-                                    child: index == _pickedImgs.length
-                                        ? _addPhotoButton(setState)
-                                        : null,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              //텍스트 필드 (200글자 이내로 작성해주세요!) //상단 5
-                              SizedBox(
-                                height: 200,
-                                child: TextField(
-                                  controller: _reviewController,
-                                  maxLength: 200,
-                                  maxLines: 4,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(12)),
-                                      borderSide: BorderSide(
-                                        width: 1,
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                //텍스트 필드 (200글자 이내로 작성해주세요!) //상단 5
+                                SizedBox(
+                                  height: 200,
+                                  child: TextField(
+                                    controller: _reviewController,
+                                    maxLength: 200,
+                                    maxLines: 4,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(12)),
+                                        borderSide: BorderSide(
+                                          width: 1,
+                                          color: Color(0xFF767676),
+                                        ),
+                                      ),
+                                      hintText: '200 글자 이내로 적어주세요!',
+                                      hintStyle: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
                                         color: Color(0xFF767676),
                                       ),
                                     ),
-                                    hintText: '200 글자 이내로 적어주세요!',
-                                    hintStyle: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xFF767676),
+                                  ),
+                                ),
+
+                                //바닥에 리뷰 등록 버튼 (form전송)
+                                SizedBox(
+                                  height: 44,
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      try {
+                                        await storeService.addReview(
+                                          id: storeId,
+                                          reviewText: _reviewController.text,
+                                          images: _pickedImgs,
+                                          rating: _rating,
+                                        );
+                                      } on TokenExpiredException catch (e) {
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      "세션이 만료되었습니다. 다시 로그인해주세요.")));
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const LoginPage()));
+                                        } else {
+                                          logger.e(
+                                              "Error! while replace to Login page");
+                                          logger.e("message: $e");
+                                        }
+                                      } on Exception catch (e) {
+                                        logger.e("Error! message: $e");
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 0,
+                                      minimumSize:
+                                          const Size(double.infinity, 50),
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(12))),
+                                      backgroundColor: const Color(0xffF15A2B),
+                                    ),
+                                    child: const Text(
+                                      "리뷰 등록",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white),
                                     ),
                                   ),
                                 ),
-                              ),
-
-                              //바닥에 리뷰 등록 버튼 (form전송)
-                              Container(
-                                height: 44,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    await _addReview(_reviewController.text,
-                                        _pickedImgs, _rating);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 0,
-                                    minimumSize:
-                                        const Size(double.infinity, 50),
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(12))),
-                                    backgroundColor: const Color(0xffF15A2B),
-                                  ),
-                                  child: const Text(
-                                    "리뷰 등록",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -400,85 +431,85 @@ class _ShowReviewState extends State<ShowReview> {
   // }
 
   //Review 추가 파트
-  Future<List<String>> uploadImages(List<XFile> images) async {
-    final accessToken = await storage.read(key: 'accessToken');
-    final uri = Uri.parse('$serverUrl/api/file-upload');
-    var request = http.MultipartRequest('POST', uri);
+  // Future<List<String>> uploadImages(List<XFile> images) async {
+  //   final accessToken = await storage.read(key: 'accessToken');
+  //   final uri = Uri.parse('$serverUrl/api/file-upload');
+  //   var request = http.MultipartRequest('POST', uri);
 
-    // Add Authorization token to the headers
-    request.headers['Authorization'] = 'Bearer $accessToken';
+  //   // Add Authorization token to the headers
+  //   request.headers['Authorization'] = 'Bearer $accessToken';
 
-    // Add images to the request
-    for (var image in images) {
-      request.files.add(await http.MultipartFile.fromPath('image', image.path));
-    }
+  //   // Add images to the request
+  //   for (var image in images) {
+  //     request.files.add(await http.MultipartFile.fromPath('image', image.path));
+  //   }
 
-    // Send the request and get the response
-    final response = await request.send();
-    if (response.statusCode == 200) {
-      final responseData = await http.Response.fromStream(response);
-      final jsonData = jsonDecode(responseData.body);
+  //   // Send the request and get the response
+  //   final response = await request.send();
+  //   if (response.statusCode == 200) {
+  //     final responseData = await http.Response.fromStream(response);
+  //     final jsonData = jsonDecode(responseData.body);
 
-      // Check if the data contains a list of image URLs
-      if (jsonData['data'] is List) {
-        // Extract the image URLs from the response
-        List<String> imageUrls = (jsonData['data'] as List)
-            .map((item) => item['imageUrl'].toString())
-            .toList();
-        logger.d(imageUrls);
-        return imageUrls;
-      } else {
-        throw Exception('Unexpected response format');
-      }
-    } else {
-      throw Exception('Failed to upload images');
-    }
-  }
+  //     // Check if the data contains a list of image URLs
+  //     if (jsonData['data'] is List) {
+  //       // Extract the image URLs from the response
+  //       List<String> imageUrls = (jsonData['data'] as List)
+  //           .map((item) => item['imageUrl'].toString())
+  //           .toList();
+  //       logger.d(imageUrls);
+  //       return imageUrls;
+  //     } else {
+  //       throw Exception('Unexpected response format');
+  //     }
+  //   } else {
+  //     throw Exception('Failed to upload images');
+  //   }
+  // }
 
-  Future<void> submitReview(
-      String reviewText, List<String> imageUrls, int rating) async {
-    final accessToken = await storage.read(key: 'accessToken');
-    final url = Uri.parse('$serverUrl/api/store/review/${widget.idx}');
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
-    logger.d('imageUrls = $imageUrls');
+  // Future<void> submitReview(
+  //     String reviewText, List<String> imageUrls, int rating) async {
+  //   final accessToken = await storage.read(key: 'accessToken');
+  //   final url = Uri.parse('$serverUrl/api/store/review/${widget.idx}');
+  //   final headers = {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': 'Bearer $accessToken',
+  //   };
+  //   logger.d('imageUrls = $imageUrls');
 
-    // Create review data
-    final data = {
-      'text': reviewText,
-      'reviewPics': imageUrls, // Use image URLs from the upload
-      'reviewStar': rating, // Ensure the rating is an integer
-    };
+  //   // Create review data
+  //   final data = {
+  //     'text': reviewText,
+  //     'reviewPics': imageUrls, // Use image URLs from the upload
+  //     'reviewStar': rating, // Ensure the rating is an integer
+  //   };
 
-    logger.d('submitReview 함수 들어옴 (서버 통신 전)');
-    // Send review request
-    final response =
-        await http.post(url, headers: headers, body: jsonEncode(data));
-    try {
-      if (response.statusCode == 200) {
-        showAlertDialog(context);
-      }
-    } catch (e) {
-      // TODO
-    }
-  }
+  //   logger.d('submitReview 함수 들어옴 (서버 통신 전)');
+  //   // Send review request
+  //   final response =
+  //       await http.post(url, headers: headers, body: jsonEncode(data));
+  //   try {
+  //     if (response.statusCode == 200) {
+  //       showAlertDialog(context);
+  //     }
+  //   } on Exception catch (e) {
+  //     // TODO
+  //   }
+  // }
 
-  Future<void> _addReview(
-      String reviewText, List<XFile> images, int rating) async {
-    try {
-      // 1. Upload images and get their URLs
-      List<String> imageUrls = await uploadImages(images);
-      logger.d('step 1 클리어 ');
-      // 2. Submit review with the received image URLs
-      await submitReview(reviewText, imageUrls, rating.toInt());
-      logger.d('step 2 클리어');
-    } catch (e) {
-      // Handle error
-      logger.d('Error !! $e');
-    }
-  }
+  // Future<void> _addReview(
+  //     String reviewText, List<XFile> images, int rating) async {
+  //   try {
+  //     // 1. Upload images and get their URLs
+  //     List<String> imageUrls = await uploadImages(images);
+  //     logger.d('step 1 클리어 ');
+  //     // 2. Submit review with the received image URLs
+  //     await submitReview(reviewText, imageUrls, rating.toInt());
+  //     logger.d('step 2 클리어');
+  //   } catch (e) {
+  //     // Handle error
+  //     logger.d('Error !! $e');
+  //   }
+  // }
   // ---------- Review 추가 파트 끝 -----------
 
 //리뷰 등록 클릭시 실행 함수
