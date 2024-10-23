@@ -12,11 +12,11 @@ import 'apple_kakao_naver_login.dart';
 import 'login_view_model.dart';
 
 class AppleUserInfoPage extends StatefulWidget {
-  AppleUserInfoPage({
+  const AppleUserInfoPage({
     this.userData,
     super.key,
   });
-  Map<String, dynamic>? userData; // socialId 와 email 들어있음
+  final Map<String, dynamic>? userData; // socialId 와 email 들어있음
 
   @override
   State<AppleUserInfoPage> createState() => AppleUserInfoPageState();

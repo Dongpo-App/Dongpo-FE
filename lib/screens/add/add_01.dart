@@ -60,7 +60,7 @@ class _AddPageState extends State<AddPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         scrolledUnderElevation: 0,
-        automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
+        automaticallyImplyLeading: true, // 뒤로가기 버튼 없애기
         centerTitle: true,
         title: const Text(
           "가게 등록",
