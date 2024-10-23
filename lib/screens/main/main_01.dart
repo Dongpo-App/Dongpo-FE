@@ -512,8 +512,6 @@ class _MainPageState extends State<MainPage>
           icon: const NOverlayImage.fromAssetImage(
               'assets/icons/default_marker.png'),
         );
-        // 확인용 logger
-        logger.i("marker ${marker.info.id}  : ${data.latitude} & ${data.longitude}");
 
         //마커 사이즈 조절
         marker.setSize(defaultMarkerSize);
@@ -541,6 +539,7 @@ class _MainPageState extends State<MainPage>
       }
       _selectedMarker = marker;
     });
+
     try {
       marker.setIcon(const NOverlayImage.fromAssetImage(
         'assets/icons/clicked_marker.png'));
