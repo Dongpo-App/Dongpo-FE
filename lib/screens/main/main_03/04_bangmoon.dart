@@ -1,8 +1,13 @@
+import 'dart:convert';
+
+import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
+import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dongpo_test/main.dart';
+import 'package:http/http.dart' as http;
 
 class BangMoon extends StatelessWidget {
   const BangMoon({super.key});
@@ -215,7 +220,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
                             foregroundColor: Color(0xFF003ACE),
                             backgroundColor: WidgetStateColor.resolveWith(
                                 (states) => Colors.white)),
-                        onPressed: _checkBangMoon,
+                        onPressed: _checkDistance,
                         child: const Icon(Icons.my_location),
                       ),
                     ],
@@ -462,33 +467,16 @@ class _BangMoonPageState extends State<BangMoonPage> {
     logger.d('두 개의 거리 차이는 = $checkMeter M');
     //만약 사용자와 가게 거리가 100미터 이내이면 방문인증 시작
     if (checkMeter <= 100) {
-      _checkBangMoon();
+      _checkBangMoon(myPosition);
       logger.d('_checkBangMoon실행');
     }
     //아니라면 100미터 이내에 와야된다하고 경고 후 내위치 보여주기
     else {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('인증 실패'),
-            content: const Text('가게와의 거리가 멀어요! '),
-            actions: [
-              TextButton(
-                child: const Text("확인"),
-                onPressed: () {
-                  // 해당가게로 다시 돌아가기
-                  Navigator.pop(context);
-                },
-              )
-            ],
-          );
-        },
-      );
+      showFailDialog();
     }
   }
 
-  void _checkBangMoon() {
+  void _checkBangMoon(Position myPosition) async {
     //서버 통신
     bool setTrueFaileValue;
     if (okValue == 1) {
@@ -496,35 +484,161 @@ class _BangMoonPageState extends State<BangMoonPage> {
     } else {
       setTrueFaileValue = false;
     }
+
+    final accessToken = await storage.read(key: 'accessToken');
+
+    final data = {
+      "latitude": myPosition.latitude, // '방문인증'을 지도에서 누른 기준 사용자의 위도
+      "longitude": myPosition.longitude, // '방문인증'을 지도에서 누른 기준 사용자의 경도
+      "storeId": storeData!.id, // 방문인증 하고자 하는 점포의 id
+      "isVisitSuccessful": setTrueFaileValue // 방문인증 성공 여부 ? true : false
+    };
+
+    final url = Uri.parse('$serverUrl/api/store/visit-cert');
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final body = jsonEncode(data);
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        logger.d('성공 보낸 데이터: $data');
+        showSuccessDialog();
+      } else {
+        final errorData = utf8.decode(response.bodyBytes);
+        logger.d('전송 실패 ${response.statusCode} 에러 내용 : $errorData ');
+
+        //실패했을 떄
+      }
+    } catch (e) {
+      logger.d('Error $e');
+    }
   }
 
-  showAlertDialog(BuildContext context, int okValue, int noValue) {
-    // set up the button
-    Widget okButton = TextButton(
-      child: const Text("OK"),
+  void showFailDialog() {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0, backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+      ),
       onPressed: () {
-        // 해당가게로 다시 돌아가기
-        logger.d('하이');
-        Navigator.pop(context);
-        Navigator.pop(context);
+        Navigator.of(context).pop();
       },
     );
-
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: const Text("방문 인증"),
-      content: const Text("방문 인증이 완료되었습니다. "),
+      backgroundColor: Colors.white,
+      title: const Text(
+        "방문 실패!",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "가게와의 거리가 너무 멀어요!",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
       actions: [
-        okButton,
+        Center(child: okButton),
       ],
     );
 
-    // show the dialog
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return alert;
       },
     );
   }
+
+  void showSuccessDialog() {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0, backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+      ),
+      onPressed: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => StoreInfo(idx: storeData!.id),
+          ),
+        );
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => StoreInfo(idx: storeData!.id)));
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "인증 성공!",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "방문 인증이 완료되었어요!",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      actions: [
+        Center(child: okButton),
+      ],
+    );
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  // showAlertDialog(BuildContext context, int okValue, int noValue) {
+  //   // set up the button
+  //   Widget okButton = TextButton(
+  //     child: const Text("OK"),
+  //     onPressed: () {
+  //       // 해당가게로 다시 돌아가기
+  //       logger.d('하이');
+  //       Navigator.pop(context);
+  //       Navigator.pop(context);
+  //     },
+  //   );
+
+  //   // set up the AlertDialog
+  //   AlertDialog alert = AlertDialog(
+  //     title: const Text("방문 인증"),
+  //     content: const Text("방문 인증이 완료되었습니다. "),
+  //     actions: [
+  //       okButton,
+  //     ],
+  //   );
+
+  //   // show the dialog
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return alert;
+  //     },
+  //   );
+  // }
 }
