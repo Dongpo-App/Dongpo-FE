@@ -13,6 +13,7 @@ class StoreSangse {
   final List<String> operatingDays;
   final List<String> payMethods;
   final List<Review> reviews;
+  final List<MostVisitMembers>? mostVisitMembers;
   final String openPossibility;
   final bool isBookmarked;
   final int? visitSuccessfulCount;
@@ -33,6 +34,7 @@ class StoreSangse {
     required this.operatingDays,
     required this.payMethods,
     required this.reviews,
+    this.mostVisitMembers,
     required this.openPossibility,
     required this.isBookmarked,
     this.visitFailCount,
@@ -62,6 +64,11 @@ class StoreSangse {
           ? (json['reviews'] as List)
               .map((reviewJson) => Review.fromJson(reviewJson))
               .toList()
+          : [],
+      mostVisitMembers: json['mostVisitMembers'] != null
+          ? (json['mostVisitMembers'] as List)
+            .map((mostVisitMembersJson) => MostVisitMembers.fromJson(mostVisitMembersJson))
+            .toList()
           : [],
       openPossibility: json['openPossibility'] as String,
       isBookmarked: json['isBookmarked'] as bool,
@@ -104,6 +111,30 @@ class Review {
           ? List<String>.from(json['reviewPics'])
           : null,
       registerDate: json['registerDate'] as String?,
+    );
+  }
+}
+
+class MostVisitMembers {
+  late final int? id;
+  late final String? nickname;
+  late final String? title;
+  late final String? profilePic;
+
+  MostVisitMembers({
+    this.id,
+    this.nickname,
+    this.title,
+    this.profilePic,
+  });
+
+  // JSON 데이터를 클래스 인스턴스로 변환하는 factory 생성자
+  factory MostVisitMembers.fromJson(Map<String, dynamic> json) {
+    return MostVisitMembers(
+      id: json['id'],
+      nickname: json['nickname'],
+      title: json['mainTitle'],
+      profilePic: json['profilePic'],
     );
   }
 }
