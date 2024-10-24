@@ -17,7 +17,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:dongpo_test/screens/add/add_01.dart';
 
 /*
 메인페이지 맨처음 보여줄 때 
@@ -713,20 +712,12 @@ class _MainPageState extends State<MainPage>
       if (data['documents'].isNotEmpty) {
         // 도로명 주소가 있는 경우 반환
         if (data['documents'][0]['road_address'] != null) {
-          dataForm = DataForm(
-              sendAddress: data['documents'][0]['road_address']['address_name'],
-              sendLatitude: latLng.latitude,
-              sendLongitude: latLng.longitude);
           address =
               "${data['documents'][0]['road_address']['region_2depth_name']} ${data['documents'][0]['road_address']['road_name']}";
           return address;
         }
         // 도로명 주소가 없는 경우 지번 주소 반환
         else if (data['documents'][0]['address'] != null) {
-          dataForm = DataForm(
-              sendAddress: data['documents'][0]['address']['address_name'],
-              sendLatitude: latLng.latitude,
-              sendLongitude: latLng.longitude);
           address =
               "${data['documents'][0]['address']['region_2depth_name']} ${data['documents'][0]['address']['region_3depth_name']}  ";
           return address;

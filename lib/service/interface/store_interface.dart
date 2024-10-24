@@ -1,4 +1,5 @@
 import 'package:dongpo_test/models/clickedMarkerInfo.dart';
+import 'package:dongpo_test/models/request/add_store_request.dart';
 import 'package:dongpo_test/models/store_detail.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,7 +8,7 @@ abstract class StoreServiceInterface {
   // 현재 카메라 위치 기준 주변 점포 조회
   Future<List<MyData>> getStoreByCurrentLocation(double lat, double lng);
   // 점포 등록
-  Future<bool> addStore(MyData storeInfo);
+  Future<bool> addStore(AddStoreRequest storeInfo);
   // 점포 상세 조회
   Future<StoreSangse> getStoreDetail(int id);
   // 점포 삭제

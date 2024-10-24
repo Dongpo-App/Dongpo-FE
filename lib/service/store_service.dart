@@ -4,8 +4,9 @@ import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/clickedMarkerInfo.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/models/request/add_review_request.dart';
+import 'package:dongpo_test/models/request/add_store_request.dart';
 import 'package:dongpo_test/models/store_detail.dart';
-import 'package:dongpo_test/service/api_service.dart';
+import 'package:dongpo_test/service/base_api_service.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/interface/store_interface.dart';
 import 'package:http/http.dart' as http;
@@ -102,7 +103,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
 
   // MyData에 추가로 사용자 위치 정보를 포함한 dto 필요
   @override
-  Future<bool> addStore(MyData storeInfo) async {
+  Future<bool> addStore(AddStoreRequest storeInfo) async {
     await loadToken();
 
     final url = Uri.parse("$serverUrl/api/store");
@@ -155,7 +156,8 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
           throw TokenExpiredException();
         }
       } else {
-        logger.d("점포 등록 실패 code : ${response.statusCode}");
+        logger
+            .d("점포 등록 실패 code : ${response.statusCode} body: $decodedResponse");
         return false;
       }
     } catch (e) {
