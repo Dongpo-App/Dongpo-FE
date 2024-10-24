@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'package:dongpo_test/models/login_response.dart';
+import 'package:dongpo_test/models/response/login_response.dart';
 import 'package:dongpo_test/models/request/apple_signup_request.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
-import 'package:dongpo_test/service/api_service.dart';
+import 'package:dongpo_test/service/base_api_service.dart';
 import 'package:dongpo_test/service/interface/login_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';

@@ -1,4 +1,4 @@
-import 'package:dongpo_test/models/login_response.dart';
+import 'package:dongpo_test/models/response/login_response.dart';
 import 'package:dongpo_test/models/request/apple_signup_request.dart';
 
 abstract class LoginServiceInterface {
