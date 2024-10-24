@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
@@ -7,10 +6,8 @@ import 'package:dongpo_test/service/store_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dongpo_test/main.dart';
-import 'package:http/http.dart' as http;
 
 int value = 0;
 
@@ -404,113 +401,6 @@ class _ShowReviewState extends State<ShowReview> {
       _pickedImgs = images.take(3).toList(); // 최대 3장까지 추가 가능
     });
   }
-  //서버에서 url 받아와야함
-  // Future<List<String>> uploadImages(List<XFile> images) async {
-  //   final accessToken = await storage.read(key: 'accessToken');
-  //   final uri = Uri.parse('$serverUrl/api/file-upload');
-  //   var request = http.MultipartRequest('POST', uri);
-
-  //   // Add Authorization token to the headers
-  //   request.headers['Authorization'] = 'Bearer $accessToken';
-
-  //   // Add images to the request
-  //   for (var image in images) {
-  //     request.files.add(await http.MultipartFile.fromPath('image', image.path));
-  //   }
-  //   logger.d(request);
-  //   // Send request and get response
-  //   final response = await request.send();
-  //   if (response.statusCode == 200) {
-  //     final responseData = await http.Response.fromStream(response);
-  //     final jsonData = jsonDecode(responseData.body);
-  //     logger.d('upload image 함수 작동');
-  //     return List<String>.from(jsonData['data']['imageUrl']);
-  //   } else {
-  //     throw Exception('Failed to upload images');
-  //   }
-  // }
-
-  //Review 추가 파트
-  // Future<List<String>> uploadImages(List<XFile> images) async {
-  //   final accessToken = await storage.read(key: 'accessToken');
-  //   final uri = Uri.parse('$serverUrl/api/file-upload');
-  //   var request = http.MultipartRequest('POST', uri);
-
-  //   // Add Authorization token to the headers
-  //   request.headers['Authorization'] = 'Bearer $accessToken';
-
-  //   // Add images to the request
-  //   for (var image in images) {
-  //     request.files.add(await http.MultipartFile.fromPath('image', image.path));
-  //   }
-
-  //   // Send the request and get the response
-  //   final response = await request.send();
-  //   if (response.statusCode == 200) {
-  //     final responseData = await http.Response.fromStream(response);
-  //     final jsonData = jsonDecode(responseData.body);
-
-  //     // Check if the data contains a list of image URLs
-  //     if (jsonData['data'] is List) {
-  //       // Extract the image URLs from the response
-  //       List<String> imageUrls = (jsonData['data'] as List)
-  //           .map((item) => item['imageUrl'].toString())
-  //           .toList();
-  //       logger.d(imageUrls);
-  //       return imageUrls;
-  //     } else {
-  //       throw Exception('Unexpected response format');
-  //     }
-  //   } else {
-  //     throw Exception('Failed to upload images');
-  //   }
-  // }
-
-  // Future<void> submitReview(
-  //     String reviewText, List<String> imageUrls, int rating) async {
-  //   final accessToken = await storage.read(key: 'accessToken');
-  //   final url = Uri.parse('$serverUrl/api/store/review/${widget.idx}');
-  //   final headers = {
-  //     'Content-Type': 'application/json',
-  //     'Authorization': 'Bearer $accessToken',
-  //   };
-  //   logger.d('imageUrls = $imageUrls');
-
-  //   // Create review data
-  //   final data = {
-  //     'text': reviewText,
-  //     'reviewPics': imageUrls, // Use image URLs from the upload
-  //     'reviewStar': rating, // Ensure the rating is an integer
-  //   };
-
-  //   logger.d('submitReview 함수 들어옴 (서버 통신 전)');
-  //   // Send review request
-  //   final response =
-  //       await http.post(url, headers: headers, body: jsonEncode(data));
-  //   try {
-  //     if (response.statusCode == 200) {
-  //       showAlertDialog(context);
-  //     }
-  //   } on Exception catch (e) {
-  //     // TODO
-  //   }
-  // }
-
-  // Future<void> _addReview(
-  //     String reviewText, List<XFile> images, int rating) async {
-  //   try {
-  //     // 1. Upload images and get their URLs
-  //     List<String> imageUrls = await uploadImages(images);
-  //     logger.d('step 1 클리어 ');
-  //     // 2. Submit review with the received image URLs
-  //     await submitReview(reviewText, imageUrls, rating.toInt());
-  //     logger.d('step 2 클리어');
-  //   } catch (e) {
-  //     // Handle error
-  //     logger.d('Error !! $e');
-  //   }
-  // }
-  // ---------- Review 추가 파트 끝 -----------
 
 //리뷰 등록 클릭시 실행 함수
 
