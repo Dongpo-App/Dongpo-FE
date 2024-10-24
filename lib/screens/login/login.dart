@@ -1,4 +1,4 @@
-import 'package:dongpo_test/models/login_response.dart';
+import 'package:dongpo_test/models/response/login_response.dart';
 import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
@@ -165,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                 onTap: () async {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                        builder: (context) => AppleUserInfoPage()),
+                        builder: (context) => const AppleUserInfoPage()),
                   );
                 },
                 child: Container(

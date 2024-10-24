@@ -70,7 +70,8 @@ class _AddPageState extends State<AddPage> {
                 NaverMap(
                   onMapReady: (controller) async {
                     // 맵이 준비되었을 때 컨트롤러 초기화
-                    logger.d("controller : ${controller.hashCode}");
+                    logger.d(
+                        "time: ${DateTime.now()} controller : ${controller.hashCode}");
                     _mapController = controller;
                     await _mapController.updateCamera(
                       NCameraUpdate.fromCameraPosition(
@@ -87,11 +88,10 @@ class _AddPageState extends State<AddPage> {
                     _isCameraMoving = true;
                   },
                   onCameraIdle: () async {
-                    logger
-                        .d("controller is ready? : ${_mapController.hashCode}");
                     // 카메라가 멈췄을 때 주소 업데이트
                     if (_isCameraMoving && startAddPage) {
                       _isCameraMoving = false;
+                      await Future.delayed(const Duration(milliseconds: 100));
                       await _updateAddress();
                     }
                   },
@@ -223,7 +223,9 @@ class _AddPageState extends State<AddPage> {
   }
 
   Future<void> _updateAddress() async {
-    logger.d("is controller null? : $_mapController");
+    logger.d(
+        "time : ${DateTime.now()} is map ready? $startAddPage\n_controller : ${_mapController.hashCode}");
+
     final position = await _mapController.getCameraPosition();
     _position = position.target;
     final address = await _reverseGeocode(_position);

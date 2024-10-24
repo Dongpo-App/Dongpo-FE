@@ -1,5 +1,5 @@
 import 'package:dongpo_test/main.dart';
-import 'package:dongpo_test/models/login_response.dart';
+import 'package:dongpo_test/models/response/login_response.dart';
 import 'package:dongpo_test/models/request/apple_signup_request.dart';
 import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/cupertino.dart';
