@@ -69,6 +69,16 @@ class _AddPageState extends State<AddPage> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context); //뒤로가기
+          },
+          icon: const Icon(
+            Icons.chevron_left,
+            size: 24,
+            color: Color(0xFF767676),
+          ),
+        ),
       ),
       body: FutureBuilder<NLatLng>(
         future: getCurrentLocation(), // 현재 위치 정보를 가져오는 Future를 빌드
@@ -129,7 +139,7 @@ class _AddPageState extends State<AddPage> {
                   ),
                 ),
                 SizedBox(
-                  height: screenHeight * 0.5,
+                  height: screenHeight * 0.58,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -151,8 +161,15 @@ class _AddPageState extends State<AddPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
+                      height: screenHeight * 0.3,
                       padding: const EdgeInsets.all(24.0), // 패딩 설정
-                      color: Colors.white,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
