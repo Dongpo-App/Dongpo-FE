@@ -179,29 +179,15 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
   Future<bool> logout() async {
     await loadToken();
     final platform = await storage.read(key: "loginPlatform");
-    final url = Uri.parse("$serverUrl/auth/logout");
-    final headers = this.headers(true);
-    logger.d("header : $headers");
-    try {
-      final response = await http.post(url, headers: headers);
-      Map<String, dynamic> decodedResponse =
-          jsonDecode(utf8.decode(response.bodyBytes));
-      if (response.statusCode == 200) {
-        logger.d("code: ${response.statusCode} body: $decodedResponse");
-      } else {
-        logger.e("code: ${response.statusCode} body: $decodedResponse");
-      }
-    } catch (e) {
-      logger.e(e);
-      return false;
-    }
+
+    // sdk 연동 해제
     switch (platform) {
       case "kakao":
         try {
           await UserApi.instance.unlink();
-          await resetToken();
+
           logger.d("$platform logout successfully!");
-          return true;
+          break;
         } catch (e) {
           logger.e("$platform logout error: $e");
           return false;
@@ -209,20 +195,39 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
       case "naver":
         try {
           await FlutterNaverLogin.logOut();
-          await resetToken();
+
           logger.d("$platform logout successfully!");
-          return true;
+          break;
         } catch (e) {
           logger.e("$platform logout error: $e");
           return false;
         }
       case "apple":
-        await resetToken();
         logger.d("$platform logout successfully!");
-        return true;
+        break;
       default:
         logger.d("$platform is Unauthorized platform");
+        return false;
+    }
+    // 서버에 로그아웃 요청
+    final url = Uri.parse("$serverUrl/auth/logout");
+    final headers = this.headers(true);
+    try {
+      final response = await http.post(url, headers: headers);
+      Map<String, dynamic> decodedResponse =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      if (response.statusCode == 200) {
+        logger.d("code: ${response.statusCode} body: $decodedResponse");
         return true;
+      } else {
+        logger.e("code: ${response.statusCode} body: $decodedResponse");
+        return false;
+      }
+    } catch (e) {
+      logger.e(e);
+      return false;
+    } finally {
+      await resetToken();
     }
   }
 
