@@ -69,9 +69,11 @@ class _StoreInfoState extends State<StoreInfo> {
 
   //라디오 버튼 관련 변수
   int value = 0;
+  String etcText = '';
   static const storage = FlutterSecureStorage();
   // 점포 신고
   void storeReport(int storeId) async {
+    String sendData = setReportData(value);
     final url = Uri.parse('$serverUrl/api/report/store/$storeId');
 
     final accessToken = await storage.read(key: 'accessToken');
@@ -81,17 +83,108 @@ class _StoreInfoState extends State<StoreInfo> {
       'Authorization': 'Bearer $accessToken',
     };
 
-    final response = await http.post(
-      url,
-      headers: headers,
+    final includeTextData = {
+      "text": etcText + "dddd", // reason이 ETC일 경우 포함
+      "reason": sendData,
+    };
+
+    final exceptTextData = {
+      "reson": sendData,
+    };
+    var data;
+
+    if (value == 4) {
+      data = includeTextData;
+    } else {
+      data = exceptTextData;
+    }
+
+    logger.d('send Body check value : $value data : $data');
+
+    final body = jsonEncode(data);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: body,
+      );
+
+      final responsebody = utf8.decode(response.bodyBytes);
+
+      if (response.statusCode == 200) {
+        logger.d('신고 완료!! 신고 내용 : ${sendData} & ETC : ${etcText}');
+        showSuccessDialog();
+      } else {
+        logger.e(
+            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responsebody}');
+      }
+    } catch (e) {
+      // TODO
+      logger.d("HTTP ERROR in storeReposrt method!! Error 내용 : $e");
+    }
+  }
+
+  String setReportData(int idx) {
+    switch (idx) {
+      case 1:
+        return "NOT_EXIST_STORE";
+      case 2:
+        return "WORNG_ADDRESS";
+      case 3:
+        return "INAPPOSITE_INFO";
+      case 4:
+        return "ETC";
+      default:
+        "";
+    }
+
+    return "";
+  }
+
+  void showSuccessDialog() {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0, backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "신고 성공!",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "성공적으로 신고가 접수되었어요!",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      actions: [
+        Center(child: okButton),
+      ],
     );
 
-    if (response.statusCode == 200) {
-    } else {
-      logger.e(
-          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-      throw Exception('HTTP ERROR !!! ${response.body}');
-    }
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
@@ -188,6 +281,10 @@ class _StoreInfoState extends State<StoreInfo> {
                                       height: 16,
                                     ),
                                     _radioBtn('부적절한 정보가 포함되어 있어요', 3, setState),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    _radioBtn('기타', 4, setState),
                                   ],
                                 ),
                               ),
@@ -292,7 +389,7 @@ class _StoreInfoState extends State<StoreInfo> {
         onPressed: () {
           setStater(() {
             value = index;
-            print('$index');
+            logger.d('점포 신고 value : $value');
           });
         },
         style: ElevatedButton.styleFrom(
