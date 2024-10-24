@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dongpo_test/screens/login/login.dart';
+import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/store_service.dart';
@@ -662,7 +663,7 @@ class _ShowReviewState extends State<ShowReview> {
                                               (value == 0)
                                                   ? null
                                                   : logger.d('버튼 활성화');
-                                              //dio.post()구현
+                                              reviewStoreReport(index);
                                             },
                                             style: ElevatedButton.styleFrom(
                                               splashFactory: (value ==
@@ -711,6 +712,125 @@ class _ShowReviewState extends State<ShowReview> {
           ],
         ),
       ),
+    );
+  }
+
+  String etcText = '';
+  // 리뷰 점포 신고
+  void reviewStoreReport(int idx) async {
+    String sendData = setReportData(value);
+    final url = Uri.parse('$serverUrl/api/report/review/${reviewList[idx].id}');
+
+    final accessToken = await storage.read(key: 'accessToken');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+
+    final includeTextData = {
+      "text": etcText + "테스트 ", // reason이 ETC일 경우 포함
+      "reason": sendData,
+    };
+
+    final exceptTextData = {
+      "reson": sendData,
+    };
+    var data;
+
+    if (value == 5) {
+      data = includeTextData;
+    } else {
+      data = exceptTextData;
+    }
+
+    logger.d('send Body check value : $value data : $data');
+
+    final body = jsonEncode(data);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: body,
+      );
+
+      final responsebody = utf8.decode(response.bodyBytes);
+
+      if (response.statusCode == 200) {
+        logger.d('신고 완료!! 신고 내용 : ${sendData} & ETC : ${etcText}');
+        logger.d('신고한 리뷰 ID = :${reviewList[idx].id}');
+        showSuccessDialog();
+      } else {
+        logger.e(
+            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responsebody}');
+      }
+    } catch (e) {
+      // TODO
+      logger.d("HTTP ERROR in storeReposrt method!! Error 내용 : $e");
+    }
+  }
+
+  String setReportData(int idx) {
+    switch (idx) {
+      case 1:
+        return "PROMOTIONAL_REVIEW";
+      case 2:
+        return "SPAM";
+      case 3:
+        return " INAPPOSITE_INFO";
+      case 4:
+        return "IRRELEVANT_CONTENT";
+      case 5:
+        return "ETC";
+      default:
+        "";
+    }
+
+    return "";
+  }
+
+  void showSuccessDialog() {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0, backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "신고 성공!",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "성공적으로 신고가 접수되었어요!",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      actions: [
+        Center(child: okButton),
+      ],
+    );
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
@@ -881,7 +1001,7 @@ Widget _showReview2(BuildContext context, int rating, int index) {
                                             (value == 0)
                                                 ? null
                                                 : logger.d('버튼 활성화');
-                                            //dio.post()구현
+                                            //가게 신고 기능 구현
                                           },
                                           style: ElevatedButton.styleFrom(
                                             splashFactory: (value ==

@@ -84,7 +84,7 @@ class _StoreInfoState extends State<StoreInfo> {
     };
 
     final includeTextData = {
-      "text": etcText + "dddd", // reason이 ETC일 경우 포함
+      "text": etcText + "테스트 ", // reason이 ETC일 경우 포함
       "reason": sendData,
     };
 
@@ -130,7 +130,7 @@ class _StoreInfoState extends State<StoreInfo> {
       case 1:
         return "NOT_EXIST_STORE";
       case 2:
-        return "WORNG_ADDRESS";
+        return "WRONG_ADDRESS";
       case 3:
         return "INAPPOSITE_INFO";
       case 4:
@@ -340,7 +340,7 @@ class _StoreInfoState extends State<StoreInfo> {
       body: storeData == null // storeData가 null인 경우 로딩 표시
           ? const Center(child: CircularProgressIndicator())
           : Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
+              margin: const EdgeInsets.all(24),
               child: ListView(
                 children: [
                   //제목, 영업가능성, 거리
@@ -431,7 +431,6 @@ class _StoreInfoState extends State<StoreInfo> {
 
       // StoreSangse 객체 생성
       final StoreSangse storeData = StoreSangse.fromJson(jsonData);
-      logger.d("store detail Data : $jsonData");
 
       return storeData;
     } else {
