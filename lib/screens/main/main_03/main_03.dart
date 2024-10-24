@@ -334,6 +334,7 @@ class _StoreInfoState extends State<StoreInfo> {
 
       // StoreSangse 객체 생성
       final StoreSangse storeData = StoreSangse.fromJson(jsonData);
+      logger.d("store detail Data : $jsonData");
 
       return storeData;
     } else {

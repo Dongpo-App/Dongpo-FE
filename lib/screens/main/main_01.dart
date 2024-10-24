@@ -756,8 +756,6 @@ class _MainPageState extends State<MainPage>
           builder: (context, scrollController) {
             return NotificationListener<ScrollNotification>(
               onNotification: (scrollNotification) {
-                logger.i(
-                    "scrollNotification : ${scrollNotification.metrics.pixels}");
                 if (scrollNotification.metrics.pixels >= 0 && !isNavigating) {
                   isNavigating = true; // 플래그 설정
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
