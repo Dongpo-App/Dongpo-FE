@@ -515,27 +515,43 @@ class _ShowReviewState extends State<ShowReview> {
 
 //리뷰 등록 클릭시 실행 함수
 
-  showAlertDialog(BuildContext context) {
-    // set up the button
-    Widget okButton = TextButton(
-      child: const Text("확인"),
+  void sucessAddReviewAlert(BuildContext context) {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0, backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+      ),
       onPressed: () {
         Navigator.pop(context);
         Navigator.pop(context);
       },
     );
-
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: const Text("리뷰 등록"),
-      content: const Text("리뷰 등록이 완료되었습니다."),
+      backgroundColor: Colors.white,
+      title: const Text(
+        "리뷰 등록",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "리뷰 등록이 완료되었습니다.",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
       actions: [
-        okButton,
+        Center(child: okButton),
       ],
     );
 
-    // show the dialog
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return alert;
@@ -719,6 +735,7 @@ class _ShowReviewState extends State<ShowReview> {
   // 리뷰 점포 신고
   void reviewStoreReport(int idx) async {
     String sendData = setReportData(value);
+    logger.d("sendData : $sendData");
     final url = Uri.parse('$serverUrl/api/report/review/${reviewList[idx].id}');
 
     final accessToken = await storage.read(key: 'accessToken');
@@ -736,6 +753,7 @@ class _ShowReviewState extends State<ShowReview> {
     final exceptTextData = {
       "reson": sendData,
     };
+    logger.d("_send : sendData");
     var data;
 
     if (value == 5) {
