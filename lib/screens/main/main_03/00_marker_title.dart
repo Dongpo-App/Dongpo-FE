@@ -70,20 +70,21 @@ class _MainTitle2State extends State<MainTitle2> {
     Position myPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-    logger.d(
-        "myPosition : ${myPosition.latitude} myDataList : ${myDataList[widget.idx].latitude}");
+    if (widget.idx >= 0 && widget.idx < myDataList.length) {
+      // myDataList[widget.idx]에 안전하게 접근
+      var checkMeter = Geolocator.distanceBetween(
+        myPosition.latitude,
+        myPosition.longitude,
+        myDataList[widget.idx].latitude,
+        myDataList[widget.idx].longitude,
+      );
 
-    //int로 형변환
-    var checkMeter = Geolocator.distanceBetween(
-      myPosition.latitude,
-      myPosition.longitude,
-      myDataList[widget.idx].latitude,
-      myDataList[widget.idx].longitude,
-    );
-
-    logger.d("checkMeter = ${checkMeter}");
-    // betweenDistance = checkMeter;
-    logger.d('나와 점포 거리 차이는 = $checkMeter M');
+      logger.d("checkMeter = ${checkMeter}");
+      // betweenDistance = checkMeter;
+      logger.d('나와 점포 거리 차이는 = $checkMeter M');
+    } else {
+      logger.e("유효하지 않은 인덱스: ${widget.idx}");
+    }
   }
 }
 
