@@ -67,8 +67,9 @@ class StoreSangse {
           : [],
       mostVisitMembers: json['mostVisitMembers'] != null
           ? (json['mostVisitMembers'] as List)
-            .map((mostVisitMembersJson) => MostVisitMembers.fromJson(mostVisitMembersJson))
-            .toList()
+              .map((mostVisitMembersJson) =>
+                  MostVisitMembers.fromJson(mostVisitMembersJson))
+              .toList()
           : [],
       openPossibility: json['openPossibility'] as String,
       isBookmarked: json['isBookmarked'] as bool,
@@ -83,12 +84,14 @@ class Review {
   final int? storeId;
   final int? memberId;
   final int? reviewStar;
+  final String? memberNickname;
   final String? memberProfilePic;
   final String? text;
   final List<String>? reviewPics;
   final String? registerDate;
 
   Review({
+    required this.memberNickname,
     required this.id,
     required this.storeId,
     required this.memberId,
@@ -101,6 +104,7 @@ class Review {
 
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
+      memberNickname: json['memberNickname'] as String?,
       id: json['id'] as int?,
       storeId: json['storeId'] as int?,
       memberId: json['memberId'] as int?,

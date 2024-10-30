@@ -580,7 +580,7 @@ class _ShowReviewState extends State<ShowReview> {
                   children: [
                     Row(
                       children: [
-                        Text('${reviewList[index].memberId} 이름'),
+                        Text('${reviewList[index].memberNickname}'),
                         const SizedBox(width: 20),
                         Container(
                           padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
@@ -959,7 +959,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
                   children: [
                     Row(
                       children: [
-                        Text('${reviewList[index].memberId} 이름'),
+                        Text('${reviewList[index].memberNickname}'),
                         const SizedBox(width: 20),
                         Container(
                           padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
