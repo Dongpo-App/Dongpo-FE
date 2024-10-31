@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/request/apple_signup_request.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
@@ -432,6 +433,29 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
       default:
         logger.d("$platform is Unauthorized platform");
         return false;
+    }
+  }
+
+  Future<void> deleteNaverAccount() async {
+    final url = Uri.parse('https://nid.naver.com/oauth2.0/token');
+    try {
+      final token = await FlutterNaverLogin.currentAccessToken;
+      final requestbody = jsonEncode({
+        'grant_type': 'delete',
+        'client_id': naverApiKey,
+        'client_secret': 'YOUR_CLIENT_SECRET', // 클라이언트 시크릿
+        'access_token': token.accessToken,
+      });
+
+      final response = await http.post(url, body: requestbody);
+
+      if (response.statusCode == 200) {
+        logger.d("delete naver account success");
+      } else {
+        logger.e("failed to delete naver account");
+      }
+    } catch (e) {
+      logger.e(e);
     }
   }
 }
