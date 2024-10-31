@@ -7,3 +7,23 @@ class TokenExpiredException implements Exception {
   @override
   String toString() => message;
 }
+
+class ServerLogoutException implements Exception {
+  // 서버 로그아웃 진행중 실패시 비정상적인 로그아웃
+  final String message;
+
+  ServerLogoutException([this.message = "failed to logout with server"]);
+
+  @override
+  String toString() => message;
+}
+
+class AccountDeletionFailureException implements Exception {
+  final String message;
+
+  AccountDeletionFailureException(
+      [this.message = "failed to delete your account"]);
+
+  @override
+  String toString() => message;
+}

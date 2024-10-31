@@ -1,3 +1,4 @@
+import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/store_detail.dart';
 import 'package:dongpo_test/models/clickedMarkerInfo.dart';
 import 'package:dongpo_test/models/pocha.dart';
@@ -592,14 +593,19 @@ class _MainPageState extends State<MainPage>
     // 점포 데이터 받기
 
     try {
-      List<MyData> storeList = await storeService.getStoreByCurrentLocation(
+      ApiResponse<List<MyData>> response =
+          await storeService.getStoreByCurrentLocation(
         target.latitude,
         target.longitude,
       );
-      myDataList = storeList;
-      bsAddress = await _reverseGeocode(target);
 
-      _addMarkers(storeList);
+      if (response.statusCode == 200 && response.data != null) {
+        myDataList = response.data!;
+        bsAddress = await _reverseGeocode(target);
+        _addMarkers(myDataList);
+      } else {
+        logger.e("Erorr in fetching store list: ${response.message}");
+      }
     } on TokenExpiredException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -732,62 +738,73 @@ class _MainPageState extends State<MainPage>
     bool isNavigating = false;
 
     int index = int.parse(markerId);
-    markerInfo = await storeService.getStoreSummary(index);
-    showBottomSheet(
-      backgroundColor: Colors.white,
-      context: context,
-      builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.35,
-          minChildSize: 0.35,
-          shouldCloseOnMinExtent: false,
-          snap: true,
-          snapAnimationDuration: const Duration(milliseconds: 300),
-          builder: (context, scrollController) {
-            return NotificationListener<ScrollNotification>(
-              onNotification: (scrollNotification) {
-                logger.i(
-                    "scrollNotification : ${scrollNotification.metrics.pixels}");
-                if (scrollNotification.metrics.pixels >= 0 && !isNavigating) {
-                  isNavigating = true; // 플래그 설정
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return StoreInfo(idx: index); // 이동할 페이지
-                  })).then((_) {
-                    isNavigating = false; // 돌아올 때 플래그 해제
-                  });
-                  return true;
-                }
-                return false;
-              },
-              child: SingleChildScrollView(
-                controller: scrollController,
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
-                  decoration: const BoxDecoration(),
-                  child: Column(
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            Navigator.pop(context); //뒤로가기
-                          },
-                          icon: const Icon(
-                              size: 36,
-                              Icons.remove,
-                              color: Color(0xff767676))),
-                      MainTitle2(idx: index),
-                      const SizedBox(height: 30),
-                      const MainPhoto2(),
-                      const SizedBox(height: 20),
-                    ],
+    try {
+      ApiResponse<MarkerInfo> response =
+          await storeService.getStoreSummary(index);
+      if (response.statusCode == 200 && response.data != null) {
+        markerInfo = response.data!;
+      }
+    } catch (e) {
+      logger.e("Error in show bottomSheet");
+    }
+    if (mounted) {
+      showBottomSheet(
+        backgroundColor: Colors.white,
+        context: context,
+        builder: (BuildContext context) {
+          return DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: 0.35,
+            minChildSize: 0.35,
+            shouldCloseOnMinExtent: false,
+            snap: true,
+            snapAnimationDuration: const Duration(milliseconds: 300),
+            builder: (context, scrollController) {
+              return NotificationListener<ScrollNotification>(
+                onNotification: (scrollNotification) {
+                  logger.i(
+                      "scrollNotification : ${scrollNotification.metrics.pixels}");
+                  if (scrollNotification.metrics.pixels >= 0 && !isNavigating) {
+                    isNavigating = true; // 플래그 설정
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return StoreInfo(idx: index); // 이동할 페이지
+                    })).then((_) {
+                      isNavigating = false; // 돌아올 때 플래그 해제
+                    });
+                    return true;
+                  }
+                  return false;
+                },
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 24),
+                    decoration: const BoxDecoration(),
+                    child: Column(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context); //뒤로가기
+                            },
+                            icon: const Icon(
+                                size: 36,
+                                Icons.remove,
+                                color: Color(0xff767676))),
+                        MainTitle2(idx: index),
+                        const SizedBox(height: 30),
+                        const MainPhoto2(),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
-        );
-      },
-    );
+              );
+            },
+          );
+        },
+      );
+    }
   }
 
   // //마커 서버통신

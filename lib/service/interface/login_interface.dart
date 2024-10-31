@@ -10,8 +10,8 @@ abstract class LoginServiceInterface {
   Future<ApiResponse> appleLogin();
   // 애플 회원가입 (추가 정보 입력)
   Future<ApiResponse> appleSignup(AppleSignupRequest request);
-  // 애플 탈퇴
-  Future<bool> appleLeave();
+  // 회원 탈퇴
+  Future<ApiResponse> deleteAccount();
   // 로그아웃
-  Future<bool> logout();
+  Future<ApiResponse> logout();
 }

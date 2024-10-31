@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dongpo_test/api_key.dart';
+import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/user_profile.dart';
 import 'package:dongpo_test/screens/my_info/info_detail/add_store.dart';
 import 'package:dongpo_test/screens/my_info/my_page_view_model.dart';
@@ -410,33 +411,48 @@ class _MyPageState extends State<MyPage> {
                       const Spacer(),
                       GestureDetector(
                         onTap: () async {
-                          String? loginPlatform =
-                              await storage.read(key: 'loginPlatform');
-                          if (loginPlatform == null) {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginPage()),
-                              (route) => false, // 모든 이전 페이지 제거
-                            );
+                          // 확인창 띄워야함
+                          try {
+                            ApiResponse response =
+                                await loginService.deleteAccount();
+                            if (response.statusCode == 200) {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginPage()),
+                                  (route) => false);
+                            }
+                          } catch (e) {
+                            logger.e(e);
                           }
-                          isLogouted =
-                              await loginViewModel.logout(loginPlatform);
-                          if (isLogouted == "logout") {
-                            // FlutterSecureStorage에 있는 token 삭제
-                            await storage.delete(key: 'accessToken');
-                            await storage.delete(key: 'refreshToken');
-                            await storage.delete(key: 'loginPlatform');
-                            Map<String, String> allData =
-                                await storage.readAll();
-                            logger.d("logout token : $allData");
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginPage()),
-                              (route) => false, // 모든 이전 페이지 제거
-                            );
-                          }
+
+                          // String? loginPlatform =
+                          //     await storage.read(key: 'loginPlatform');
+                          // if (loginPlatform == null) {
+                          //   Navigator.pushAndRemoveUntil(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => const LoginPage()),
+                          //     (route) => false, // 모든 이전 페이지 제거
+                          //   );
+                          // }
+                          // isLogouted =
+                          //     await loginViewModel.logout(loginPlatform);
+                          // if (isLogouted == "logout") {
+                          //   // FlutterSecureStorage에 있는 token 삭제
+                          //   await storage.delete(key: 'accessToken');
+                          //   await storage.delete(key: 'refreshToken');
+                          //   await storage.delete(key: 'loginPlatform');
+                          //   Map<String, String> allData =
+                          //       await storage.readAll();
+                          //   logger.d("logout token : $allData");
+                          //   Navigator.pushAndRemoveUntil(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => const LoginPage()),
+                          //     (route) => false, // 모든 이전 페이지 제거
+                          //   );
+                          // }
                         },
                         child: const Text(
                           '탈퇴',

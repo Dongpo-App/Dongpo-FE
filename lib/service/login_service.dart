@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/request/apple_signup_request.dart';
+import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
@@ -49,7 +50,10 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
         storage.write(key: "loginPlatform", value: loginPlatform);
         storage.write(key: 'accessToken', value: accessToken);
         storage.write(key: 'refreshToken', value: refreshToken);
-        return ApiResponse(statusCode: response.statusCode, message: "success");
+        return ApiResponse(
+          statusCode: response.statusCode,
+          message: "success",
+        );
       } else if (response.statusCode == 401) {
         // 애플 로그인시 추가 정보
         logger.w(
@@ -117,9 +121,44 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
   }
 
   @override
-  Future<bool> appleLeave() {
-    // TODO: implement appleLeave
-    throw UnimplementedError();
+  Future<ApiResponse> appleSignup(AppleSignupRequest request) async {
+    final url = Uri.parse("$serverUrl/auth/apple/continue");
+    final headers = this.headers(false);
+    final body = jsonEncode(request.toJson());
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+      final decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
+      if (response.statusCode == 200) {
+        logger.d(
+            "code: ${response.statusCode} body: ${decodedResponse.toString()}");
+        Map<String, dynamic> data = decodedResponse['data'];
+
+        String accessToken = data['accessToken'];
+        String refreshToken = data['refreshToken'];
+        logger.d("accessToken: $accessToken");
+        logger.d("refreshToken: $refreshToken");
+
+        await storage.write(key: 'accessToken', value: accessToken);
+        await storage.write(key: 'refreshToken', value: refreshToken);
+        await storage.write(key: 'loginPlatform', value: "apple");
+
+        return ApiResponse(statusCode: response.statusCode, message: "success");
+      } else if (response.statusCode == 409) {
+        logger.w(
+            "code: ${response.statusCode} body: ${decodedResponse.toString()}");
+        return ApiResponse(
+            statusCode: response.statusCode, message: "duplicated email");
+      } else {
+        // 통신 실패
+        logger.w(
+            "code: ${response.statusCode} body: ${decodedResponse.toString()}");
+        return ApiResponse(statusCode: response.statusCode, message: "error");
+      }
+    } catch (e) {
+      logger.e("애플 회원 가입 실패 : $e");
+      return ApiResponse(statusCode: 500, message: "error");
+    }
   }
 
   @override
@@ -193,13 +232,156 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
   }
 
   @override
-  Future<bool> logout() async {
+  Future<ApiResponse> logout() async {
     final platform = await storage.read(key: "loginPlatform");
+    bool isSocialLogoutSuccess = false;
+    bool isServerLogoutSuccess = false;
+
+    // 1. 소셜 로그아웃
+    isSocialLogoutSuccess = await socialLogout(platform);
+    // 2. 서버 로그아웃
+    if (isSocialLogoutSuccess) {
+      // 소셜 로그아웃 성공한 경우에만
+      await loadToken();
+      final url = Uri.parse("$serverUrl/auth/logout");
+      Map<String, String> headers = this.headers(true);
+
+      try {
+        final response = await http.post(url, headers: headers);
+        Map<String, dynamic> decodedResponse =
+            jsonDecode(utf8.decode(response.bodyBytes));
+        if (response.statusCode == 200) {
+          // 로그아웃 성공
+          logger.d("code: ${response.statusCode} body: $decodedResponse");
+          isServerLogoutSuccess = true;
+        } else if (response.statusCode == 401) {
+          // 토큰 만료
+          logger.w("code: ${response.statusCode} body: $decodedResponse");
+          // 토큰 재발급
+          final reissued = await reissueToken();
+          if (reissued) {
+            // 토큰 재발급 성공시 재요청
+            headers = this.headers(true);
+            final retryResponse = await http.post(url, headers: headers);
+            decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
+            if (retryResponse.statusCode == 200) {
+              // 재요청 성공
+              logger.d(
+                  "code: ${retryResponse.statusCode} body: $decodedResponse");
+              isServerLogoutSuccess = true;
+            } else {
+              // 재요청 실패
+              logger.e(
+                  "code: ${retryResponse.statusCode} body: $decodedResponse");
+              throw ServerLogoutException();
+            }
+          } else {
+            // 토큰 재발급 실패 == 토큰 만료 -> 로그인
+            throw TokenExpiredException();
+          }
+        } else {
+          // 서버 로그아웃 실패
+          logger.e("code: ${response.statusCode} body: $decodedResponse");
+          throw ServerLogoutException();
+        }
+
+        // 토큰 삭제
+        if (isServerLogoutSuccess) {
+          await resetToken();
+          return ApiResponse(
+            statusCode: response.statusCode,
+            message: decodedResponse['message'],
+          );
+        } else {
+          throw ServerLogoutException();
+        }
+      } catch (e) {
+        logger.e("server logout failed : $e");
+        rethrow;
+      }
+    } else {
+      // 소셜 로그아웃 실패
+      return ApiResponse(statusCode: 500, message: "social logout failed");
+    }
+  }
+
+  @override
+  Future<ApiResponse> deleteAccount() async {
+    final platform = await storage.read(key: "loginPlatform");
+    bool isSocialDeleteSuccess = false;
+    bool isServerDeleteSuccess = false;
+    // 1. 소셜 연동 해제
+    isSocialDeleteSuccess = await unlinkSocialAccount(platform);
+    // 2. 서버에 탈퇴 요청
+    if (isSocialDeleteSuccess) {
+      // 소셜 탈퇴 성공한 경우에만
+      await loadToken();
+      final url = Uri.parse("$serverUrl/auth/leave");
+      Map<String, String> headers = this.headers(true);
+
+      try {
+        final response = await http.post(url, headers: headers);
+        Map<String, dynamic> decodedResponse =
+            jsonDecode(utf8.decode(response.bodyBytes));
+        if (response.statusCode == 200) {
+          // 탈퇴 성공
+          logger.d("code: ${response.statusCode} body: $decodedResponse");
+          isServerDeleteSuccess = true;
+        } else if (response.statusCode == 401) {
+          // 토큰 만료
+          logger.w("code: ${response.statusCode} body: $decodedResponse");
+          // 토큰 재발급
+          final reissued = await reissueToken();
+          if (reissued) {
+            // 토큰 재발급 성공
+            headers = this.headers(true);
+            final retryResponse = await http.post(url, headers: headers);
+            decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
+            if (retryResponse.statusCode == 200) {
+              // 재요청 성공
+              logger.d(
+                  "code: ${retryResponse.statusCode} body: $decodedResponse");
+              isServerDeleteSuccess = true;
+            } else {
+              // 재요청 실패
+              logger.e(
+                  "code: ${retryResponse.statusCode} body: $decodedResponse");
+              throw AccountDeletionFailureException();
+            }
+          } else {
+            // 토큰 재발급 실패
+            throw TokenExpiredException();
+          }
+        } else {
+          // 서버 로그아웃 실패
+          logger.e("code: ${response.statusCode} body: $decodedResponse");
+        }
+        // 3. 서버 로그인 성공시 토큰 삭제
+        if (isServerDeleteSuccess) {
+          await resetToken();
+          return ApiResponse(
+            statusCode: response.statusCode,
+            message: decodedResponse['message'],
+          );
+        } else {
+          throw AccountDeletionFailureException();
+        }
+      } catch (e) {
+        logger.e("failed to leave : $e");
+        rethrow;
+      }
+    } else {
+      // 소셜 탈퇴 실패
+      return ApiResponse(
+          statusCode: 500, message: "failed to delete your account");
+    }
+  }
+
+  Future<bool> socialLogout(String? platform) async {
     switch (platform) {
       case "kakao":
         try {
-          await UserApi.instance.unlink();
-          await resetToken();
+          await UserApi.instance.logout();
           logger.d("$platform logout successfully!");
           return true;
         } catch (e) {
@@ -209,7 +391,6 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
       case "naver":
         try {
           await FlutterNaverLogin.logOut();
-          await resetToken();
           logger.d("$platform logout successfully!");
           return true;
         } catch (e) {
@@ -217,53 +398,40 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
           return false;
         }
       case "apple":
-        await resetToken();
         logger.d("$platform logout successfully!");
         return true;
       default:
         logger.d("$platform is Unauthorized platform");
-        return true;
+        return false;
     }
   }
 
-  @override
-  Future<ApiResponse> appleSignup(AppleSignupRequest request) async {
-    final url = Uri.parse("$serverUrl/auth/apple/continue");
-    final headers = this.headers(false);
-    final body = jsonEncode(request.toJson());
-
-    try {
-      final response = await http.post(url, headers: headers, body: body);
-      final decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
-      if (response.statusCode == 200) {
-        logger.d(
-            "code: ${response.statusCode} body: ${decodedResponse.toString()}");
-        Map<String, dynamic> data = decodedResponse['data'];
-
-        String accessToken = data['accessToken'];
-        String refreshToken = data['refreshToken'];
-        logger.d("accessToken: $accessToken");
-        logger.d("refreshToken: $refreshToken");
-
-        await storage.write(key: 'accessToken', value: accessToken);
-        await storage.write(key: 'refreshToken', value: refreshToken);
-        await storage.write(key: 'loginPlatform', value: "apple");
-
-        return ApiResponse(statusCode: response.statusCode, message: "success");
-      } else if (response.statusCode == 409) {
-        logger.w(
-            "code: ${response.statusCode} body: ${decodedResponse.toString()}");
-        return ApiResponse(
-            statusCode: response.statusCode, message: "duplicated email");
-      } else {
-        // 통신 실패
-        logger.w(
-            "code: ${response.statusCode} body: ${decodedResponse.toString()}");
-        return ApiResponse(statusCode: response.statusCode, message: "error");
-      }
-    } catch (e) {
-      logger.e("애플 회원 가입 실패 : $e");
-      return ApiResponse(statusCode: 500, message: "error");
+  Future<bool> unlinkSocialAccount(String? platform) async {
+    switch (platform) {
+      case "kakao":
+        try {
+          await UserApi.instance.unlink();
+          logger.d("$platform logout successfully!");
+          return true;
+        } catch (e) {
+          logger.e("$platform logout error: $e");
+          return false;
+        }
+      case "naver":
+        try {
+          await FlutterNaverLogin.logOut();
+          logger.d("$platform logout successfully!");
+          return true;
+        } catch (e) {
+          logger.e("$platform logout error: $e");
+          return false;
+        }
+      case "apple":
+        logger.d("$platform logout successfully!");
+        return true;
+      default:
+        logger.d("$platform is Unauthorized platform");
+        return false;
     }
   }
 }
