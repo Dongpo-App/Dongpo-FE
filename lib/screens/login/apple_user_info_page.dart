@@ -1,5 +1,5 @@
 import 'package:dongpo_test/main.dart';
-import 'package:dongpo_test/models/response/login_response.dart';
+import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/request/apple_signup_request.dart';
 import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -537,7 +537,7 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                           email: email!,
                         );
                         logger.d("data: ${request.toString()}");
-                        LoginResponse response =
+                        ApiResponse response =
                             await loginService.appleSignup(request);
                         if (response.statusCode == 200) {
                           if (mounted) {

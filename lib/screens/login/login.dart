@@ -1,4 +1,4 @@
-import 'package:dongpo_test/models/response/login_response.dart';
+import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  LoginResponse response = await loginService.appleLogin();
+                  ApiResponse response = await loginService.appleLogin();
                   if (response.statusCode == 200) {
                     if (mounted) {
                       Navigator.pushReplacement(
@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  LoginResponse response = await loginService.naverLogin();
+                  ApiResponse response = await loginService.naverLogin();
                   if (response.statusCode == 200) {
                     if (mounted) {
                       Navigator.pushReplacement(
@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  LoginResponse response = await loginService.kakaoLogin();
+                  ApiResponse response = await loginService.kakaoLogin();
                   if (response.statusCode == 200) {
                     if (mounted) {
                       Navigator.pushReplacement(
