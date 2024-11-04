@@ -32,7 +32,7 @@ class _ShowReviewState extends State<ShowReview> {
   int _rating = 0;
   final TextEditingController _reviewController = TextEditingController();
   final reviewList = storeData?.reviews ?? []; // null일 경우 빈 리스트로 대체
-
+  String etcText = ''; //리뷰 신고
 //여기서 부터 화면
   @override
   Widget build(BuildContext context) {
@@ -628,72 +628,92 @@ class _ShowReviewState extends State<ShowReview> {
                 const Spacer(),
                 TextButton(
                   onPressed: () {
+                    TextEditingController textController2 =
+                        TextEditingController(); // TextEditingController 정의
+
                     showModalBottomSheet(
                       context: context,
+                      isScrollControlled: true, // 모달 시트의 크기를 조절 가능하게 설정
                       builder: (context) {
                         return StatefulBuilder(builder:
                             (BuildContext context, StateSetter setState) {
-                          return SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.6,
-                            child: Container(
-                              margin: const EdgeInsets.all(20),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Text(
-                                        "리뷰 신고하기",
-                                        style: TextStyle(
+                          return SingleChildScrollView(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                bottom: MediaQuery.of(context)
+                                    .viewInsets
+                                    .bottom, // 키보드가 올라오면 그만큼 패딩 추가
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Text(
+                                          "리뷰 신고하기",
+                                          style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 30),
-                                      ),
-                                      const Spacer(),
-                                      IconButton(
+                                            fontSize: 30,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        IconButton(
                                           onPressed: () {
                                             setState(() => value = 0);
                                             Navigator.pop(context);
                                           },
                                           icon:
-                                              const Icon(CupertinoIcons.xmark))
-                                    ],
-                                  ),
-                                  //버튼 모음
-                                  Container(
-                                    height: 350,
-                                    padding: const EdgeInsets.all(20),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        _radioBtn('홍보성 리뷰에요', 1, setState),
-                                        _radioBtn('도배 글이에요', 2, setState),
-                                        _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)', 3,
-                                            setState),
-                                        _radioBtn('가게에 무관한 리뷰에요', 4, setState),
-                                        _radioBtn('기타', 5, setState),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        ElevatedButton(
+                                              const Icon(CupertinoIcons.xmark),
+                                        )
+                                      ],
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Column(
+                                        children: [
+                                          _radioBtn('홍보성 리뷰에요', 1, setState),
+                                          _radioBtn('도배 글이에요', 2, setState),
+                                          _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)',
+                                              3, setState),
+                                          _radioBtn(
+                                              '가게에 무관한 리뷰에요', 4, setState),
+                                          _radioBtn('기타', 5, setState),
+                                          if (value == 5)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 16.0),
+                                              child: TextField(
+                                                controller: textController2,
+                                                maxLength: 100,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  hintText: '기타 사항을 입력해주세요',
+                                                  border: OutlineInputBorder(),
+                                                ),
+                                              ),
+                                            ),
+                                          const SizedBox(height: 20),
+                                          ElevatedButton(
                                             onPressed: () {
-                                              (value == 0)
-                                                  ? null
-                                                  : logger.d('버튼 활성화');
-                                              reviewStoreReport(index);
+                                              if (value != 0) {
+                                                etcText = (value == 5)
+                                                    ? textController2.text
+                                                    : "";
+                                                reviewStoreReport(
+                                                    index, etcText);
+                                              }
                                             },
                                             style: ElevatedButton.styleFrom(
-                                              splashFactory: (value ==
-                                                      0) // 아무것도 터치 안했으면
-                                                  ? NoSplash
-                                                      .splashFactory //스플레시 효과 비활성화
-                                                  : InkSplash
-                                                      .splashFactory, //스플레시 효과 활성화
+                                              splashFactory: value == 0
+                                                  ? NoSplash.splashFactory
+                                                  : InkSplash.splashFactory,
                                               shape:
                                                   const RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  10))),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10)),
+                                              ),
                                               minimumSize: const Size(
                                                   double.infinity, 40),
                                               backgroundColor: value != 0
@@ -703,14 +723,17 @@ class _ShowReviewState extends State<ShowReview> {
                                             child: Text(
                                               "가게 신고",
                                               style: TextStyle(
-                                                  color: (value > 0)
-                                                      ? Colors.white
-                                                      : Colors.grey[600]),
-                                            )),
-                                      ],
+                                                color: value > 0
+                                                    ? Colors.white
+                                                    : Colors.grey[600],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -731,9 +754,8 @@ class _ShowReviewState extends State<ShowReview> {
     );
   }
 
-  String etcText = '';
   // 리뷰 점포 신고
-  void reviewStoreReport(int idx) async {
+  void reviewStoreReport(int idx, String etcText) async {
     String sendData = setReportData(value);
     logger.d("sendData : $sendData");
     final url = Uri.parse('$serverUrl/api/report/review/${reviewList[idx].id}');
@@ -746,7 +768,7 @@ class _ShowReviewState extends State<ShowReview> {
     };
 
     final includeTextData = {
-      "text": etcText + "테스트 ", // reason이 ETC일 경우 포함
+      "text": etcText, // reason이 ETC일 경우 포함
       "reason": sendData,
     };
 
@@ -1007,72 +1029,94 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
                 const Spacer(),
                 TextButton(
                   onPressed: () {
+                    TextEditingController textController =
+                        TextEditingController();
+
+                    String etcText2 = ''; // 리뷰 전체 신고
+
                     showModalBottomSheet(
                       context: context,
+                      isScrollControlled: true, // 모달 시트의 크기를 조절 가능하게 설정
                       builder: (context) {
                         return StatefulBuilder(builder:
                             (BuildContext context, StateSetter setState) {
-                          return SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.6,
-                            child: Container(
-                              margin: const EdgeInsets.all(20),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Text(
-                                        "리뷰 신고하기",
-                                        style: TextStyle(
+                          return SingleChildScrollView(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                bottom: MediaQuery.of(context)
+                                    .viewInsets
+                                    .bottom, // 키보드가 올라오면 그만큼 패딩 추가
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Text(
+                                          "리뷰 신고하기",
+                                          style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 30),
-                                      ),
-                                      const Spacer(),
-                                      IconButton(
+                                            fontSize: 30,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        IconButton(
                                           onPressed: () {
                                             setState(() => value = 0);
                                             Navigator.pop(context);
                                           },
                                           icon:
-                                              const Icon(CupertinoIcons.xmark))
-                                    ],
-                                  ),
-                                  //버튼 모음
-                                  Container(
-                                    height: 350,
-                                    padding: const EdgeInsets.all(20),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        _radioBtn('홍보성 리뷰에요', 1, setState),
-                                        _radioBtn('도배 글이에요', 2, setState),
-                                        _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)', 3,
-                                            setState),
-                                        _radioBtn('가게에 무관한 리뷰에요', 4, setState),
-                                        _radioBtn('기타', 5, setState),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        ElevatedButton(
+                                              const Icon(CupertinoIcons.xmark),
+                                        )
+                                      ],
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Column(
+                                        children: [
+                                          _radioBtn('홍보성 리뷰에요', 1, setState),
+                                          _radioBtn('도배 글이에요', 2, setState),
+                                          _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)',
+                                              3, setState),
+                                          _radioBtn(
+                                              '가게에 무관한 리뷰에요', 4, setState),
+                                          _radioBtn('기타', 5, setState),
+                                          if (value == 5)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 16.0),
+                                              child: TextField(
+                                                controller: textController,
+                                                maxLength: 100,
+                                                decoration:
+                                                    const InputDecoration(
+                                                  hintText: '기타 사항을 입력해주세요',
+                                                  border: OutlineInputBorder(),
+                                                ),
+                                              ),
+                                            ),
+                                          const SizedBox(height: 20),
+                                          ElevatedButton(
                                             onPressed: () {
-                                              (value == 0)
-                                                  ? null
-                                                  : logger.d('버튼 활성화');
-                                              reviewStoreReport(index);
+                                              if (value != 0) {
+                                                etcText2 = (value == 5)
+                                                    ? textController.text
+                                                    : "";
+                                                reviewStoreReport2(
+                                                    index, etcText2);
+                                              }
                                             },
                                             style: ElevatedButton.styleFrom(
-                                              splashFactory: (value ==
-                                                      0) // 아무것도 터치 안했으면
-                                                  ? NoSplash
-                                                      .splashFactory //스플레시 효과 비활성화
-                                                  : InkSplash
-                                                      .splashFactory, //스플레시 효과 활성화
+                                              splashFactory: value == 0
+                                                  ? NoSplash.splashFactory
+                                                  : InkSplash.splashFactory,
                                               shape:
                                                   const RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                              Radius.circular(
-                                                                  10))),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10)),
+                                              ),
                                               minimumSize: const Size(
                                                   double.infinity, 40),
                                               backgroundColor: value != 0
@@ -1082,14 +1126,17 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
                                             child: Text(
                                               "가게 신고",
                                               style: TextStyle(
-                                                  color: (value > 0)
-                                                      ? Colors.white
-                                                      : Colors.grey[600]),
-                                            )),
-                                      ],
+                                                color: value > 0
+                                                    ? Colors.white
+                                                    : Colors.grey[600],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -1110,9 +1157,8 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
     );
   }
 
-  String etcText = '';
   // 리뷰 점포 신고
-  void reviewStoreReport(int idx) async {
+  void reviewStoreReport2(int idx, String etcText) async {
     String sendData = setReportData(value);
     logger.d("sendData : $sendData");
     final url = Uri.parse('$serverUrl/api/report/review/${reviewList[idx].id}');
@@ -1125,7 +1171,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
     };
 
     final includeTextData = {
-      "text": etcText + "테스트 ", // reason이 ETC일 경우 포함
+      "text": etcText, // reason이 ETC일 경우 포함
       "reason": sendData,
     };
 

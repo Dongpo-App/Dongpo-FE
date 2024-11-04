@@ -208,126 +208,148 @@ class _StoreInfoState extends State<StoreInfo> {
         actions: [
           IconButton(
             onPressed: () {
-              //신고 기능 구현
+              TextEditingController textController =
+                  TextEditingController(); // TextEditingController 정의
+
               showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return StatefulBuilder(
-                        builder: (BuildContext context, StateSetter setState) {
-                      return Container(
-                        color: Colors.white,
-                        padding: const EdgeInsets.only(top: 24),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 24.0),
-                              child: Row(
-                                children: [
-                                  const Text(
-                                    "가게에 문제가 있나요?",
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w600,
+                isScrollControlled: true,
+                context: context,
+                builder: (context) {
+                  return StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                      return FractionallySizedBox(
+                        heightFactor: value == 4 ? 0.8 : 0.6,
+                        child: Container(
+                          color: Colors.white,
+                          padding: const EdgeInsets.only(top: 24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0),
+                                child: Row(
+                                  children: [
+                                    const Text(
+                                      "가게에 문제가 있나요?",
+                                      style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w600),
                                     ),
-                                  ),
-                                  const Spacer(),
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() => value = 0);
-                                      Navigator.pop(context);
-                                    },
-                                    icon: const Icon(
-                                      CupertinoIcons.xmark,
-                                      size: 24,
-                                      color: Color(0xFF767676),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24.0),
-                              child: Text(
-                                "항목에 알맞게 선택해주세요.",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
+                                    const Spacer(),
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() => value = 0);
+                                        Navigator.pop(context);
+                                      },
+                                      icon: const Icon(
+                                        CupertinoIcons.xmark,
+                                        size: 24,
+                                        color: Color(0xFF767676),
+                                      ),
+                                    )
+                                  ],
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 24.0),
-                              child: SizedBox(
+                              const SizedBox(height: 8),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 24.0),
+                                child: Text(
+                                  "항목에 알맞게 선택해주세요.",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ),
+                              const SizedBox(height: 40),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0),
                                 child: Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
                                     _radioBtn('없어진 가게에요', 1, setState),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
+                                    const SizedBox(height: 16),
                                     _radioBtn('위치가 틀려요', 2, setState),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
+                                    const SizedBox(height: 16),
                                     _radioBtn('부적절한 정보가 포함되어 있어요', 3, setState),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
+                                    const SizedBox(height: 16),
                                     _radioBtn('기타', 4, setState),
                                   ],
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 40,
-                            ),
-                            Expanded(
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    logger.d("사용하고있는 값 : ${widget.idx}");
-                                    (value == 0) ? null : storeReport(value);
-                                    // 신고 api 추가
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    splashFactory: (value == 0) // 아무것도 터치 안했으면
-                                        ? NoSplash.splashFactory //스플레시 효과 비활성화
-                                        : InkSplash.splashFactory, //스플레시 효과 활성화
-                                    minimumSize:
-                                        const Size(double.infinity, 40),
-                                    shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(0))),
-                                    backgroundColor: value != 0
-                                        ? const Color(0xffF15A2B)
-                                        : const Color(0xFFF4F4F4),
-                                  ),
-                                  child: Text(
-                                    "가게 신고",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                      color: (value > 0)
-                                          ? Colors.white
-                                          : const Color(0xFF767676),
+                              const SizedBox(height: 16),
+
+                              // 기타 선택 시 텍스트박스 표시
+                              if (value == 4)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 24.0),
+                                  child: TextField(
+                                    controller:
+                                        textController, // TextEditingController 연결
+                                    maxLength: 100,
+                                    maxLines: 3,
+                                    decoration: const InputDecoration(
+                                      hintText: '기타 사항을 입력해주세요',
+                                      border: OutlineInputBorder(),
                                     ),
-                                  )),
-                            ),
-                          ],
+                                  ),
+                                ),
+
+                              const SizedBox(height: 16),
+
+                              // 버튼 위치 고정 및 크기 조정
+                              Padding(
+                                padding: const EdgeInsets.all(24.0),
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      if (value != 0) {
+                                        etcText =
+                                            textController.text; // 텍스트를 변수에 저장
+                                        logger.d("입력된 기타 내용: $etcText");
+                                        storeReport(value);
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      splashFactory: (value == 0)
+                                          ? NoSplash.splashFactory
+                                          : InkSplash.splashFactory,
+                                      minimumSize:
+                                          const Size(double.infinity, 40),
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(0)),
+                                      ),
+                                      backgroundColor: value != 0
+                                          ? const Color(0xffF15A2B)
+                                          : const Color(0xFFF4F4F4),
+                                    ),
+                                    child: Text(
+                                      "가게 신고",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 14,
+                                        color: (value > 0)
+                                            ? Colors.white
+                                            : const Color(0xFF767676),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
-                    });
-                  });
+                    },
+                  );
+                },
+              );
             },
             icon: const Icon(
               Icons.warning_rounded,
