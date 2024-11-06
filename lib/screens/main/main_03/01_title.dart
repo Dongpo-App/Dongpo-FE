@@ -87,14 +87,15 @@ class _MainTitleState extends State<MainTitle> {
         desiredAccuracy: LocationAccuracy.high);
 
     //int로 형변환
-    int checkMeter = Geolocator.distanceBetween(
+    var checkMeter = Geolocator.distanceBetween(
       myPosition.latitude,
       myPosition.longitude,
       storeData!.latitude,
       storeData!.longitude,
     ).floor();
     betweenDistance = checkMeter;
-    logger.d('나와 점포 거리 차이는 = $checkMeter M');
+    logger.d('titlePage1 checkMeter = $checkMeter M');
+    logger.d('titlePage1 나와 점포 거리 차이는 = $betweenDistance');
   }
 
   bool getOpenPossibility() {

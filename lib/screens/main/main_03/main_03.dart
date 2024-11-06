@@ -14,21 +14,9 @@ import 'package:dongpo_test/screens/my_info/info_detail/bookmark_view_model.dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: StoreInfo(
-        idx: 1, // class.idx로 수정
-      ),
-    );
-  }
-}
 
 //가게정보 상세 페이지
 
@@ -59,6 +47,7 @@ class _StoreInfoState extends State<StoreInfo> {
       final data = await _storeSangse(); // 비동기 호출
       logger.d(
           'StoreData Test : ${data.visitSuccessfulCount} : ${data.visitFailCount}');
+      logger.d('Store Review Data : ${data.reviews[1].memberMainTitle}');
       setState(() {
         storeData = data; // 가져온 데이터를 myStoreList에 할당
       });
