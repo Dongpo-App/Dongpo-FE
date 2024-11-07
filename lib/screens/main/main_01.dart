@@ -1,6 +1,6 @@
 import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/store_detail.dart';
-import 'package:dongpo_test/models/clickedMarkerInfo.dart';
+import 'package:dongpo_test/models/clicked_marker_info.dart';
 import 'package:dongpo_test/models/store_marker.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:dongpo_test/screens/login/login.dart';
@@ -792,7 +792,7 @@ class _MainPageState extends State<MainPage>
                                 size: 36,
                                 Icons.remove,
                                 color: Color(0xff767676))),
-                        MainTitle2(idx: index),
+                        StoreSummaryTitle(idx: index),
                         const SizedBox(height: 30),
                         const MainPhoto2(),
                         const SizedBox(height: 20),

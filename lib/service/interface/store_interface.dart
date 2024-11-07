@@ -1,4 +1,4 @@
-import 'package:dongpo_test/models/clickedMarkerInfo.dart';
+import 'package:dongpo_test/models/clicked_marker_info.dart';
 import 'package:dongpo_test/models/request/add_store_request.dart';
 import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/store_detail.dart';

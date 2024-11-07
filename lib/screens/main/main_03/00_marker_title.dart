@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:geolocator/geolocator.dart';
 
-class MainTitle2 extends StatefulWidget {
+class StoreSummaryTitle extends StatefulWidget {
   final int idx;
-  const MainTitle2({super.key, required this.idx});
+  const StoreSummaryTitle({super.key, required this.idx});
 
   @override
-  State<MainTitle2> createState() => _MainTitle2State();
+  State<StoreSummaryTitle> createState() => _StoreSummaryTitleState();
 }
 
-class _MainTitle2State extends State<MainTitle2> {
+class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
   bool setOpenPossbility = false;
   int betweenDistance = 0;
 

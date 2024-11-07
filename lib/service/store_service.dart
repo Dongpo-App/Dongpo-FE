@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dongpo_test/main.dart';
-import 'package:dongpo_test/models/clickedMarkerInfo.dart';
+import 'package:dongpo_test/models/clicked_marker_info.dart';
 import 'package:dongpo_test/models/store_marker.dart';
 import 'package:dongpo_test/models/request/add_review_request.dart';
 import 'package:dongpo_test/models/request/add_store_request.dart';
