@@ -589,7 +589,7 @@ class _ShowReviewState extends State<ShowReview> {
                             color: Colors.red[100],
                           ),
                           child: Text(
-                            "난 한 가게만 패",
+                            "${reviewList[index].memberMainTitle}",
                             style: TextStyle(
                                 fontSize: 10, color: Colors.redAccent[400]),
                           ),

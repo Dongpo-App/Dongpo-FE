@@ -1,10 +1,8 @@
-import 'dart:ui';
-
 import 'package:dongpo_test/screens/main/main_01.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
-import 'package:flutter/painting.dart';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -30,12 +28,14 @@ class _UserActionState extends State<UserAction> {
   @override
   void initState() {
     super.initState();
-    checkBookMark();
+    checkedBookMark();
   }
 
   bool _selected = false;
+  int? userActionCount = storeData?.bookmarkCount;
   @override
   Widget build(BuildContext context) {
+    logger.d("userActionCount : $userActionCount");
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -69,6 +69,7 @@ class _UserActionState extends State<UserAction> {
                 onPressed: () {
                   setState(() {
                     _selected = false;
+                    userActionCount = (userActionCount ?? 0) - 1;
                   });
                   removeBookMark();
                 },
@@ -84,6 +85,7 @@ class _UserActionState extends State<UserAction> {
                 onPressed: () {
                   setState(() {
                     _selected = true;
+                    userActionCount = (userActionCount ?? 0) + 1;
                   });
                   addBookMark();
                 },
@@ -93,34 +95,9 @@ class _UserActionState extends State<UserAction> {
                   color: Color(0xFF767676),
                 ),
               ),
-        const Text("(A)북마크 수"),
+        Text("$userActionCount"),
       ],
     );
-  }
-
-  void checkBookMarkSelected() async {
-    final url = Uri.parse('$serverUrl/api/my-page/bookmarks');
-
-    final accessToken = await storage.read(key: 'accessToken');
-
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
-
-    try {
-      final response = await http.get(
-        url,
-        headers: headers,
-      );
-      if (response.statusCode == 200) {
-      } else {
-        logger.e(
-            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-      }
-    } catch (e) {
-      logger.e("에러!! 에러내용 : $e");
-    }
   }
 
   void checkedBookMark() async {
@@ -133,8 +110,32 @@ class _UserActionState extends State<UserAction> {
 
     final response = await http.get(url, headers: headers);
 
-    if (response.statusCode == 200) {
-      logger.d('ck 완료');
+    try {
+      if (response.statusCode == 200) {
+        // JSON 데이터 디코딩 및 UTF-8 디코딩
+        final Map<String, dynamic> data =
+            json.decode(utf8.decode(response.bodyBytes));
+
+        // 서버에서 받은 데이터 중 'data' 키의 값을 리스트로 가져옴
+        final List<dynamic> jsonData = data['data'];
+
+        // JSON 배열을 UserBookmark 리스트로 변환
+        userBookmark = jsonData
+            .map((jsonItem) => UserBookmark.fromJson(jsonItem))
+            .toList();
+
+        logger.d("checkBookMark isSelected : $data");
+
+        checkBookMark();
+
+        logger.d("북마크 체크 완료 현재 selected 값 : $_selected");
+      } else {
+        logger
+            .e("Failed to load bookmarks. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      // TODO
+      logger.d('eeror! : $e');
     }
   }
 
@@ -179,13 +180,12 @@ class _UserActionState extends State<UserAction> {
   }
 
   void checkBookMark() {
-    for (int i = 0; i < userBookmark.length; i++) {
+    for (int i = 1; i < userBookmark.length; i++) {
       if (userBookmark[i].storeId == widget.idx) {
-        _selected = true;
-        logger.d('북마크한 가게');
+        setState(() {
+          _selected = true;
+        });
       }
     }
-    logger.d('북마크 체크 완료');
-    setState(() {});
   }
 }

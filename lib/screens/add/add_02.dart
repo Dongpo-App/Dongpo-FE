@@ -633,7 +633,10 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       ),
       onPressed: () {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MyAppPage()),
+          MaterialPageRoute(
+              builder: (context) => const MyAppPage(
+                    initialIndex: 0,
+                  )),
         );
       },
     );
@@ -681,7 +684,10 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       ),
       onPressed: () {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MyAppPage()),
+          MaterialPageRoute(
+              builder: (context) => const MyAppPage(
+                    initialIndex: 0,
+                  )),
         );
       },
     );

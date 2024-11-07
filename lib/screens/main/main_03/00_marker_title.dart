@@ -79,9 +79,11 @@ class _MainTitle2State extends State<MainTitle2> {
         myDataList[widget.idx].longitude,
       );
 
-      logger.d("checkMeter = ${checkMeter}");
-      // betweenDistance = checkMeter;
-      logger.d('나와 점포 거리 차이는 = $checkMeter M');
+      betweenDistance = checkMeter.floor();
+      setState(() {});
+
+      logger.d('00_marker 나와 점포 거리 차이는 = $checkMeter M');
+      logger.d('00_marker betwwenDistance = $betweenDistance');
     } else {
       logger.e("유효하지 않은 인덱스: ${widget.idx}");
     }

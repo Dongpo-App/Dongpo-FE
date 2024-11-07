@@ -322,7 +322,7 @@ class _MainPageState extends State<MainPage>
                                               child: CircleAvatar(
                                                 minRadius: 15,
                                                 backgroundImage: AssetImage(
-                                                    'assets/images/rakoon.png'),
+                                                    'assets/images/icon.png'),
                                               ),
                                             ),
                                             const SizedBox(

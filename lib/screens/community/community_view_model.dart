@@ -7,11 +7,13 @@ import '../../models/recommend_store.dart';
 import '../login/login_view_model.dart';
 
 class CommunityViewModel {
-  Future<RecommendResponse> recommendStoreGetAPI(BuildContext context, String recommendStoreCategory) async {
+  Future<RecommendResponse> recommendStoreGetAPI(
+      BuildContext context, String recommendStoreCategory) async {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('$serverUrl/api/store/recommend/$recommendStoreCategory');
+    final url =
+        Uri.parse('$serverUrl/api/store/recommend/$recommendStoreCategory');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -19,7 +21,8 @@ class CommunityViewModel {
     try {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(utf8.decode(response.bodyBytes));
+        final Map<String, dynamic> jsonData =
+            json.decode(utf8.decode(response.bodyBytes));
         logger.d("recommend jsonData - store : $jsonData");
 
         // 전체 응답을 RecommendResponse로 변환
@@ -30,15 +33,12 @@ class CommunityViewModel {
         if (context.mounted) {
           return recommendStoreGetAPI(context, recommendStoreCategory);
         } else {
-          throw CommunityRankException(
-              "context.mounted is false"
-          );
+          throw CommunityRankException("context.mounted is false");
         }
       } else {
         // 실패
         throw CommunityRankException(
-            "Fail to load. status code: ${response.statusCode}"
-        );
+            "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
       logger.d("error : $e");
@@ -58,27 +58,27 @@ class CommunityViewModel {
     try {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(utf8.decode(response.bodyBytes));
+        final Map<String, dynamic> jsonData =
+            json.decode(utf8.decode(response.bodyBytes));
         final List<dynamic> storeTop10Json = jsonData['data'];
 
         logger.d("communityData - store : $storeTop10Json");
 
-        return storeTop10Json.map((item) => CommunityRank.fromJson(item)).toList();
+        return storeTop10Json
+            .map((item) => CommunityRank.fromJson(item))
+            .toList();
       } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
         if (context.mounted) await reissue(context);
         if (context.mounted) {
           return storeTop10GetAPI(context);
         } else {
-          throw CommunityRankException(
-              "context.mounted is false"
-          );
+          throw CommunityRankException("context.mounted is false");
         }
       } else {
         // 실패
         throw CommunityRankException(
-            "Fail to load. status code: ${response.statusCode}"
-        );
+            "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
       logger.d("error : $e");
@@ -98,27 +98,27 @@ class CommunityViewModel {
     try {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(utf8.decode(response.bodyBytes));
+        final Map<String, dynamic> jsonData =
+            json.decode(utf8.decode(response.bodyBytes));
         final List<dynamic> visitTop10Json = jsonData['data'];
 
         logger.d("communityData - visit : $visitTop10Json");
 
-        return visitTop10Json.map((item) => CommunityRank.fromJson(item)).toList();
+        return visitTop10Json
+            .map((item) => CommunityRank.fromJson(item))
+            .toList();
       } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
         if (context.mounted) await reissue(context);
         if (context.mounted) {
           return visitTop10GetAPI(context);
         } else {
-          throw CommunityRankException(
-              "context.mounted is false"
-          );
+          throw CommunityRankException("context.mounted is false");
         }
       } else {
         // 실패
         throw CommunityRankException(
-            "Fail to load. status code: ${response.statusCode}"
-        );
+            "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
       logger.d("error : $e");
@@ -138,27 +138,27 @@ class CommunityViewModel {
     try {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(utf8.decode(response.bodyBytes));
+        final Map<String, dynamic> jsonData =
+            json.decode(utf8.decode(response.bodyBytes));
         final List<dynamic> reviewTop10GetAPI = jsonData['data'];
 
         logger.d("communityData - review : $reviewTop10GetAPI");
 
-        return reviewTop10GetAPI.map((item) => CommunityRank.fromJson(item)).toList();
+        return reviewTop10GetAPI
+            .map((item) => CommunityRank.fromJson(item))
+            .toList();
       } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
         if (context.mounted) await reissue(context);
         if (context.mounted) {
           return reviewTop10GetAPI(context);
         } else {
-          throw CommunityRankException(
-              "context.mounted is false"
-          );
+          throw CommunityRankException("context.mounted is false");
         }
       } else {
         // 실패
         throw CommunityRankException(
-            "Fail to load. status code: ${response.statusCode}"
-        );
+            "Fail to load. status code: ${response.statusCode}");
       }
     } catch (e) {
       logger.d("error : $e");
