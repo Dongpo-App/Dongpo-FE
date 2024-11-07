@@ -25,9 +25,37 @@ mixin ErrorHandlingMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  void showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+  void showAlert(BuildContext context, String message) {
+    // set up the button
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(color: Colors.white),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+
+    // set up the AlertDialog
+    // 완료되었을 때 Alert
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text("알림"),
+      content: Text(message),
+      actions: [
+        Center(child: okButton),
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 

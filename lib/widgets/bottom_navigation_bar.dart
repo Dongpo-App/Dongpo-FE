@@ -17,7 +17,7 @@ class MyAppPageState extends State<MyAppPage> {
 
   final List<Widget> screens = [
     const MainPage(),
-    const AddPage(),
+    const SizedBox.shrink(), // 여기에 addPage() 넣으면 쓰지 않는 페이지가 로딩됨
     const CommunityPage(),
     const MyPage(),
   ];

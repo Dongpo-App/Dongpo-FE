@@ -1,5 +1,7 @@
 import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/screens/login/splash_page.dart';
+import 'package:dongpo_test/screens/main/main_01.dart';
+import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -58,6 +60,9 @@ class MyApp extends StatelessWidget {
         highlightColor: Colors.transparent,
       ),
       home: const SplashPage(), // 로그인 페이지 이동
+      routes: {
+        '/home': (context) => const MyAppPage(),
+      },
     );
   }
 }

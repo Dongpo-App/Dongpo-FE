@@ -1,9 +1,12 @@
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/request/add_store_request.dart';
 import 'package:dongpo_test/service/store_service.dart';
+import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
+import 'package:dongpo_test/widgets/error_handling_mixin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
@@ -17,7 +20,8 @@ class AddStorePageDetail extends StatefulWidget {
   State<AddStorePageDetail> createState() => _AddStorePageDetailState();
 }
 
-class _AddStorePageDetailState extends State<AddStorePageDetail> {
+class _AddStorePageDetailState extends State<AddStorePageDetail>
+    with ErrorHandlingMixin {
   StoreApiService storeService = StoreApiService.instance;
 
   // form
@@ -28,6 +32,8 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
   // 입력 필드 관련
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _openTimeController = TextEditingController();
+  final TextEditingController _closeTimeController = TextEditingController();
   // 요일 관련
   final List<bool> _selectedDays = List.generate(7, (index) => false);
   final List<String> _days = ["일", "월", "화", "수", "목", "금", "토"];
@@ -44,7 +50,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
   final List<String> _payments = ["현금", "계좌이체", "카드"];
   // 화장실 관련
   late List<bool> _isToilets; // 선택됐는지 true false
-  int _toiletIndex = 0; // 0 있음, 1 없음
+  int _toiletIndex = 1; // 0 있음, 1 없음
   final List<String> _toilet = ["있음", "없음"]; // 요소
 
   @override
@@ -58,6 +64,8 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
   void dispose() {
     _addressController.dispose();
     _nameController.dispose();
+    _openTimeController.dispose();
+    _closeTimeController.dispose();
     super.dispose();
   }
 
@@ -237,10 +245,9 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
                           child: ToggleButtons(
                             isSelected: _selectedDays,
                             onPressed: (index) {
-                              setState(() {
-                                _selectedDays[index] =
-                                    !_selectedDays[index]; // 선택 상태 토글
-                              });
+                              _selectedDays[index] =
+                                  !_selectedDays[index]; // 선택 상태 토글
+                              _validateForm();
                             },
                             selectedColor: Colors.white,
                             renderBorder: false,
@@ -270,6 +277,16 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
                               style: TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 16),
                             ),
+                            SizedBox(
+                              width: 4,
+                            ),
+                            Text(
+                              '*',
+                              style: TextStyle(
+                                color: Color(0xFFF15A2B),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(
@@ -280,18 +297,24 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
                             // 오픈 시간 입력 필드
                             Expanded(
                               child: TextFormField(
+                                controller: _openTimeController,
                                 readOnly: true,
                                 onTap: () => _showCupertinoTimePicker(context,
                                     isOpenTime: true),
                                 decoration: InputDecoration(
-                                  hintText: _openTime != null
-                                      ? _formatViewTime(_openTime)
-                                      : "시간 선택",
+                                  hintText: "시간 선택",
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   suffixIcon: const Icon(Icons.access_time),
+                                  helperText: "",
                                 ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return '';
+                                  }
+                                  return null;
+                                },
                               ),
                             ),
                             const SizedBox(
@@ -304,23 +327,29 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
                             // 마감 시간 입력 필드
                             Expanded(
                               child: TextFormField(
+                                controller: _closeTimeController,
                                 readOnly: true,
                                 onTap: () => _showCupertinoTimePicker(context,
                                     isOpenTime: false),
                                 decoration: InputDecoration(
-                                  hintText: _closeTime != null
-                                      ? _formatViewTime(_closeTime)
-                                      : "시간 선택",
+                                  hintText: "시간 선택",
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   suffixIcon: const Icon(Icons.access_time),
+                                  helperText: "",
                                 ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return '';
+                                  }
+                                  return null;
+                                },
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 12),
                         // 결제 방식
                         const Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -350,10 +379,9 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
                         ToggleButtons(
                           isSelected: _selectedPaymentMethods,
                           onPressed: (index) {
-                            setState(() {
-                              _selectedPaymentMethods[index] =
-                                  !_selectedPaymentMethods[index]; // 선택 상태 토글
-                            });
+                            _selectedPaymentMethods[index] =
+                                !_selectedPaymentMethods[index]; // 선택 상태 토글
+                            _validateForm();
                           },
                           selectedColor: Colors.white,
                           renderBorder: false,
@@ -459,9 +487,28 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
                             currentLongitude: userLocation.longitude,
                           );
                           logger.d("data ${storeInfo.toJson()}");
-                          await storeService.addStore(storeInfo);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('good')));
+                          final response =
+                              await storeService.addStore(storeInfo);
+                          if (response.statusCode == 200) {
+                            Fluttertoast.showToast(
+                              msg: "성공적으로 점포를 등록했습니다.",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                            );
+                            if (mounted) {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const MyAppPage()),
+                                ModalRoute.withName("/home"),
+                              );
+                            }
+                          } else if (response.statusCode == 400) {
+                            showAlert(context, response.message!);
+                          } else {
+                            showAlert(context, "오류가 발생했습니다.");
+                          }
                         }
                       }
                     : null,
@@ -494,8 +541,12 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
   // 메서드
   // 폼이 원하는 값이 다 채워졌는지 확인하는 함수
   void _validateForm() {
+    bool formValid = _formKey.currentState?.validate() ?? false;
+    bool toggleValid =
+        _selectedDays.contains(true) && _selectedPaymentMethods.contains(true);
+    logger.d("form: $formValid, toggle: $toggleValid");
     setState(() {
-      _isFormValid = _formKey.currentState?.validate() ?? false;
+      _isFormValid = formValid && toggleValid;
     });
   }
 
@@ -531,8 +582,10 @@ class _AddStorePageDetailState extends State<AddStorePageDetail> {
               setState(() {
                 if (isOpenTime) {
                   _openTime = newTime;
+                  _openTimeController.text = _formatViewTime(_openTime);
                 } else {
                   _closeTime = newTime;
+                  _closeTimeController.text = _formatViewTime(_closeTime);
                 }
               });
             },

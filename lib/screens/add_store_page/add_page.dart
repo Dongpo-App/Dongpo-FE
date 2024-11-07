@@ -1,5 +1,6 @@
 import 'dart:convert'; // JSON 데이터를 다루기 위해 사용
 import 'package:dongpo_test/screens/add_store_page/add_detail_page.dart';
+import 'package:dongpo_test/widgets/error_handling_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart'; // Naver Map API를 사용하기 위해 사용
 import 'package:geolocator/geolocator.dart'; // 위치 정보를 얻기 위해 사용
@@ -14,7 +15,7 @@ class AddPage extends StatefulWidget {
   State<AddPage> createState() => _AddPageState();
 }
 
-class _AddPageState extends State<AddPage> {
+class _AddPageState extends State<AddPage> with ErrorHandlingMixin {
   late NaverMapController _mapController;
   late ValueNotifier<String> _addressNotifier;
   late NLatLng _position;
@@ -81,6 +82,7 @@ class _AddPageState extends State<AddPage> {
                         ),
                       ),
                     );
+                    _position = snapshot.data!;
                     startAddPage = true; // 화면 로딩 완료
                   },
                   onCameraChange: (reason, animated) {
@@ -194,16 +196,20 @@ class _AddPageState extends State<AddPage> {
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white),
                               ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AddStorePageDetail(
-                                      address: _addressNotifier.value,
-                                      position: _position,
+                              onPressed: () async {
+                                if (await _checkDistance()) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddStorePageDetail(
+                                        address: _addressNotifier.value,
+                                        position: _position,
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                } else {
+                                  showAlert(context, "점포와 거리가 너무 멉니다.");
+                                }
                               },
                             ),
                           ),
@@ -274,5 +280,15 @@ class _AddPageState extends State<AddPage> {
         ),
       ),
     );
+  }
+
+  // 거리 체크
+  // 500 미터 미만이면 참
+  Future<bool> _checkDistance() async {
+    final userPosition = await getCurrentLocation();
+    final distance = Geolocator.distanceBetween(userPosition.latitude,
+        userPosition.longitude, _position.latitude, _position.longitude);
+    logger.d("distance : $distance");
+    return distance < 500;
   }
 }
