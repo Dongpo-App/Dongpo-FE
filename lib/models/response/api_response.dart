@@ -10,10 +10,11 @@ class ApiResponse<T> {
   });
 
   factory ApiResponse.fromJson(
-      int statusCode, Map<String, dynamic> json, T Function(dynamic) create) {
+      int statusCode, Map<String, dynamic> json, T Function(dynamic) create,
+      {String defaultMessage = "비어있는 메시지"}) {
     return ApiResponse(
         statusCode: statusCode,
-        message: json['message'],
+        message: json['message'] ?? defaultMessage,
         data: json['data'] != null ? create(json['data']) : null);
   }
 }

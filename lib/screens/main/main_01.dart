@@ -1,7 +1,7 @@
 import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/store_detail.dart';
 import 'package:dongpo_test/models/clickedMarkerInfo.dart';
-import 'package:dongpo_test/models/pocha.dart';
+import 'package:dongpo_test/models/store_marker.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/main/main_03/00_marker_title.dart';
@@ -31,7 +31,7 @@ import 'dart:convert';
 StoreSangse? storeData; // storeData를 nullable로 변경
 
 List<NMarker> markers = []; //마커 담는 리스트
-List<MyData> myDataList = []; //가게 기본정보 담는 리스트
+List<StoreMarker> myDataList = []; //가게 기본정보 담는 리스트
 List<UserBookmark> userBookmark = []; //북마크 체크를 위한 클래스
 late MarkerInfo markerInfo;
 
@@ -333,7 +333,7 @@ class _MainPageState extends State<MainPage>
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  '${myDataList[idx].name}',
+                                                  myDataList[idx].name,
                                                   style: const TextStyle(
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 16,
@@ -505,7 +505,7 @@ class _MainPageState extends State<MainPage>
   }
 
   // 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
-  void _addMarkers(List<MyData> dataList) async {
+  void _addMarkers(List<StoreMarker> dataList) async {
     //여러개 마커 담는 리스트
     try {
       var defaultMarkerSize = const Size(24, 24);
@@ -535,7 +535,7 @@ class _MainPageState extends State<MainPage>
   }
 
   // 마커 클릭 이벤트 함수
-  void _onMarkerTapped(NMarker marker, MyData data) {
+  void _onMarkerTapped(NMarker marker, StoreMarker data) {
     logger.d("onMakerTapped start");
     setState(() {
       if (_selectedMarker != null) {
@@ -593,7 +593,7 @@ class _MainPageState extends State<MainPage>
     // 점포 데이터 받기
 
     try {
-      ApiResponse<List<MyData>> response =
+      ApiResponse<List<StoreMarker>> response =
           await storeService.getStoreByCurrentLocation(
         target.latitude,
         target.longitude,

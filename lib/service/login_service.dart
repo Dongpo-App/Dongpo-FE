@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/request/apple_signup_request.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
@@ -385,7 +384,7 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
         try {
           await UserApi.instance.logout();
           logger.d("$platform logout successfully!");
-          break;
+          return true;
         } catch (e) {
           logger.e("$platform logout error: $e");
           return false;
@@ -394,14 +393,14 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
         try {
           await FlutterNaverLogin.logOut();
           logger.d("$platform logout successfully!");
-          break;
+          return true;
         } catch (e) {
           logger.e("$platform logout error: $e");
           return false;
         }
       case "apple":
         logger.d("$platform logout successfully!");
-        break;
+        return true;
       default:
         logger.d("$platform is Unauthorized platform");
         return false;
@@ -413,23 +412,23 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
       case "kakao":
         try {
           await UserApi.instance.unlink();
-          logger.d("$platform logout successfully!");
+          logger.d("$platform unlink successfully!");
           return true;
         } catch (e) {
-          logger.e("$platform logout error: $e");
+          logger.e("$platform unlink error: $e");
           return false;
         }
       case "naver":
         try {
           await FlutterNaverLogin.logOut();
-          logger.d("$platform logout successfully!");
+          logger.d("$platform unlink successfully!");
           return true;
         } catch (e) {
-          logger.e("$platform logout error: $e");
+          logger.e("$platform unlink error: $e");
           return false;
         }
       case "apple":
-        logger.d("$platform logout successfully!");
+        logger.d("$platform unlink successfully!");
         return true;
       default:
         logger.d("$platform is Unauthorized platform");

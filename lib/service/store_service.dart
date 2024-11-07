@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/clickedMarkerInfo.dart';
-import 'package:dongpo_test/models/pocha.dart';
+import 'package:dongpo_test/models/store_marker.dart';
 import 'package:dongpo_test/models/request/add_review_request.dart';
 import 'package:dongpo_test/models/request/add_store_request.dart';
 import 'package:dongpo_test/models/response/api_response.dart';
@@ -94,7 +94,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
     }
   }
 
-  // MyData에 추가로 사용자 위치 정보를 포함한 dto 필요
+  // StoreMarker에 추가로 사용자 위치 정보를 포함한 dto 필요
   @override
   Future<ApiResponse> addStore(AddStoreRequest storeInfo) async {
     await loadToken();
@@ -225,7 +225,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   }
 
   @override
-  Future<ApiResponse<List<MyData>>> getStoreByCurrentLocation(
+  Future<ApiResponse<List<StoreMarker>>> getStoreByCurrentLocation(
       double lat, double lng) async {
     await loadToken(); // storage로부터 토큰 가져오기
 
@@ -241,11 +241,14 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
         // 요청 성공
         //List dataList = decodedResponse['data'];
         logger.d("code : ${response.statusCode} body: $decodedResponse");
-        return ApiResponse<List<MyData>>.fromJson(
+        return ApiResponse<List<StoreMarker>>.fromJson(
           response.statusCode,
           decodedResponse,
-          (data) =>
-              (data as List).map((item) => MyData.fromJson(item)).toList(),
+          (data) {
+            return (data as List<dynamic>)
+                .map((item) => StoreMarker.fromJson(item))
+                .toList();
+          },
         );
       } else if (response.statusCode == 401) {
         // 토큰 만료
@@ -268,7 +271,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
                 retryResponse.statusCode,
                 decodedResponse,
                 (data) => (data as List)
-                    .map((item) => MyData.fromJson(item))
+                    .map((item) => StoreMarker.fromJson(item))
                     .toList());
           } else {
             // 그럼에도 실패시
@@ -422,7 +425,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   }
 
   @override
-  Future<ApiResponse> updateStore(int id, MyData update) {
+  Future<ApiResponse> updateStore(int id, StoreMarker update) {
     // TODO: implement updateStore
     throw UnimplementedError();
   }

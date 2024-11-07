@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
@@ -773,7 +775,7 @@ class _ShowReviewState extends State<ShowReview> {
       "reson": sendData,
     };
     logger.d("_send : sendData");
-    var data;
+    Map<String, String> data;
 
     if (value == 5) {
       data = includeTextData;
@@ -795,12 +797,12 @@ class _ShowReviewState extends State<ShowReview> {
       final responsebody = utf8.decode(response.bodyBytes);
 
       if (response.statusCode == 200) {
-        logger.d('신고 완료!! 신고 내용 : ${sendData} & ETC : ${etcText}');
+        logger.d('신고 완료!! 신고 내용 : $sendData & ETC : $etcText');
         logger.d('신고한 리뷰 ID = :${reviewList[idx].id}');
         showSuccessDialog();
       } else {
         logger.e(
-            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responsebody}');
+            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : $responsebody');
       }
     } catch (e) {
       // TODO
@@ -1176,7 +1178,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
       "reson": sendData,
     };
     logger.d("_send : sendData");
-    var data;
+    Map<String, String> data;
 
     if (value == 5) {
       data = includeTextData;
@@ -1198,12 +1200,12 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
       final responsebody = utf8.decode(response.bodyBytes);
 
       if (response.statusCode == 200) {
-        logger.d('신고 완료!! 신고 내용 : ${sendData} & ETC : ${etcText}');
+        logger.d('신고 완료!! 신고 내용 : $sendData & ETC : $etcText');
         logger.d('신고한 리뷰 ID = :${reviewList[idx].id}');
         showSuccessDialog();
       } else {
         logger.e(
-            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responsebody}');
+            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : $responsebody');
       }
     } catch (e) {
       // TODO

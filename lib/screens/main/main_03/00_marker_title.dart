@@ -13,13 +13,13 @@ class MainTitle2 extends StatefulWidget {
 }
 
 class _MainTitle2State extends State<MainTitle2> {
-  late final SetOpenPossbility;
+  bool setOpenPossbility = false;
   int betweenDistance = 0;
 
   @override
   void initState() {
     super.initState();
-    SetOpenPossbility = getOpenPossibility();
+    setOpenPossbility = getOpenPossibility();
     _checkDistance();
   }
 
@@ -44,12 +44,12 @@ class _MainTitle2State extends State<MainTitle2> {
         Text("$betweenDistance M"),
         Row(
           children: [
-            Icon(
+            const Icon(
               Icons.location_on_outlined,
               color: Color(0xffF15A2B),
             ),
             Text(
-              SetOpenPossbility ? "영업 가능성이 높아요!" : "영업 가능성이 있어요!",
+              setOpenPossbility ? "영업 가능성이 높아요!" : "영업 가능성이 있어요!",
             )
           ],
         )

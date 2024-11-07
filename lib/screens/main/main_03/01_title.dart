@@ -48,7 +48,7 @@ class _MainTitleState extends State<MainTitle> {
                         color: Color(0xffF15A2B))),
                 Text(
                   "$betweenDistance M",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
                   ),
@@ -59,17 +59,17 @@ class _MainTitleState extends State<MainTitle> {
         ),
         Row(
           children: [
-            Icon(
+            const Icon(
               Icons.lightbulb_outline_rounded,
               size: 16,
               color: Color(0xffF15A2B),
             ),
-            SizedBox(
+            const SizedBox(
               width: 8,
             ),
             Text(
               SetOpenPossbility ? "영업 가능성이 높아요!" : "영업 가능성이 있어요!",
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF767676),
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
