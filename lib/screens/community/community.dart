@@ -29,7 +29,7 @@ class CommunityPageState extends State<CommunityPage> {
   // 로딩
   bool isLoading = false;
 
-  late final List<CommunityRank> _storeTop10GetAPI = [
+  late List<CommunityRank> _storeTop10GetAPI = [
     CommunityRank(
       nickname: "",
       title: "",
@@ -37,7 +37,7 @@ class CommunityPageState extends State<CommunityPage> {
       count: 0,
     ),
   ];
-  late final List<CommunityRank> _visitTop10GetAPI = [
+  late List<CommunityRank> _visitTop10GetAPI = [
     CommunityRank(
       nickname: "",
       title: "",
@@ -45,7 +45,7 @@ class CommunityPageState extends State<CommunityPage> {
       count: 0,
     ),
   ];
-  late final List<CommunityRank> _reviewTop10GetAPI = [
+  late List<CommunityRank> _reviewTop10GetAPI = [
     CommunityRank(
       nickname: "",
       title: "",
@@ -62,9 +62,9 @@ class CommunityPageState extends State<CommunityPage> {
   }
 
   void getTop10() async {
-    //_storeTop10GetAPI = await viewModel.storeTop10GetAPI(context);
-    //_visitTop10GetAPI = await viewModel.visitTop10GetAPI(context);
-    //_reviewTop10GetAPI = await viewModel.reviewTop10GetAPI(context);
+    _storeTop10GetAPI = await viewModel.storeTop10GetAPI(context);
+    _visitTop10GetAPI = await viewModel.visitTop10GetAPI(context);
+    _reviewTop10GetAPI = await viewModel.reviewTop10GetAPI(context);
     setState(() {});
   }
 
@@ -138,19 +138,20 @@ class CommunityPageState extends State<CommunityPage> {
                 ),
               ),
               const SizedBox(width: 24.0),
-              Container(
-                width: double.infinity,
-                height: 64.0,
-                margin: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.0),
-                  image: const DecorationImage(
-                    image: AssetImage('assets/images/banner.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
+              // 배너 이미지
+              // Container(
+              //   width: double.infinity,
+              //   height: 64.0,
+              //   margin: const EdgeInsets.all(24),
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(12.0),
+              //     image: const DecorationImage(
+              //       image: AssetImage('assets/images/banner.png'),
+              //       fit: BoxFit.cover,
+              //     ),
+              //   ),
+              // ),
               const SizedBox(height: 40.0),
               Container(
                 color: const Color(0xFFFFFFFF),
@@ -166,10 +167,10 @@ class CommunityPageState extends State<CommunityPage> {
                               ? const CircularProgressIndicator()
                               : Text(
                                   recommendStoreCategory == "age"
-                                      ? "$recommendMessage대 추천 가게"
+                                      ? "$recommendMessage대에게 추천해요"
                                       : recommendMessage == "GEN_MALE"
-                                          ? "남성 추천 가게"
-                                          : "여성 추천 가게",
+                                          ? "남성분께 추천해요"
+                                          : "여성분께 추천해요",
                                   style: const TextStyle(
                                       fontSize: 32,
                                       fontWeight: FontWeight.w600),

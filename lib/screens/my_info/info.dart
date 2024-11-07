@@ -207,29 +207,31 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
                           return const AddStorePage();
                         }));
                       },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            _userProfile.registerCount.toString(),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF767676),
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _userProfile.registerCount.toString(),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF767676),
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          const Text(
-                            '등록한 가게',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF767676),
+                            const SizedBox(
+                              height: 8,
                             ),
-                          ),
-                        ],
+                            const Text(
+                              '등록한 가게',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF767676),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     // 칭호
@@ -240,29 +242,31 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
                           return const InfoTitlePage();
                         }));
                       },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            _userProfile.titleCount.toString(),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF767676),
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _userProfile.titleCount.toString(),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF767676),
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          const Text(
-                            '칭호',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF767676),
+                            const SizedBox(
+                              height: 8,
                             ),
-                          ),
-                        ],
+                            const Text(
+                              '칭호',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF767676),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     // Spacer(),

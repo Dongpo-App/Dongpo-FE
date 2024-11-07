@@ -508,7 +508,7 @@ class _MainPageState extends State<MainPage>
   void _addMarkers(List<StoreMarker> dataList) async {
     //여러개 마커 담는 리스트
     try {
-      var defaultMarkerSize = const Size(24, 24);
+      var defaultMarkerSize = const Size(32, 32);
 
       for (var data in dataList) {
         NMarker marker = NMarker(
@@ -546,6 +546,7 @@ class _MainPageState extends State<MainPage>
     });
 
     try {
+      marker.setZIndex(500);
       marker.setIcon(const NOverlayImage.fromAssetImage(
           'assets/icons/clicked_marker.png'));
 

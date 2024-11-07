@@ -111,137 +111,135 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
               ),
             )
-          : Padding(
+          : ListView.builder(
               padding: const EdgeInsets.only(top: 24),
-              child: ListView.builder(
-                itemCount: _userReview.length,
-                itemBuilder: (context, index) {
-                  var review = _userReview[index];
-                  String reviewDate = DateFormat('yyyy-MM-dd').format(_userReview[index].registerDate);
-                  return Card(
-                    elevation: 0,
-                    color: const Color(0xFFFFFFFF),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
+              itemCount: _userReview.length,
+              itemBuilder: (context, index) {
+                var review = _userReview[index];
+                String reviewDate = DateFormat('yyyy-MM-dd').format(_userReview[index].registerDate);
+                return Card(
+                  elevation: 0,
+                  color: const Color(0xFFFFFFFF),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 12, horizontal: 24
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 24, right: 24, left: 24, bottom: 32
                     ),
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 24
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 24, right: 24, left: 24, bottom: 32
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    // 버튼이 눌리면 해당 점포 상세 페이지로 이동
-                                    Navigator.push(context,
-                                      MaterialPageRoute(builder: (BuildContext context) {
-                                        return StoreInfo(idx: review.storeId);
-                                    }));
-                                  },
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        review.storeName,
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 12,
-                                      ),
-                                      const Icon(
-                                        Icons.keyboard_arrow_right,
-                                        size: 24,
-                                        color: Colors.black,
-                                      )
-                                    ]
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 12,
-                                ),
-                                Row(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  // 버튼이 눌리면 해당 점포 상세 페이지로 이동
+                                  Navigator.push(context,
+                                    MaterialPageRoute(builder: (BuildContext context) {
+                                      return StoreInfo(idx: review.storeId);
+                                  }));
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    RatingBarIndicator(
-                                      rating: review.reviewStar.toDouble(),
-                                      itemCount: 5,
-                                      itemSize: 16.0,
-                                      unratedColor: const Color(0xFF767676),
-                                      itemBuilder: (context, index) => const Icon(
-                                        Icons.star,
-                                        color: Color(0xFFF15A2B),
+                                    Text(
+                                      review.storeName,
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     const SizedBox(
                                       width: 12,
                                     ),
-                                    Text(
-                                      reviewDate,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xFF767676),
-                                      ),
+                                    const Icon(
+                                      Icons.keyboard_arrow_right,
+                                      size: 24,
+                                      color: Colors.black,
+                                    )
+                                  ]
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              Row(
+                                children: [
+                                  RatingBarIndicator(
+                                    rating: review.reviewStar.toDouble(),
+                                    itemCount: 5,
+                                    itemSize: 16.0,
+                                    unratedColor: const Color(0xFF767676),
+                                    itemBuilder: (context, index) => const Icon(
+                                      Icons.star,
+                                      color: Color(0xFFF15A2B),
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 24,
-                                ),
-                                Text(
-                                  review.text,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
                                   ),
+                                  const SizedBox(
+                                    width: 12,
+                                  ),
+                                  Text(
+                                    reviewDate,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xFF767676),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 24,
+                              ),
+                              Text(
+                                review.text,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
                                 ),
-                                review.reviewPics.isEmpty // 리뷰 사진이 있으면 이미지 띄움
-                                ? const SizedBox(height: 24,)
-                                : reviewImageList(review.reviewPics),
-                                Row(
-                                  children: [
-                                    const Spacer(),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        // 리뷰 삭제
-                                        deleteUserReview(review.id);
-                                      },
-                                      child: Container(
-                                        width: 44,
-                                        height: 44,
-                                        alignment: Alignment.centerRight,
-                                        child: const Text(
-                                          '삭제',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 14,
-                                            color: Color(0xFF767676),
-                                            decoration: TextDecoration.underline, // 밑줄 추가
-                                          ),
+                              ),
+                              review.reviewPics.isEmpty // 리뷰 사진이 있으면 이미지 띄움
+                              ? const SizedBox(height: 24,)
+                              : reviewImageList(review.reviewPics),
+                              Row(
+                                children: [
+                                  const Spacer(),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      // 리뷰 삭제
+                                      deleteUserReview(review.id);
+                                    },
+                                    child: Container(
+                                      width: 44,
+                                      height: 44,
+                                      alignment: Alignment.centerRight,
+                                      child: const Text(
+                                        '삭제',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 14,
+                                          color: Color(0xFF767676),
+                                          decoration: TextDecoration.underline, // 밑줄 추가
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
     );
   }

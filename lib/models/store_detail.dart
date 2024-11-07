@@ -86,7 +86,7 @@ class Review {
   final int? id;
   final int? storeId;
   final int? memberId;
-  final int? reviewStar;
+  final double? reviewStar;
   final String? memberNickname;
   final String? memberProfilePic;
   final String? text;
@@ -114,7 +114,7 @@ class Review {
       id: json['id'] as int?,
       storeId: json['storeId'] as int?,
       memberId: json['memberId'] as int?,
-      reviewStar: json['reviewStar'] as int?,
+      reviewStar: json['reviewStar'] as double?,
       text: json['text'] as String?,
       memberProfilePic: json['memberProfilePic'],
       reviewPics: json['reviewPics'] != null

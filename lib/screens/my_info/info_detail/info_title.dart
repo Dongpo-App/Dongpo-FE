@@ -54,9 +54,8 @@ class InfoTitlePageState extends State<InfoTitlePage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
               ),
             )
-          : Padding(
+          : ListView.builder(
               padding: const EdgeInsets.only(top: 24),
-              child: ListView.builder(
               itemCount: _userTitle.length,
               itemBuilder: (context, index) {
                 var titles = _userTitle[index];
@@ -103,7 +102,6 @@ class InfoTitlePageState extends State<InfoTitlePage> {
                               ),
                             ],
                           ),
-
                         const SizedBox(// 테스트용
                           width: 30,
                         ),
@@ -113,7 +111,6 @@ class InfoTitlePageState extends State<InfoTitlePage> {
               );
             },
         ),
-      ),
     );
   }
 }
