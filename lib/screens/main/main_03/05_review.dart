@@ -291,7 +291,7 @@ class _ShowReviewState extends State<ShowReview> {
                     logger.d('리뷰 리스트에 들어있는 값 체크 : $reviewList');
 
                     return _showReview(
-                        context, index); // 각 리뷰 위젯 생성
+                        context, review ?? 1, index); // 각 리뷰 위젯 생성
                   },
                 )
               : Container(
@@ -559,7 +559,7 @@ class _ShowReviewState extends State<ShowReview> {
   }
 
 // 개별 리뷰를 표시하는 함수
-  Widget _showReview(BuildContext context, int index) {
+  Widget _showReview(BuildContext context, double rating, int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
@@ -595,18 +595,8 @@ class _ShowReviewState extends State<ShowReview> {
                         ),
                       ],
                     ),
-                    RatingBarIndicator(
-                      rating: reviewList[index].reviewStar!,
-                      itemCount: 5,
-                      itemSize: 16.0,
-                      unratedColor: const Color(0xFF767676),
-                      itemBuilder: (context, index) => const Icon(
-                        Icons.star,
-                        color: Color(0xFFF15A2B),
-                      ),
-                    ),
-                    // RatingWidget(
-                    //     rating: reviewList[index].reviewStar ?? 0), // 별점 위젯 추가
+                    RatingWidget(
+                        rating: reviewList[index].reviewStar ?? 0), // 별점 위젯 추가
                   ],
                 ),
               ],
@@ -885,36 +875,36 @@ class _ShowReviewState extends State<ShowReview> {
 }
 
 // 별점을 표시하는 위젯
-// class RatingWidget extends StatelessWidget {
-//   final int rating; // 평점 값
-//   const RatingWidget({super.key, required this.rating});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Row(
-//       children: [
-//         ..._buildStarIcons(), // 별 아이콘을 생성하여 추가
-//       ],
-//     );
-//   }
-//
-//   // 별 아이콘 리스트를 생성하는 함수
-//   List<Widget> _buildStarIcons() {
-//     List<Widget> stars = [];
-//     for (int i = 1; i <= 5; i++) {
-//       if (i <= rating) {
-//         stars.add(const Icon(Icons.star, color: Colors.orange)); //start full
-//       } else if (i - rating <= 0.5) {
-//         stars
-//             .add(const Icon(Icons.star_half, color: Colors.orange)); //star half
-//       } else {
-//         stars.add(
-//             const Icon(Icons.star_border, color: Colors.orange)); //start blank
-//       }
-//     }
-//     return stars;
-//   }
-// }
+class RatingWidget extends StatelessWidget {
+  final double rating; // 평점 값
+  const RatingWidget({super.key, required this.rating});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        ..._buildStarIcons(), // 별 아이콘을 생성하여 추가
+      ],
+    );
+  }
+
+  // 별 아이콘 리스트를 생성하는 함수
+  List<Widget> _buildStarIcons() {
+    List<Widget> stars = [];
+    for (int i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        stars.add(const Icon(Icons.star, color: Colors.orange)); //start full
+      } else if (i - rating <= 0.5) {
+        stars
+            .add(const Icon(Icons.star_half, color: Colors.orange)); //star half
+      } else {
+        stars.add(
+            const Icon(Icons.star_border, color: Colors.orange)); //start blank
+      }
+    }
+    return stars;
+  }
+}
 
 Widget _radioBtn(String text, int index, StateSetter setStater) {
   return ElevatedButton(
@@ -964,13 +954,13 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
             final review = reviewList[index].reviewStar; // 항상 비어있지 않으므로 직접 접근
             logger.d('리뷰 리스트에 들어있는 값 체크 : $reviewList');
 
-            return _showReview(context, index); // 각 리뷰 위젯 생성
+            return _showReview(context, review ?? 1, index); // 각 리뷰 위젯 생성
           },
         ));
   }
 
 // 개별 리뷰를 표시하는 함수
-  Widget _showReview(BuildContext context, int index) {
+  Widget _showReview(BuildContext context, double rating, int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(
@@ -1006,18 +996,8 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
                         ),
                       ],
                     ),
-                    RatingBarIndicator(
-                      rating: reviewList[index].reviewStar!,
-                      itemCount: 5,
-                      itemSize: 16.0,
-                      unratedColor: const Color(0xFF767676),
-                      itemBuilder: (context, index) => const Icon(
-                        Icons.star,
-                        color: Color(0xFFF15A2B),
-                      ),
-                    ),
-                    // RatingWidget(
-                    //     rating: reviewList[index].reviewStar ?? 0), // 별점 위젯 추가
+                    RatingWidget(
+                        rating: reviewList[index].reviewStar ?? 0), // 별점 위젯 추가
                   ],
                 ),
               ],
