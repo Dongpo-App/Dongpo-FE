@@ -36,67 +36,70 @@ class _UserActionState extends State<UserAction> {
   @override
   Widget build(BuildContext context) {
     logger.d("userActionCount : $userActionCount");
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.chat,
-            color: Color(0xFF767676),
-            size: 24,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.chat,
+              color: Color(0xFF767676),
+              size: 24,
+            ),
           ),
-        ),
-        Text(
-          "${storeData?.reviews.length}",
-          style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Color(0xFF767676)),
-        ),
-        const SizedBox(
-          width: 16,
-        ),
-        const Text("|",
+          Text(
+            "${storeData?.reviews.length}",
             style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF767676))),
-        //북마크 추가를 기존에 했었다면
-        _selected
-            ? IconButton(
-                onPressed: () {
-                  setState(() {
-                    _selected = false;
-                    userActionCount = (userActionCount ?? 0) - 1;
-                  });
-                  removeBookMark();
-                },
-                icon: const Icon(
-                  Icons.bookmark_rounded,
-                  size: 24,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF767676)),
+          ),
+          const SizedBox(
+            width: 16,
+          ),
+          const Text("|",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF767676))),
+          //북마크 추가를 기존에 했었다면
+          _selected
+              ? IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _selected = false;
+                      userActionCount = (userActionCount ?? 0) - 1;
+                    });
+                    removeBookMark();
+                  },
+                  icon: const Icon(
+                    Icons.bookmark_rounded,
+                    size: 24,
+                  ),
+                  style: ButtonStyle(
+                      iconColor: WidgetStateColor.resolveWith(
+                          (states) => Color(0xffF15A2B))),
+                )
+              : IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _selected = true;
+                      userActionCount = (userActionCount ?? 0) + 1;
+                    });
+                    addBookMark();
+                  },
+                  icon: const Icon(
+                    Icons.bookmark_rounded,
+                    size: 24,
+                    color: Color(0xFF767676),
+                  ),
                 ),
-                style: ButtonStyle(
-                    iconColor: WidgetStateColor.resolveWith(
-                        (states) => Color(0xffF15A2B))),
-              )
-            : IconButton(
-                onPressed: () {
-                  setState(() {
-                    _selected = true;
-                    userActionCount = (userActionCount ?? 0) + 1;
-                  });
-                  addBookMark();
-                },
-                icon: const Icon(
-                  Icons.bookmark_rounded,
-                  size: 24,
-                  color: Color(0xFF767676),
-                ),
-              ),
-        Text("$userActionCount"),
-      ],
+          Text("$userActionCount"),
+        ],
+      ),
     );
   }
 

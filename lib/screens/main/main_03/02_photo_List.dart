@@ -21,6 +21,7 @@ class _MainPhotoState extends State<MainPhoto> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 24),
       height: 120,
       color: Colors.white,
       child: imageList.isEmpty
@@ -35,6 +36,7 @@ class _MainPhotoState extends State<MainPhoto> {
           )
         ) // 이미지가 없을 때 로딩 표시
         : ListView.builder(
+            padding: EdgeInsets.symmetric(horizontal: 24),
             scrollDirection: Axis.horizontal,
             itemCount: imageList.length,
             itemBuilder: (BuildContext context, int index) {
