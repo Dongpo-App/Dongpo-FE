@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import '../../login/login_view_model.dart';
 
@@ -73,6 +74,14 @@ class BookmarkViewModel{
       }
     } catch (e) {
       logger.d("error : $e / bookmarkId : ${storeId}");
+      await Future.delayed(const Duration(milliseconds: 1200));
+      Fluttertoast.showToast(
+        msg: "북마크 삭제에 실패하였습니다.",
+        timeInSecForIosWeb: 2,
+      );
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
       throw UserBookmarkException("Error occurred: $e");
     }
   }

@@ -6,6 +6,7 @@ import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/main/main_03/00_marker_title.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
+import 'package:dongpo_test/screens/my_info/info_detail/add_store.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/store_service.dart';
 import 'package:flutter/material.dart';
@@ -261,22 +262,25 @@ class _MainPageState extends State<MainPage>
                   child: SlideTransition(
                     position: _offsetAnimation, // 슬라이더 애니메이션 적용
                     child: Container(
-                      padding: const EdgeInsets.only(top: 24, left: 24),
+                      padding: const EdgeInsets.only(top: 24),
                       height: 200, // 튀어나오는 부분을 포함한 전체 높이
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12)),
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            bsAddress,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                            child: Text(
+                              bsAddress,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                           Container(
@@ -290,6 +294,7 @@ class _MainPageState extends State<MainPage>
                               itemBuilder: (BuildContext ctx, int idx) {
                                 return Row(
                                   children: [
+                                    SizedBox(width: 24,),
                                     GestureDetector(
                                       onTap: () {
                                         Navigator.push(
@@ -415,9 +420,10 @@ class _MainPageState extends State<MainPage>
                           Text(
                             "해당 위치로 재검색",
                             style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.white),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.white
+                            ),
                           ),
                           SizedBox(width: 8.0),
                           Icon(Icons.refresh, color: Colors.white, size: 16.0),
@@ -428,28 +434,29 @@ class _MainPageState extends State<MainPage>
                 ),
                 // 왼쪽 하단 내 위치 재검색 버튼
                 AnimatedBuilder(
-                    animation: _locationBtn,
-                    builder: (context, child) {
-                      return Positioned(
-                        bottom: _locationBtn.value,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              elevation: 8,
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(4),
-                              foregroundColor: const Color(0xFF003ACE),
-                              backgroundColor: WidgetStateColor.resolveWith(
-                                  (states) => Colors.white)),
-                          onPressed: () async {
-                            NLatLng target = await _getCurrentNLatLng();
-                            _userMarker.setPosition(target);
-                            await _moveCamera(target);
-                            await _searchStoreCurrentLocation(target);
-                          },
-                          child: const Icon(Icons.my_location),
+                  animation: _locationBtn,
+                  builder: (context, child) {
+                    return Positioned(
+                      bottom: _locationBtn.value,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          elevation: 8,
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(4),
+                          foregroundColor: const Color(0xFF003ACE),
+                          backgroundColor: WidgetStateColor.resolveWith((states) => Colors.white)
                         ),
-                      );
-                    }),
+                        onPressed: () async {
+                          NLatLng target = await _getCurrentNLatLng();
+                          _userMarker.setPosition(target);
+                          await _moveCamera(target);
+                          await _searchStoreCurrentLocation(target);
+                        },
+                        child: const Icon(Icons.my_location),
+                      ),
+                    );
+                  }
+                ),
 
                 // 슬라이더와 함께 올라오는 버튼
                 AnimatedBuilder(
@@ -736,8 +743,8 @@ class _MainPageState extends State<MainPage>
 
   //가게 기본정보 바텀시트
   void _showBottomSheet(BuildContext context, String markerId) async {
+    double screenHeight = MediaQuery.of(context).size.height;
     bool isNavigating = false;
-
     int index = int.parse(markerId);
     try {
       ApiResponse<MarkerInfo> response =
@@ -755,25 +762,42 @@ class _MainPageState extends State<MainPage>
         builder: (BuildContext context) {
           return DraggableScrollableSheet(
             expand: false,
-            initialChildSize: 0.35,
-            minChildSize: 0.35,
+            initialChildSize: 0.4,
+            minChildSize: 0.2,
+            maxChildSize: 0.7, // 드래그할 최대 크기 설정
             shouldCloseOnMinExtent: false,
             snap: true,
+            snapSizes: [0.2, 0.7],
             snapAnimationDuration: const Duration(milliseconds: 300),
             builder: (context, scrollController) {
               return NotificationListener<ScrollNotification>(
                 onNotification: (scrollNotification) {
-                  logger.i(
-                      "scrollNotification : ${scrollNotification.metrics.pixels}");
-                  if (scrollNotification.metrics.pixels >= 0 && !isNavigating) {
-                    isNavigating = true; // 플래그 설정
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return StoreInfo(idx: index); // 이동할 페이지
-                    })).then((_) {
-                      isNavigating = false; // 돌아올 때 플래그 해제
-                    });
-                    return true;
+                  if (!isNavigating) {
+                    // 상단으로 드래그
+                    if (scrollNotification.metrics.extentBefore >= screenHeight * 0.6) {
+                      isNavigating = true;
+                      setState(() {
+                        _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage('assets/icons/default_marker.png'));
+                        _selectedMarker = null;
+                      });
+                      if (mounted) {
+                        // 페이지 전환
+                        Navigator.popAndPushNamed(context, '/addStorePage').then((_) {
+                          isNavigating = false; // 페이지 이동 후 플래그 해제
+                        });
+                      }
+                      return true;
+                    }
+                    // 하단으로 드래그
+                    if (scrollNotification.metrics.extentInside <= screenHeight * 0.3) { // minScrollExtent * 1.3 으로 최소 영역 하한 조정
+                      setState(() {
+                        _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage('assets/icons/default_marker.png'));
+                        _selectedMarker = null;
+                      });
+                      Navigator.pop(context); // 현재 bottom sheet 닫기
+                      logger.i("페이지 pop 성공");
+                      return true;
+                    }
                   }
                   return false;
                 },

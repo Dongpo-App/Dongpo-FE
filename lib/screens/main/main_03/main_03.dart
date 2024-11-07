@@ -61,7 +61,7 @@ class _StoreInfoState extends State<StoreInfo> {
       logger.e('가게 정보 불러오는데 뭔가 잘못됌 에러 사유: $e'); // 에러 처리
       await Future.delayed(const Duration(milliseconds: 1200));
       Fluttertoast.showToast(
-        msg: "점포 상세정보를 가져오는데 실패하였습니다.",
+        msg: "점포 상세 정보를 가져오는 데 실패하였습니다.",
         timeInSecForIosWeb: 2,
       );
       if (mounted) {

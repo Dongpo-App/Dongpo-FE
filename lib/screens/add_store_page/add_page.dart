@@ -45,13 +45,21 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        automaticallyImplyLeading: true, // 뒤로가기 버튼 없애기
+        elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
         title: const Text(
           "가게 등록",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context); //뒤로가기
+          },
+          icon: const Icon(
+            Icons.chevron_left,
+            size: 24,
+            color: Color(0xFF767676),
           ),
         ),
       ),
@@ -106,11 +114,10 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
                     ),
                   ),
                 ),
-                const Center(
-                  child: Icon(
-                    Icons.location_on, // 중앙에 위치 핀 아이콘 표시
-                    size: 48,
-                    color: Color(0xFFF15A2B),
+                Center(
+                  child: Image.asset(
+                    'assets/icons/clicked_marker.png',
+                    width: 32,
                   ),
                 ),
                 SizedBox(

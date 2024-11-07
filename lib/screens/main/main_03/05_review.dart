@@ -68,195 +68,200 @@ class _ShowReviewState extends State<ShowReview> {
                     builder: (context) {
                       return StatefulBuilder(
                           builder: (BuildContext context, StateSetter setState) {
-                            return SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.8,
-                              child: SingleChildScrollView(
-                                child: Container(
-                                  padding: const EdgeInsets.all(24),
-                                  child: Column(
-                                    children: [
-                                      //상단 1
-                                      Row(
-                                        children: [
-                                          const Text(
-                                            "방문 후기를 알려주세요",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 24),
-                                          ),
-                                          const Spacer(),
-                                          IconButton(
-                                            onPressed: () {
-                                              _showConfirmationDialog(context);
-                                            },
-                                            icon: const Icon(CupertinoIcons.xmark,
-                                                color: Color(0xFF767676), size: 24),
-                                          )
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 24,
-                                      ),
-                                      //별점 RatingBar //상단 2
-                                      Row(
-                                        children: [
-                                          RatingBar.builder(
-                                            minRating: 0.5,
-                                            direction: Axis.horizontal,
-                                            allowHalfRating: true,
-                                            glowRadius: 1,
-                                            glow: false,
-                                            itemPadding: EdgeInsets.zero,
-                                            itemSize: 56,
-                                            itemBuilder: (context, _) => const Icon(
-                                              Icons.star,
-                                              color: Color(0xffF15A2B),
+                            return GestureDetector(
+                              onTap: () {
+                                FocusScope.of(context).unfocus();
+                              },
+                              child: SizedBox(
+                                height: MediaQuery.of(context).size.height * 0.8,
+                                child: SingleChildScrollView(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(24),
+                                    child: Column(
+                                      children: [
+                                        //상단 1
+                                        Row(
+                                          children: [
+                                            const Text(
+                                              "방문 후기를 알려주세요",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 24),
                                             ),
-                                            onRatingUpdate: (rating) {
-                                              setState(() {
-                                                _rating = rating.floor();
-                                                logger.d(rating);
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 24,
-                                      ),
-                                      //사진 첨부 텍스트 //상단 3
-                                      const Row(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            "사진 첨부",
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                          SizedBox(
-                                            width: 8,
-                                          ),
-                                          Text(
-                                            " 최대 3개까지 선택 가능해요",
-                                            style: TextStyle(
-                                              color: Color(0xFF767676),
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
+                                            const Spacer(),
+                                            IconButton(
+                                              onPressed: () {
+                                                _showConfirmationDialog(context);
+                                              },
+                                              icon: const Icon(CupertinoIcons.xmark,
+                                                  color: Color(0xFF767676), size: 24),
+                                            )
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 24,
+                                        ),
+                                        //별점 RatingBar //상단 2
+                                        Row(
+                                          children: [
+                                            RatingBar.builder(
+                                              minRating: 0.5,
+                                              direction: Axis.horizontal,
+                                              allowHalfRating: true,
+                                              glowRadius: 1,
+                                              glow: false,
+                                              itemPadding: EdgeInsets.zero,
+                                              itemSize: 56,
+                                              itemBuilder: (context, _) => const Icon(
+                                                Icons.star,
+                                                color: Color(0xffF15A2B),
+                                              ),
+                                              onRatingUpdate: (rating) {
+                                                setState(() {
+                                                  _rating = rating.floor();
+                                                  logger.d(rating);
+                                                });
+                                              },
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      // 사진 첨부 버튼과 이미지 미리보기 //상단 4
-                                      Row(
-                                        children: List.generate(
-                                          3,
-                                              (index) => Container(
-                                            margin: const EdgeInsets.all(5),
-                                            width: 80,
-                                            height: 80,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(
-                                                  color: index < _pickedImgs.length
-                                                      ? Colors.transparent
-                                                      : Colors.white70,
-                                                  width: 1),
-                                              image: index < _pickedImgs.length
-                                                  ? DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: FileImage(
-                                                  File(_pickedImgs[index].path),
-                                                ),
-                                              )
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 24,
+                                        ),
+                                        //사진 첨부 텍스트 //상단 3
+                                        const Row(
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              "사진 첨부",
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                            SizedBox(
+                                              width: 8,
+                                            ),
+                                            Text(
+                                              " 최대 3개까지 선택 가능해요",
+                                              style: TextStyle(
+                                                color: Color(0xFF767676),
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+                                        // 사진 첨부 버튼과 이미지 미리보기 //상단 4
+                                        Row(
+                                          children: List.generate(
+                                            3,
+                                                (index) => Container(
+                                              margin: const EdgeInsets.all(5),
+                                              width: 80,
+                                              height: 80,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(
+                                                    color: index < _pickedImgs.length
+                                                        ? Colors.transparent
+                                                        : Colors.white70,
+                                                    width: 1),
+                                                image: index < _pickedImgs.length
+                                                    ? DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: FileImage(
+                                                    File(_pickedImgs[index].path),
+                                                  ),
+                                                )
+                                                    : null,
+                                              ),
+                                              child: index == _pickedImgs.length
+                                                  ? _addPhotoButton(setState)
                                                   : null,
                                             ),
-                                            child: index == _pickedImgs.length
-                                                ? _addPhotoButton(setState)
-                                                : null,
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                      //텍스트 필드 (200글자 이내로 작성해주세요!) //상단 5
-                                      SizedBox(
-                                        height: 200,
-                                        child: TextField(
-                                          controller: _reviewController,
-                                          maxLength: 200,
-                                          maxLines: 4,
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(12)),
-                                              borderSide: BorderSide(
-                                                width: 1,
+                                        const SizedBox(
+                                          height: 16,
+                                        ),
+                                        //텍스트 필드 (200글자 이내로 작성해주세요!) //상단 5
+                                        SizedBox(
+                                          height: 200,
+                                          child: TextField(
+                                            controller: _reviewController,
+                                            maxLength: 200,
+                                            maxLines: 4,
+                                            decoration: const InputDecoration(
+                                              border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(12)),
+                                                borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Color(0xFF767676),
+                                                ),
+                                              ),
+                                              hintText: '200 글자 이내로 적어주세요!',
+                                              hintStyle: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
                                                 color: Color(0xFF767676),
                                               ),
                                             ),
-                                            hintText: '200 글자 이내로 적어주세요!',
-                                            hintStyle: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                              color: Color(0xFF767676),
+                                          ),
+                                        ),
+
+                                        //바닥에 리뷰 등록 버튼 (form전송)
+                                        SizedBox(
+                                          height: 44,
+                                          child: ElevatedButton(
+                                            onPressed: () async {
+                                              try {
+                                                await storeService.addReview(
+                                                  id: storeId,
+                                                  reviewText: _reviewController.text,
+                                                  images: _pickedImgs,
+                                                  rating: _rating,
+                                                );
+                                              } on TokenExpiredException catch (e) {
+                                                if (mounted) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(const SnackBar(
+                                                      content: Text(
+                                                          "세션이 만료되었습니다. 다시 로그인해주세요.")));
+                                                  Navigator.pushReplacement(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                          const LoginPage()));
+                                                } else {
+                                                  logger.e(
+                                                      "Error! while replace to Login page");
+                                                  logger.e("message: $e");
+                                                }
+                                              } on Exception catch (e) {
+                                                logger.e("Error! message: $e");
+                                              }
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              elevation: 0,
+                                              minimumSize:
+                                              const Size(double.infinity, 50),
+                                              shape: const RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(12))),
+                                              backgroundColor: const Color(0xffF15A2B),
+                                            ),
+                                            child: const Text(
+                                              "리뷰 등록",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white),
                                             ),
                                           ),
                                         ),
-                                      ),
-
-                                      //바닥에 리뷰 등록 버튼 (form전송)
-                                      SizedBox(
-                                        height: 44,
-                                        child: ElevatedButton(
-                                          onPressed: () async {
-                                            try {
-                                              await storeService.addReview(
-                                                id: storeId,
-                                                reviewText: _reviewController.text,
-                                                images: _pickedImgs,
-                                                rating: _rating,
-                                              );
-                                            } on TokenExpiredException catch (e) {
-                                              if (mounted) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(const SnackBar(
-                                                    content: Text(
-                                                        "세션이 만료되었습니다. 다시 로그인해주세요.")));
-                                                Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                        const LoginPage()));
-                                              } else {
-                                                logger.e(
-                                                    "Error! while replace to Login page");
-                                                logger.e("message: $e");
-                                              }
-                                            } on Exception catch (e) {
-                                              logger.e("Error! message: $e");
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 0,
-                                            minimumSize:
-                                            const Size(double.infinity, 50),
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(12))),
-                                            backgroundColor: const Color(0xffF15A2B),
-                                          ),
-                                          child: const Text(
-                                            "리뷰 등록",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -321,6 +326,7 @@ class _ShowReviewState extends State<ShowReview> {
                 );
               },
               style: ElevatedButton.styleFrom(
+                elevation: 0,
                 shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10))),
                 minimumSize: const Size(double.infinity, 40),
@@ -969,7 +975,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
           itemCount: reviewList.length,
           itemBuilder: (context, index) {
             final review = reviewList[index].reviewStar; // 항상 비어있지 않으므로 직접 접근
-            logger.d('리뷰 리스트에 들어있는 값 체크 : $reviewList');
+            logger.d('리뷰 리스트에 들어있는 값 체크 : $review');
 
             return _showReview(context, index); // 각 리뷰 위젯 생성
           },
@@ -978,56 +984,61 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
 
 // 개별 리뷰를 표시하는 함수
   Widget _showReview(BuildContext context, int index) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Container(
+    return Container(
         margin: const EdgeInsets.only(top: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundImage:
-                  NetworkImage('${reviewList[index].memberProfilePic}'),
-                ),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text('${reviewList[index].memberNickname}'),
-                        const SizedBox(width: 20),
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.red[100],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 44,
+                    backgroundImage: (reviewList[index].memberProfilePic != null &&
+                        reviewList[index].memberProfilePic!.isNotEmpty)
+                        ? NetworkImage(reviewList[index].memberProfilePic!) as ImageProvider
+                        : const AssetImage('assets/images/profile.jpg'),
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text('${reviewList[index].memberNickname}'),
+                          const SizedBox(width: 20),
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.red[100],
+                            ),
+                            child: Text(
+                              "난 한 가게만 패",
+                              style: TextStyle(
+                                  fontSize: 10, color: Colors.redAccent[400]),
+                            ),
                           ),
-                          child: Text(
-                            "난 한 가게만 패",
-                            style: TextStyle(
-                                fontSize: 10, color: Colors.redAccent[400]),
-                          ),
-                        ),
-                      ],
-                    ),
-                    RatingBarIndicator(
-                      rating: reviewList[index].reviewStar!,
-                      itemCount: 5,
-                      itemSize: 16.0,
-                      unratedColor: const Color(0xFF767676),
-                      itemBuilder: (context, index) => const Icon(
-                        Icons.star,
-                        color: Color(0xFFF15A2B),
+                        ],
                       ),
-                    ),
-                    // RatingWidget(
-                    //     rating: reviewList[index].reviewStar ?? 0), // 별점 위젯 추가
-                  ],
-                ),
-              ],
+                      RatingBarIndicator(
+                        rating: reviewList[index].reviewStar!,
+                        itemCount: 5,
+                        itemSize: 16.0,
+                        unratedColor: const Color(0xFF767676),
+                        itemBuilder: (context, index) => const Icon(
+                          Icons.star,
+                          color: Color(0xFFF15A2B),
+                        ),
+                      ),
+                      // RatingWidget(
+                      //     rating: reviewList[index].reviewStar ?? 0), // 별점 위젯 추가
+                    ],
+                  ),
+                ],
+              ),
             ),
             Text('${reviewList[index].text}'),
             const SizedBox(height: 10),
@@ -1179,7 +1190,6 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
             const Divider(),
           ],
         ),
-      ),
     );
   }
 
