@@ -50,7 +50,7 @@ class CommunityViewModel {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('$serverUrl/rank/store');
+    final url = Uri.parse('$serverUrl/api/rank/store');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -90,7 +90,7 @@ class CommunityViewModel {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('$serverUrl/rank/visit');
+    final url = Uri.parse('$serverUrl/api/rank/visit');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
@@ -130,7 +130,7 @@ class CommunityViewModel {
     // secure storage token read
     final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('$serverUrl/rank/review');
+    final url = Uri.parse('$serverUrl/api/rank/review');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $accessToken',
