@@ -297,12 +297,13 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
           throw ServerLogoutException();
         }
       } catch (e) {
+        await resetToken();
         logger.e("server logout failed : $e");
         rethrow;
       }
     } else {
       // 소셜 로그아웃 실패
-      return ApiResponse(statusCode: 500, message: "social logout failed");
+      return ApiResponse(statusCode: 500, message: "소셜 로그인 서버와 통신에 실패했습니다.");
     }
   }
 

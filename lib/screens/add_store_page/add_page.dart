@@ -1,6 +1,6 @@
 import 'dart:convert'; // JSON 데이터를 다루기 위해 사용
 import 'package:dongpo_test/screens/add_store_page/add_detail_page.dart';
-import 'package:dongpo_test/widgets/error_handling_mixin.dart';
+import 'package:dongpo_test/widgets/dialog_method_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart'; // Naver Map API를 사용하기 위해 사용
 import 'package:geolocator/geolocator.dart'; // 위치 정보를 얻기 위해 사용
@@ -15,7 +15,7 @@ class AddPage extends StatefulWidget {
   State<AddPage> createState() => _AddPageState();
 }
 
-class _AddPageState extends State<AddPage> with ErrorHandlingMixin {
+class _AddPageState extends State<AddPage> with DialogMethodMixin {
   late NaverMapController _mapController;
   late ValueNotifier<String> _addressNotifier;
   late NLatLng _position;
@@ -208,7 +208,13 @@ class _AddPageState extends State<AddPage> with ErrorHandlingMixin {
                                     ),
                                   );
                                 } else {
-                                  showAlert(context, "점포와 거리가 너무 멉니다.");
+                                  if (mounted) {
+                                    showAlertDialog(
+                                      context,
+                                      title: "위치 오류",
+                                      message: "점포와 거리가 너무 멉니다.",
+                                    );
+                                  }
                                 }
                               },
                             ),

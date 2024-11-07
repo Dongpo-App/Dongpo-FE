@@ -4,7 +4,9 @@ import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/user_profile.dart';
 import 'package:dongpo_test/screens/my_info/info_detail/add_store.dart';
 import 'package:dongpo_test/screens/my_info/my_page_view_model.dart';
+import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/login_service.dart';
+import 'package:dongpo_test/widgets/dialog_method_mixin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
@@ -12,6 +14,7 @@ import 'package:dongpo_test/screens/login/apple_kakao_naver_login.dart';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/models/title.dart';
@@ -26,7 +29,7 @@ class MyPage extends StatefulWidget {
   State<MyPage> createState() => _MyPageState();
 }
 
-class _MyPageState extends State<MyPage> {
+class _MyPageState extends State<MyPage> with DialogMethodMixin {
   LoginApiService loginService = LoginApiService.instance;
   late TextEditingController nicknameController;
 
@@ -385,19 +388,58 @@ class _MyPageState extends State<MyPage> {
                     children: [
                       GestureDetector(
                         onTap: () async {
-                          logger.d("네이버 맵 지도 초기화");
-                          await NaverMapSdk.instance.initialize(
-                            clientId: naverApiKey, // 클라이언트 ID 설정
-                            onAuthFailed: (e) =>
-                                logger.e("네이버맵 인증오류 : $e onAuthFailed"),
-                          );
-                          await loginService.logout();
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginPage()),
-                            (route) => false, // 모든 이전 페이지 제거
-                          );
+                          final dialogResult = await showChoiceDialog(context,
+                              title: "로그아웃", message: "정말로 로그아웃하시겠습니까?");
+                          logger.d("dialog result : $dialogResult");
+                          if (dialogResult == true) {
+                            // 사용자가 확인을 누른 경우
+                            try {
+                              ApiResponse response =
+                                  await loginService.logout();
+                              logger.d("네이버 맵 지도 초기화");
+                              await NaverMapSdk.instance.initialize(
+                                clientId: naverApiKey, // 클라이언트 ID 설정
+                                onAuthFailed: (e) =>
+                                    logger.e("네이버맵 인증오류 : $e onAuthFailed"),
+                              );
+                              if (response.statusCode == 200) {
+                                Fluttertoast.showToast(
+                                    msg: "로그아웃 되었습니다.",
+                                    toastLength: Toast.LENGTH_SHORT);
+                                if (mounted) {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginPage()),
+                                      (route) => false);
+                                }
+                              } else if (response.statusCode == 500) {
+                                Fluttertoast.showToast(
+                                  msg: response.message,
+                                  toastLength: Toast.LENGTH_LONG,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              }
+                            } catch (e) {
+                              if (e is TokenExpiredException ||
+                                  e is ServerLogoutException) {
+                                Fluttertoast.showToast(
+                                  msg: e.toString(),
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  timeInSecForIosWeb: 1,
+                                );
+                                if (mounted) {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginPage()),
+                                      (route) => false);
+                                }
+                              }
+                            }
+                          }
                         },
                         child: const Text(
                           '로그아웃',
@@ -412,47 +454,49 @@ class _MyPageState extends State<MyPage> {
                       GestureDetector(
                         onTap: () async {
                           // 확인창 띄워야함
-                          try {
-                            ApiResponse response =
-                                await loginService.deleteAccount();
-                            if (response.statusCode == 200) {
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginPage()),
-                                  (route) => false);
+                          final dialogResult = await showChoiceDialog(context,
+                              title: "회원 탈퇴", message: "정말로 탈퇴하시겠습니까?");
+                          if (dialogResult == true) {
+                            // 사용자가 확인을 누른 경우
+                            try {
+                              ApiResponse response =
+                                  await loginService.deleteAccount();
+                              if (response.statusCode == 200) {
+                                Fluttertoast.showToast(msg: "회원 탈퇴가 완료되었습니다.");
+                                if (mounted) {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginPage()),
+                                      (route) => false);
+                                }
+                              } else if (response.statusCode == 500) {
+                                Fluttertoast.showToast(
+                                  msg: response.message,
+                                  toastLength: Toast.LENGTH_LONG,
+                                  timeInSecForIosWeb: 1,
+                                );
+                              }
+                            } catch (e) {
+                              if (e is TokenExpiredException ||
+                                  e is AccountDeletionFailureException) {
+                                Fluttertoast.showToast(
+                                  msg: e.toString(),
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  timeInSecForIosWeb: 1,
+                                );
+                                if (mounted) {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginPage()),
+                                      (route) => false);
+                                }
+                              }
                             }
-                          } catch (e) {
-                            logger.e(e);
                           }
-
-                          // String? loginPlatform =
-                          //     await storage.read(key: 'loginPlatform');
-                          // if (loginPlatform == null) {
-                          //   Navigator.pushAndRemoveUntil(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => const LoginPage()),
-                          //     (route) => false, // 모든 이전 페이지 제거
-                          //   );
-                          // }
-                          // isLogouted =
-                          //     await loginViewModel.logout(loginPlatform);
-                          // if (isLogouted == "logout") {
-                          //   // FlutterSecureStorage에 있는 token 삭제
-                          //   await storage.delete(key: 'accessToken');
-                          //   await storage.delete(key: 'refreshToken');
-                          //   await storage.delete(key: 'loginPlatform');
-                          //   Map<String, String> allData =
-                          //       await storage.readAll();
-                          //   logger.d("logout token : $allData");
-                          //   Navigator.pushAndRemoveUntil(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => const LoginPage()),
-                          //     (route) => false, // 모든 이전 페이지 제거
-                          //   );
-                          // }
                         },
                         child: const Text(
                           '탈퇴',

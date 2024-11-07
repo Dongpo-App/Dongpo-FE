@@ -2,7 +2,7 @@ import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/request/add_store_request.dart';
 import 'package:dongpo_test/service/store_service.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
-import 'package:dongpo_test/widgets/error_handling_mixin.dart';
+import 'package:dongpo_test/widgets/dialog_method_mixin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -21,7 +21,7 @@ class AddStorePageDetail extends StatefulWidget {
 }
 
 class _AddStorePageDetailState extends State<AddStorePageDetail>
-    with ErrorHandlingMixin {
+    with DialogMethodMixin {
   StoreApiService storeService = StoreApiService.instance;
 
   // form
@@ -505,9 +505,21 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                               );
                             }
                           } else if (response.statusCode == 400) {
-                            showAlert(context, response.message!);
+                            if (mounted) {
+                              showAlertDialog(
+                                context,
+                                title: "위치 오류",
+                                message: response.message,
+                              );
+                            }
                           } else {
-                            showAlert(context, "오류가 발생했습니다.");
+                            if (mounted) {
+                              showAlertDialog(
+                                context,
+                                title: "에러",
+                                message: "오류가 발생했습니다.",
+                              );
+                            }
                           }
                         }
                       }

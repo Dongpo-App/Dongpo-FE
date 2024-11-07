@@ -1,6 +1,6 @@
 class ApiResponse<T> {
   final int statusCode;
-  final String? message;
+  final String message;
   final T? data;
 
   ApiResponse({
