@@ -156,35 +156,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
-            const SizedBox(
-              height: 24,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: InkWell(
-                onTap: () async {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => const AppleUserInfoPage()),
-                  );
-                },
-                child: Container(
-                  height: 44,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFFFFF),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                        12.0), // 이미지가 컨테이너 경계를 넘지 않도록 둥근 모서리 설정
-                    child: const Text(
-                      "애플로그인 정보 입력 페이지",
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
