@@ -41,9 +41,9 @@ class ApiService {
           };
   }
 
-  void errorLog({required int statusCode, required String message}) {
-    logger.e("code : $statusCode message : $message");
-  }
+  // void errorLog({required int statusCode, required String message}) {
+  //   logger.e("code : $statusCode message : $message");
+  // }
 
   // 토큰 재발급
   Future<bool> reissueToken() async {
@@ -58,15 +58,18 @@ class ApiService {
 
     try {
       final response = await http.post(url, headers: headers, body: body);
+      Map<String, dynamic> decodedData =
+          jsonDecode(utf8.decode(response.bodyBytes));
       if (response.statusCode == 200) {
-        Map<String, dynamic> decodedData =
-            jsonDecode(utf8.decode(response.bodyBytes));
+        logger.d("code: ${response.statusCode} body: $decodedData");
         Map<String, dynamic> token = decodedData['data'];
 
         await storage.write(key: 'accessToken', value: token['accessToken']);
         await storage.write(key: 'refreshToken', value: token['refreshToken']);
+        await loadToken();
         return true;
       } else {
+        logger.w("code: ${response.statusCode} body: $decodedData");
         return false;
       }
     } catch (e) {

@@ -1,26 +1,12 @@
 import 'dart:convert'; // JSON 데이터를 다루기 위해 사용
-import 'package:dongpo_test/screens/add/add_02.dart';
+import 'package:dongpo_test/screens/add_store_page/add_detail_page.dart';
+import 'package:dongpo_test/widgets/dialog_method_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart'; // Naver Map API를 사용하기 위해 사용
 import 'package:geolocator/geolocator.dart'; // 위치 정보를 얻기 위해 사용
 import 'package:http/http.dart' as http; // HTTP 요청을 보내기 위해 사용
 import 'package:dongpo_test/api_key.dart'; // API 키를 저장한 파일을 가져오기 위해 사용
 import 'package:dongpo_test/main.dart';
-
-//등록페이지로 주소하고 위도 경도 넘기기위한 클래스
-class DataForm {
-  String sendAddress;
-  double sendLatitude;
-  double sendLongitude;
-
-  DataForm({
-    required this.sendAddress,
-    required this.sendLatitude,
-    required this.sendLongitude,
-  });
-}
-
-late DataForm dataForm;
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -29,10 +15,10 @@ class AddPage extends StatefulWidget {
   State<AddPage> createState() => _AddPageState();
 }
 
-class _AddPageState extends State<AddPage> {
+class _AddPageState extends State<AddPage> with DialogMethodMixin {
   late NaverMapController _mapController;
   late ValueNotifier<String> _addressNotifier;
-  String _address = '';
+  late NLatLng _position;
   bool _isCameraMoving = false; // 카메라 이동 상태를 추적하기 위한 변수
   bool startAddPage = false;
 
@@ -59,7 +45,6 @@ class _AddPageState extends State<AddPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        scrolledUnderElevation: 0,
         automaticallyImplyLeading: true, // 뒤로가기 버튼 없애기
         centerTitle: true,
         title: const Text(
@@ -67,16 +52,6 @@ class _AddPageState extends State<AddPage> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-          ),
-        ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context); //뒤로가기
-          },
-          icon: const Icon(
-            Icons.chevron_left,
-            size: 24,
-            color: Color(0xFF767676),
           ),
         ),
       ),
@@ -94,11 +69,12 @@ class _AddPageState extends State<AddPage> {
             return Stack(
               children: [
                 NaverMap(
-                  onMapReady: (controller) {
+                  onMapReady: (controller) async {
                     // 맵이 준비되었을 때 컨트롤러 초기화
-                    logger.d("controller : ${controller.hashCode}");
-                    _onMapReady(controller);
-                    _mapController.updateCamera(
+                    logger.d(
+                        "time: ${DateTime.now()} controller : ${controller.hashCode}");
+                    _mapController = controller;
+                    await _mapController.updateCamera(
                       NCameraUpdate.fromCameraPosition(
                         NCameraPosition(
                           target: snapshot.data!, // 초기 카메라 위치 설정
@@ -106,20 +82,19 @@ class _AddPageState extends State<AddPage> {
                         ),
                       ),
                     );
-                    startAddPage = true;
-                    _isCameraMoving = false;
+                    _position = snapshot.data!;
+                    startAddPage = true; // 화면 로딩 완료
                   },
                   onCameraChange: (reason, animated) {
                     // 카메라가 움직일 때 상태 변경
                     _isCameraMoving = true;
                   },
-                  onCameraIdle: () {
-                    logger
-                        .d("controller is ready? : ${_mapController.hashCode}");
+                  onCameraIdle: () async {
                     // 카메라가 멈췄을 때 주소 업데이트
                     if (_isCameraMoving && startAddPage) {
                       _isCameraMoving = false;
-                      _updateAddress();
+                      await Future.delayed(const Duration(milliseconds: 100));
+                      await _updateAddress();
                     }
                   },
                   options: NaverMapViewOptions(
@@ -139,7 +114,7 @@ class _AddPageState extends State<AddPage> {
                   ),
                 ),
                 SizedBox(
-                  height: screenHeight * 0.58,
+                  height: screenHeight * 0.5,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -161,85 +136,90 @@ class _AddPageState extends State<AddPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
-                      height: screenHeight * 0.3,
                       padding: const EdgeInsets.all(24.0), // 패딩 설정
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
-                        ),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 24),
-                              child: const Text(
-                                "가게 위치를 알려주세요",
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                      color: Colors.white,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 24),
+                            child: const Text(
+                              "가게 위치를 알려주세요",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                            Container(
-                              height: 44,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF4F4F4),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Center(
-                                child: ValueListenableBuilder<String>(
-                                  valueListenable:
-                                      _addressNotifier, // 주소 변경 시 업데이트
-                                  builder: (context, address, child) {
-                                    return Text(
-                                      address,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xFF767676),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
+                          ),
+                          Container(
+                            height: 44,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF4F4F4),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            const SizedBox(height: 16), // margin
-                            Container(
-                              height: 44,
-                              width: double.infinity,
-                              margin: const EdgeInsets.only(bottom: 24),
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 0, // 그림자 제거
-                                  backgroundColor:
-                                      const Color(0xFFF15A2B), // 버튼 색상 설정
-                                  shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(12))),
-                                ),
-                                child: const Text(
-                                  '가게 등록',
-                                  style: TextStyle(
+                            child: Center(
+                              child: ValueListenableBuilder<String>(
+                                valueListenable:
+                                    _addressNotifier, // 주소 변경 시 업데이트
+                                builder: (context, address, child) {
+                                  return Text(
+                                    address,
+                                    style: const TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white),
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const GageAddSangsea()));
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xFF767676),
+                                    ),
+                                  );
                                 },
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 16), // margin
+                          Container(
+                            height: 44,
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(bottom: 24),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                elevation: 0, // 그림자 제거
+                                backgroundColor:
+                                    const Color(0xFFF15A2B), // 버튼 색상 설정
+                                shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(12))),
+                              ),
+                              child: const Text(
+                                '가게 등록',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white),
+                              ),
+                              onPressed: () async {
+                                if (await _checkDistance()) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddStorePageDetail(
+                                        address: _addressNotifier.value,
+                                        position: _position,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  if (mounted) {
+                                    showAlertDialog(
+                                      context,
+                                      title: "위치 오류",
+                                      message: "점포와 거리가 너무 멉니다.",
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -255,12 +235,13 @@ class _AddPageState extends State<AddPage> {
   }
 
   Future<void> _updateAddress() async {
-    logger.d("is controller null? : $_mapController");
+    logger.d(
+        "time : ${DateTime.now()} is map ready? $startAddPage\n_controller : ${_mapController.hashCode}");
+
     final position = await _mapController.getCameraPosition();
-    final latLng = position.target;
-    final address = await _reverseGeocode(latLng);
+    _position = position.target;
+    final address = await _reverseGeocode(_position);
     _addressNotifier.value = address; // 주소 업데이트
-    _address = address;
   }
 
   Future<String> _reverseGeocode(NLatLng latLng) async {
@@ -276,19 +257,10 @@ class _AddPageState extends State<AddPage> {
       if (data['documents'].isNotEmpty) {
         // 도로명 주소가 있는 경우 반환
         if (data['documents'][0]['road_address'] != null) {
-          dataForm = DataForm(
-              sendAddress: data['documents'][0]['road_address']['address_name'],
-              sendLatitude: latLng.latitude,
-              sendLongitude: latLng.longitude);
-
           return data['documents'][0]['road_address']['address_name'];
         }
         // 도로명 주소가 없는 경우 지번 주소 반환
         else if (data['documents'][0]['address'] != null) {
-          dataForm = DataForm(
-              sendAddress: data['documents'][0]['address']['address_name'],
-              sendLatitude: latLng.latitude,
-              sendLongitude: latLng.longitude);
           return data['documents'][0]['address']['address_name'];
         }
       }
@@ -303,11 +275,6 @@ class _AddPageState extends State<AddPage> {
     return NLatLng(position.latitude, position.longitude);
   }
 
-  void _onMapReady(NaverMapController controller) {
-    // 맵 준비 완료 시 컨트롤러 초기화
-    _mapController = controller;
-  }
-
   Future<void> _moveToCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
@@ -319,5 +286,15 @@ class _AddPageState extends State<AddPage> {
         ),
       ),
     );
+  }
+
+  // 거리 체크
+  // 500 미터 미만이면 참
+  Future<bool> _checkDistance() async {
+    final userPosition = await getCurrentLocation();
+    final distance = Geolocator.distanceBetween(userPosition.latitude,
+        userPosition.longitude, _position.latitude, _position.longitude);
+    logger.d("distance : $distance");
+    return distance < 500;
   }
 }

@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/clickedMarkerInfo.dart';
 import 'package:dongpo_test/models/pocha.dart';
 import 'package:dongpo_test/models/request/add_review_request.dart';
+import 'package:dongpo_test/models/request/add_store_request.dart';
+import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/store_detail.dart';
-import 'package:dongpo_test/service/api_service.dart';
+import 'package:dongpo_test/service/base_api_service.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/interface/store_interface.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +19,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   static final StoreApiService instance = StoreApiService._privateConstructor();
 
   @override
-  Future<bool> addReview({
+  Future<ApiResponse> addReview({
     required int id,
     required String reviewText,
     required List<XFile> images,
@@ -44,19 +47,19 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
 
     try {
       if (response.statusCode == 200) {
-        logger.d("리뷰 등록 성공");
         logger.d(
             "code : ${response.statusCode} message : ${decodedResponse['message']}");
-        return true;
+        return ApiResponse(
+          statusCode: response.statusCode,
+          message: decodedResponse['message'],
+        );
       } else if (response.statusCode == 401) {
-        logger.w("토큰 만료");
         logger.w(
             "code : ${response.statusCode} message : ${decodedResponse['message']}");
         // 토큰 재발급
         final reissued = await reissueToken();
         if (reissued) {
           // 재발급 성공시 다시 요청
-          await loadToken();
           headers = this.headers(true);
           final retryResponse =
               await http.post(url, headers: headers, body: requestbody);
@@ -66,43 +69,34 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
             logger.d("리뷰 등록 성공");
             logger.d(
                 "code : ${response.statusCode} message : ${decodedResponse['message']}");
-            return true;
+            return ApiResponse(
+              statusCode: response.statusCode,
+              message: decodedResponse['message'],
+            );
           } else {
-            // 요청 최종 실패
-            errorLog(
-                statusCode: retryResponse.statusCode,
-                message: decodedResponse['message']);
             await resetToken();
             throw TokenExpiredException();
           }
         } else {
-          // 토큰 재발급 실패
-          errorLog(statusCode: response.statusCode, message: "요청 중 토큰 재발급 실패");
           await resetToken();
           throw TokenExpiredException();
         }
       } else {
         // 200, 401 이외
-        errorLog(
-            statusCode: response.statusCode,
-            message: decodedResponse['message']);
-        throw Exception(
-            "code : ${response.statusCode} message : HTTP ERROR! body : ${response.body}");
+        return ApiResponse(
+          statusCode: response.statusCode,
+          message: decodedResponse['message'],
+        );
       }
     } catch (e) {
-      if (e is! TokenExpiredException) {
-        logger.e("code : ${response.statusCode} Error occured on addReview $e");
-        throw Exception("Error occurred: $e");
-      } else {
-        // TokenExpiredException일 경우 다시 throw
-        rethrow;
-      }
+      logger.e("code : ${response.statusCode} Error occured on addReview $e");
+      rethrow;
     }
   }
 
   // MyData에 추가로 사용자 위치 정보를 포함한 dto 필요
   @override
-  Future<bool> addStore(MyData storeInfo) async {
+  Future<ApiResponse> addStore(AddStoreRequest storeInfo) async {
     await loadToken();
 
     final url = Uri.parse("$serverUrl/api/store");
@@ -118,7 +112,10 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
         logger.d("점포 등록 성공");
         logger.d(
             "code : ${response.statusCode} message : ${decodedResponse['message']}");
-        return true;
+        return ApiResponse(
+          statusCode: response.statusCode,
+          message: decodedResponse['message'],
+        );
       } else if (response.statusCode == 401) {
         logger.d("토큰 만료");
         logger.d(
@@ -137,46 +134,53 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
             logger.d("점포 등록 성공");
             logger.d(
                 "code : ${response.statusCode} message : ${decodedResponse['message']}");
-            return true;
+            return ApiResponse(
+              statusCode: retryResponse.statusCode,
+              message: decodedResponse['message'],
+            );
           } else {
             // 재발급된 토큰을 가지고도 실패시
-            errorLog(
-                statusCode: response.statusCode,
-                message: decodedResponse['message']);
             await resetToken();
             throw TokenExpiredException();
           }
         } else {
           // 토큰 재발급 실패시
-          errorLog(
-              statusCode: response.statusCode,
-              message: decodedResponse['message']);
           await resetToken();
           throw TokenExpiredException();
         }
       } else {
-        logger.d("점포 등록 실패 code : ${response.statusCode}");
-        return false;
+        logger
+            .d("점포 등록 실패 code : ${response.statusCode} body: $decodedResponse");
+        return ApiResponse(
+          statusCode: response.statusCode,
+          message: decodedResponse['message'],
+        );
       }
     } catch (e) {
       logger.e("HTTP Error on add store : $e");
-      return false;
+      // 임시
+      rethrow;
     }
   }
 
   @override
-  Future<bool> deleteStore(int id) async {
+  Future<ApiResponse> deleteStore(int id) async {
     await loadToken();
 
     final url = Uri.parse("$serverUrl/api/store/$id");
     Map<String, String> headers = this.headers(true);
 
     final response = await http.delete(url, headers: headers);
+    Map<String, dynamic> decodedResponse =
+        jsonDecode(utf8.decode(response.bodyBytes));
 
     try {
       if (response.statusCode == 200) {
         logger.d("code : ${response.statusCode} message : 점포 삭제 성공");
-        return true;
+        return ApiResponse(
+          statusCode: response.statusCode,
+          message: decodedResponse['message'],
+        );
       } else if (response.statusCode == 401) {
         logger.w("code : ${response.statusCode} message : 토큰 만료");
         final reissued = await reissueToken();
@@ -188,15 +192,19 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
           if (retryResponse.statusCode == 200) {
             // 요청 성공
             logger.d("code : ${response.statusCode} message : 점포 삭제 성공");
-            return true;
+            return ApiResponse(
+              statusCode: retryResponse.statusCode,
+              message: decodedResponse['message'],
+            );
           } else {
             // 요청 최종 실패
-            errorLog(statusCode: retryResponse.statusCode, message: "점포 삭제 실패");
-            return false;
+            return ApiResponse(
+              statusCode: response.statusCode,
+              message: decodedResponse['message'],
+            );
           }
         } else {
           // 토큰 재발급 실패
-          errorLog(statusCode: response.statusCode, message: "요청 중 토큰 재발급 실패");
           await resetToken();
           throw TokenExpiredException();
         }
@@ -217,7 +225,8 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   }
 
   @override
-  Future<List<MyData>> getStoreByCurrentLocation(double lat, double lng) async {
+  Future<ApiResponse<List<MyData>>> getStoreByCurrentLocation(
+      double lat, double lng) async {
     await loadToken(); // storage로부터 토큰 가져오기
 
     final url = Uri.parse('$serverUrl/api/store?latitude=$lat&longitude=$lng');
@@ -230,10 +239,14 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
 
       if (response.statusCode == 200) {
         // 요청 성공
-        List dataList = decodedResponse['data'];
-        logger.d(
-            "code : ${response.statusCode} message : ${decodedResponse['message']} length : ${dataList.length}");
-        return dataList.map((data) => MyData.fromJson(data)).toList();
+        //List dataList = decodedResponse['data'];
+        logger.d("code : ${response.statusCode} body: $decodedResponse");
+        return ApiResponse<List<MyData>>.fromJson(
+          response.statusCode,
+          decodedResponse,
+          (data) =>
+              (data as List).map((item) => MyData.fromJson(item)).toList(),
+        );
       } else if (response.statusCode == 401) {
         // 토큰 만료
         logger.d(
@@ -248,10 +261,15 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
           decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
           if (retryResponse.statusCode == 200) {
             // 요청 성공
-            List<Map<String, dynamic>> dataList = decodedResponse['data'];
-            logger.d(
-                "code : ${retryResponse.statusCode} message : ${decodedResponse['message']} length : ${dataList.length}");
-            return dataList.map((data) => MyData.fromJson(data)).toList();
+            //List<Map<String, dynamic>> dataList = decodedResponse['data'];
+            logger
+                .d("code : ${retryResponse.statusCode} body: $decodedResponse");
+            return ApiResponse.fromJson(
+                retryResponse.statusCode,
+                decodedResponse,
+                (data) => (data as List)
+                    .map((item) => MyData.fromJson(item))
+                    .toList());
           } else {
             // 그럼에도 실패시
             await resetToken();
@@ -283,7 +301,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   }
 
   @override
-  Future<StoreSangse> getStoreDetail(int id) async {
+  Future<ApiResponse<StoreSangse>> getStoreDetail(int id) async {
     await loadToken();
 
     final url = Uri.parse("$serverUrl/api/store/$id");
@@ -296,10 +314,10 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
 
       if (response.statusCode == 200) {
         // 요청 성공
-        Map<String, dynamic> data = decodedResponse['data'];
         logger.d(
             "code : ${response.statusCode} message : ${decodedResponse['message']}");
-        return StoreSangse.fromJson(data);
+        return ApiResponse.fromJson(response.statusCode, decodedResponse,
+            (data) => StoreSangse.fromJson(data));
       } else if (response.statusCode == 401) {
         // 토큰 만료
         logger.d(
@@ -317,7 +335,8 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
             Map<String, dynamic> data = decodedResponse['data'];
             logger.d(
                 "code : ${response.statusCode} message : ${decodedResponse['message']}");
-            return StoreSangse.fromJson(data);
+            return ApiResponse.fromJson(retryResponse.statusCode,
+                decodedResponse, (data) => StoreSangse.fromJson(data));
           } else {
             await resetToken();
             throw TokenExpiredException();
@@ -345,7 +364,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   }
 
   @override
-  Future<MarkerInfo> getStoreSummary(int id) async {
+  Future<ApiResponse<MarkerInfo>> getStoreSummary(int id) async {
     await loadToken();
     final url = Uri.parse('$serverUrl/api/store/$id/summary');
 
@@ -357,14 +376,11 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
           jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = decodedResponse['data'];
-        logger.d(
-            "code: ${response.statusCode} message: ${decodedResponse['message']}");
-        logger.d("data: $data");
-        return MarkerInfo.fromJson(data);
+        logger.d("code: ${response.statusCode} body: $decodedResponse");
+        return ApiResponse.fromJson(response.statusCode, decodedResponse,
+            (data) => MarkerInfo.fromJson(data));
       } else if (response.statusCode == 401) {
-        logger.d(
-            "code: ${response.statusCode} message: ${decodedResponse['message']}");
+        logger.d("code: ${response.statusCode} body: $decodedResponse");
         final reissued = await reissueToken();
         if (reissued) {
           await loadToken();
@@ -377,7 +393,8 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
             Map<String, dynamic> data = decodedResponse['data'];
             logger.d(
                 "code: ${response.statusCode} message: ${decodedResponse['message']}");
-            return MarkerInfo.fromJson(data);
+            return ApiResponse.fromJson(retryResponse.statusCode,
+                decodedResponse, (data) => MarkerInfo.fromJson(data));
           } else {
             await resetToken();
             throw TokenExpiredException();
@@ -405,7 +422,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   }
 
   @override
-  Future<bool> updateStore(int id, MyData update) {
+  Future<ApiResponse> updateStore(int id, MyData update) {
     // TODO: implement updateStore
     throw UnimplementedError();
   }

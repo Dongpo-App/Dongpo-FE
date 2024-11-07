@@ -1,17 +1,17 @@
-import 'package:dongpo_test/models/login_response.dart';
+import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/request/apple_signup_request.dart';
 
 abstract class LoginServiceInterface {
   // 네이버 로그인
-  Future<LoginResponse> naverLogin();
+  Future<ApiResponse> naverLogin();
   // 카카오 로그인
-  Future<LoginResponse> kakaoLogin();
+  Future<ApiResponse> kakaoLogin();
   // 애플 로그인
-  Future<LoginResponse> appleLogin();
+  Future<ApiResponse> appleLogin();
   // 애플 회원가입 (추가 정보 입력)
-  Future<LoginResponse> appleSignup(AppleSignupRequest request);
-  // 애플 탈퇴
-  Future<bool> appleLeave();
+  Future<ApiResponse> appleSignup(AppleSignupRequest request);
+  // 회원 탈퇴
+  Future<ApiResponse> deleteAccount();
   // 로그아웃
-  Future<bool> logout();
+  Future<ApiResponse> logout();
 }

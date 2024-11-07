@@ -22,13 +22,14 @@ class CommunityPageState extends State<CommunityPage> {
   // 점포 추천 분류
   String recommendStoreCategory = "age";
   // 점포 추천 데이터
-  RecommendResponse recommendResponse = RecommendResponse(stores: [], recommendationCategory: "");
+  RecommendResponse recommendResponse =
+      RecommendResponse(stores: [], recommendationCategory: "");
   List<RecommendStore> recommendList = [];
   String recommendMessage = "";
   // 로딩
   bool isLoading = false;
 
-  late List<CommunityRank> _storeTop10GetAPI = [
+  late final List<CommunityRank> _storeTop10GetAPI = [
     CommunityRank(
       nickname: "",
       title: "",
@@ -36,7 +37,7 @@ class CommunityPageState extends State<CommunityPage> {
       count: 0,
     ),
   ];
-  late List<CommunityRank> _visitTop10GetAPI = [
+  late final List<CommunityRank> _visitTop10GetAPI = [
     CommunityRank(
       nickname: "",
       title: "",
@@ -44,7 +45,7 @@ class CommunityPageState extends State<CommunityPage> {
       count: 0,
     ),
   ];
-  late List<CommunityRank> _reviewTop10GetAPI = [
+  late final List<CommunityRank> _reviewTop10GetAPI = [
     CommunityRank(
       nickname: "",
       title: "",
@@ -61,9 +62,9 @@ class CommunityPageState extends State<CommunityPage> {
   }
 
   void getTop10() async {
-    _storeTop10GetAPI = await viewModel.storeTop10GetAPI(context);
-    _visitTop10GetAPI = await viewModel.visitTop10GetAPI(context);
-    _reviewTop10GetAPI = await viewModel.reviewTop10GetAPI(context);
+    //_storeTop10GetAPI = await viewModel.storeTop10GetAPI(context);
+    //_visitTop10GetAPI = await viewModel.visitTop10GetAPI(context);
+    //_reviewTop10GetAPI = await viewModel.reviewTop10GetAPI(context);
     setState(() {});
   }
 
@@ -71,7 +72,8 @@ class CommunityPageState extends State<CommunityPage> {
     setState(() {
       isLoading = true; // 초기화
     });
-    recommendResponse = await viewModel.recommendStoreGetAPI(context, recommendStoreCategory);
+    recommendResponse =
+        await viewModel.recommendStoreGetAPI(context, recommendStoreCategory);
     setState(() {
       recommendList = recommendResponse.stores;
       recommendMessage = recommendResponse.recommendationCategory;
@@ -97,12 +99,11 @@ class CommunityPageState extends State<CommunityPage> {
             children: [
               // 상단 Text
               Container(
-                margin: const EdgeInsets.all(24),
-                child: const Text(
-                  "별별 사람들",
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
-                )
-              ),
+                  margin: const EdgeInsets.all(24),
+                  child: const Text(
+                    "별별 사람들",
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+                  )),
 
               // 조건 Top 10 카드 슬라이드
               SingleChildScrollView(
@@ -123,7 +124,7 @@ class CommunityPageState extends State<CommunityPage> {
                       member: _storeTop10GetAPI.first.nickname,
                       memberTitle: _storeTop10GetAPI.first.title,
                       memberProfile: _storeTop10GetAPI.first.pic,
-                      top10List : _storeTop10GetAPI,
+                      top10List: _storeTop10GetAPI,
                     ),
                     const SizedBox(width: 24.0),
                     _buildCard(
@@ -131,7 +132,7 @@ class CommunityPageState extends State<CommunityPage> {
                       member: _reviewTop10GetAPI.first.nickname,
                       memberTitle: _reviewTop10GetAPI.first.title,
                       memberProfile: _reviewTop10GetAPI.first.pic,
-                      top10List : _reviewTop10GetAPI,
+                      top10List: _reviewTop10GetAPI,
                     ),
                   ],
                 ),
@@ -156,186 +157,194 @@ class CommunityPageState extends State<CommunityPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 상단 Text
-                    Container(
-                      margin: const EdgeInsets.only(top: 24, bottom: 24),
-                      child: isLoading
-                        ? const CircularProgressIndicator()
-                        : Text(
-                          recommendStoreCategory == "age"
-                          ? "$recommendMessage대 추천 가게"
-                          : recommendMessage == "GEN_MALE"
-                            ? "남성 추천 가게"
-                            : "여성 추천 가게",
-                          style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
-                      )
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              recommendStoreCategory = 'age'; // 나이 선택
-                              getRecommendStore();
-                            });
-                          },
-                          child: Container(
-                            height: 30,
-                            width: 58,
-                            decoration: BoxDecoration(
-                              color: recommendStoreCategory == 'age'
-                                ? const Color(0xFFF15A2B) // 선택된 색상
-                                : Colors.transparent, // 기본 색상
-                              border: recommendStoreCategory == 'age'
-                                ? null // 선택된 상태에서는 테두리 없음
-                                : Border.all(
-                                    color: const Color(0xFF767676), // 기본 테두리 색상
-                                    width: 1, // 테두리 두께
-                                  ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Center(
-                              child: Text(
-                                "나이",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: recommendStoreCategory == 'age' ? Colors.white : const Color(0xFF767676),
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16.0),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              recommendStoreCategory = 'gender'; // 성별 선택
-                              getRecommendStore();
-                            });
-                          },
-                          child: Container(
-                            height: 30,
-                            width: 58,
-                            decoration: BoxDecoration(
-                              color: recommendStoreCategory == 'gender'
-                                  ? const Color(0xFFF15A2B) // 선택된 색상
-                                  : Colors.transparent, // 기본 색상
-                              border: recommendStoreCategory == 'gender'
-                                  ? null // 선택된 상태에서는 테두리 없음
-                                  : Border.all(
-                                color: const Color(0xFF767676), // 기본 테두리 색상
-                                width: 1, // 테두리 두께
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Center(
-                              child: Text(
-                                "성별",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: recommendStoreCategory == 'gender' ? Colors.white : const Color(0xFF767676),
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24,),
-                    // API 통신으로 받아온 카드 3개 그리기
-                    SizedBox(
-                      height: 400,
-                      width: double.infinity,
-                      child: ListView.builder(
-                        itemCount: recommendList.length,
-                        itemBuilder: (context, index) {
-                          var recommendStore = recommendList[index];
-                          return GestureDetector(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 상단 Text
+                      Container(
+                          margin: const EdgeInsets.only(top: 24, bottom: 24),
+                          child: isLoading
+                              ? const CircularProgressIndicator()
+                              : Text(
+                                  recommendStoreCategory == "age"
+                                      ? "$recommendMessage대 추천 가게"
+                                      : recommendMessage == "GEN_MALE"
+                                          ? "남성 추천 가게"
+                                          : "여성 추천 가게",
+                                  style: const TextStyle(
+                                      fontSize: 32,
+                                      fontWeight: FontWeight.w600),
+                                )),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          GestureDetector(
                             onTap: () {
-                            // 버튼이 눌리면 해당 점포 상세 페이지로 이동
-                              Navigator.push(context,
-                                MaterialPageRoute(builder: (BuildContext context) {
-                                  return StoreInfo(idx: recommendStore.id);
-                                })
-                              );
+                              setState(() {
+                                recommendStoreCategory = 'age'; // 나이 선택
+                                getRecommendStore();
+                              });
                             },
-                            child: Card(
-                              elevation: 0,
-                              color: const Color(0xFFF4F4F4),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.0),
+                            child: Container(
+                              height: 30,
+                              width: 58,
+                              decoration: BoxDecoration(
+                                color: recommendStoreCategory == 'age'
+                                    ? const Color(0xFFF15A2B) // 선택된 색상
+                                    : Colors.transparent, // 기본 색상
+                                border: recommendStoreCategory == 'age'
+                                    ? null // 선택된 상태에서는 테두리 없음
+                                    : Border.all(
+                                        color: const Color(
+                                            0xFF767676), // 기본 테두리 색상
+                                        width: 1, // 테두리 두께
+                                      ),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              margin: const EdgeInsets.symmetric(
-                                vertical: 12,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(24.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    const CircleAvatar(
-                                      radius: 18,
-                                      backgroundImage:
-                                      AssetImage('assets/images/icon.png'),
-                                    ),
-                                    const SizedBox(
-                                      width: 30,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          //crossAxisAlignment: CrossAxisAlignment.baseline, // 기준선 정렬
-                                          //textBaseline: TextBaseline.alphabetic, // 알파벳 기준선 사용
-                                          children: [
-                                            Text(
-                                              recommendStore.name,
-                                              style: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          // 테스트용
-                                          height: 4,
-                                        ),
-                                        Row(
-                                          children: [
-                                            // Icon(
-                                            //   Icons.lightbulb_outline_rounded,
-                                            //   size: 16,
-                                            //   color: Color(0xFFF15A2B),
-                                            // ),
-                                            // SizedBox(width: 4,),
-                                            Text(
-                                              recommendStore.address,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                                color: Color(0xFF767676),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ]
-                                    ),
-                                  ],
+                              child: Center(
+                                child: Text(
+                                  "나이",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: recommendStoreCategory == 'age'
+                                        ? Colors.white
+                                        : const Color(0xFF767676),
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
                               ),
                             ),
-                          );
-                        },
+                          ),
+                          const SizedBox(width: 16.0),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                recommendStoreCategory = 'gender'; // 성별 선택
+                                getRecommendStore();
+                              });
+                            },
+                            child: Container(
+                              height: 30,
+                              width: 58,
+                              decoration: BoxDecoration(
+                                color: recommendStoreCategory == 'gender'
+                                    ? const Color(0xFFF15A2B) // 선택된 색상
+                                    : Colors.transparent, // 기본 색상
+                                border: recommendStoreCategory == 'gender'
+                                    ? null // 선택된 상태에서는 테두리 없음
+                                    : Border.all(
+                                        color: const Color(
+                                            0xFF767676), // 기본 테두리 색상
+                                        width: 1, // 테두리 두께
+                                      ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "성별",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: recommendStoreCategory == 'gender'
+                                        ? Colors.white
+                                        : const Color(0xFF767676),
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ]
-                ),
+                      const SizedBox(
+                        height: 24,
+                      ),
+                      // API 통신으로 받아온 카드 3개 그리기
+                      SizedBox(
+                        height: 400,
+                        width: double.infinity,
+                        child: ListView.builder(
+                          itemCount: recommendList.length,
+                          itemBuilder: (context, index) {
+                            var recommendStore = recommendList[index];
+                            return GestureDetector(
+                              onTap: () {
+                                // 버튼이 눌리면 해당 점포 상세 페이지로 이동
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (BuildContext context) {
+                                  return StoreInfo(idx: recommendStore.id);
+                                }));
+                              },
+                              child: Card(
+                                elevation: 0,
+                                color: const Color(0xFFF4F4F4),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                margin: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(24.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      const CircleAvatar(
+                                        radius: 18,
+                                        backgroundImage: AssetImage(
+                                            'assets/images/icon.png'),
+                                      ),
+                                      const SizedBox(
+                                        width: 30,
+                                      ),
+                                      Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              //crossAxisAlignment: CrossAxisAlignment.baseline, // 기준선 정렬
+                                              //textBaseline: TextBaseline.alphabetic, // 알파벳 기준선 사용
+                                              children: [
+                                                Text(
+                                                  recommendStore.name,
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              // 테스트용
+                                              height: 4,
+                                            ),
+                                            Row(
+                                              children: [
+                                                // Icon(
+                                                //   Icons.lightbulb_outline_rounded,
+                                                //   size: 16,
+                                                //   color: Color(0xFFF15A2B),
+                                                // ),
+                                                // SizedBox(width: 4,),
+                                                Text(
+                                                  recommendStore.address,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xFF767676),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ]),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ]),
               ),
             ],
           ),
@@ -351,76 +360,74 @@ class CommunityPageState extends State<CommunityPage> {
     required String memberTitle,
     required String? memberProfile,
     required List<CommunityRank> top10List,
-  })
-  {
+  }) {
     final top10TitleData = Top10TitleData(
       top10Title: top10Title,
     );
 
     return GestureDetector(
-      onTap: () {
-        Navigator.push(context,
-          MaterialPageRoute(builder: (BuildContext context) {
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (BuildContext context) {
             return CommunityTop10Page(
               top10TitleData: top10TitleData,
               top10List: top10List,
             );
-          }
+          }));
+        },
+        child: Container(
+          width: 260.0,
+          height: 213.0,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 18),
+                child: Text(
+                  top10Title,
+                  style: const TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 29),
+                child: CircleAvatar(
+                  radius: 24,
+                  backgroundImage:
+                      (memberProfile != null && memberProfile.isNotEmpty)
+                          ? NetworkImage(memberProfile) as ImageProvider
+                          : const AssetImage('assets/images/profile.jpg'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 19),
+                child: Text(
+                  memberTitle,
+                  style: const TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  member,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ));
-      },
-      child: Container(
-        width: 260.0,
-        height: 213.0,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 18),
-              child: Text(
-                top10Title,
-                style: const TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 29),
-              child: CircleAvatar(
-                radius: 24,
-                backgroundImage: (memberProfile != null && memberProfile.isNotEmpty)
-                    ? NetworkImage(memberProfile) as ImageProvider
-                    : const AssetImage('assets/images/profile.jpg'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 19),
-              child: Text(
-                memberTitle,
-                style: const TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                member,
-                style: const TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-      )
-    );
   }
 }
 

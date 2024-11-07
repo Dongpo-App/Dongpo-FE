@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
     as picker;
 import 'package:http/http.dart' as http;
-import 'package:dongpo_test/screens/add/add_01.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../login/login_view_model.dart';
 
+// add_detail_page.dart로 바꿈
 class GageAddSangsea extends StatefulWidget {
   const GageAddSangsea({super.key});
 
@@ -169,22 +169,22 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   //검색바 안에 주소
-                  child: Row(
+                  child: const Row(
                     children: <Widget>[
-                      const SizedBox(
+                      SizedBox(
                         width: 24,
                       ),
                       Text(
-                        dataForm.sendAddress,
-                        style: const TextStyle(
+                        "",
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
                           color: Color(0xFF767676),
                         ),
                       ),
-                      const Spacer(),
-                      const Icon(size: 16, CupertinoIcons.right_chevron),
-                      const SizedBox(
+                      Spacer(),
+                      Icon(size: 16, CupertinoIcons.right_chevron),
+                      SizedBox(
                         width: 24,
                       ),
                     ],
@@ -327,14 +327,20 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          picker.DatePicker.showTimePicker(context,
-                              showSecondsColumn: false,
-                              showTitleActions: true,
-                              onChanged: (date) {}, onConfirm: (date) {
-                            setState(() {
-                              openTime = "${date.hour}:${date.minute}";
-                            });
-                          }, currentTime: DateTime.now());
+                          picker.DatePicker.showTimePicker(
+                            context,
+                            showSecondsColumn: false,
+                            showTitleActions: true,
+                            onChanged: (date) {},
+                            onConfirm: (date) {
+                              setState(
+                                () {
+                                  openTime = "${date.hour}:${date.minute}";
+                                },
+                              );
+                            },
+                            currentTime: DateTime.now(),
+                          );
                         },
                         //openTime Container
                         child: Container(
@@ -570,8 +576,8 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
 
   Future<void> sendData() async {
     final accessToken = await storage.read(key: 'accessToken');
-    double value1 = dataForm.sendLatitude;
-    double value2 = dataForm.sendLongitude;
+    double value1 = 1.1;
+    double value2 = 1.1;
 
     double truncatedValue1 = (value1 * 1000000).truncateToDouble() / 1000000;
     double truncatedValue2 = (value2 * 1000000).truncateToDouble() / 1000000;
@@ -583,7 +589,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
     logger.d("$truncatedValue1 || $truncatedValue2");
     final data = {
       'name': _nameController.text,
-      'address': dataForm.sendAddress,
+      'address': "",
       'latitude': truncatedValue1, //latitude
       'longitude': truncatedValue2, //longitude
       'openTime': openTime,

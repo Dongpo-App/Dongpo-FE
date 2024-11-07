@@ -1,7 +1,6 @@
-import 'package:dongpo_test/main.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
-import 'package:dongpo_test/screens/add/add_01.dart';
+import 'package:dongpo_test/screens/add_store_page/add_page.dart';
 import 'package:dongpo_test/screens/community/community.dart';
 import 'package:dongpo_test/screens/my_info/info.dart';
 
@@ -18,7 +17,7 @@ class MyAppPageState extends State<MyAppPage> {
 
   final List<Widget> screens = [
     const MainPage(),
-    const AddPage(),
+    const SizedBox.shrink(), // 여기에 addPage() 넣으면 쓰지 않는 페이지가 로딩됨
     const CommunityPage(),
     const MyPage(),
   ];
