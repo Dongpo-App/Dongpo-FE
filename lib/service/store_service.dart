@@ -47,15 +47,13 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
 
     try {
       if (response.statusCode == 200) {
-        logger.d(
-            "code : ${response.statusCode} message : ${decodedResponse['message']}");
+        logger.d("code : ${response.statusCode} body: $decodedResponse");
         return ApiResponse(
           statusCode: response.statusCode,
           message: decodedResponse['message'],
         );
       } else if (response.statusCode == 401) {
-        logger.w(
-            "code : ${response.statusCode} message : ${decodedResponse['message']}");
+        logger.w("code : ${response.statusCode} body: $decodedResponse");
         // 토큰 재발급
         final reissued = await reissueToken();
         if (reissued) {
@@ -67,8 +65,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
           if (retryResponse.statusCode == 200) {
             // 요청 성공
             logger.d("리뷰 등록 성공");
-            logger.d(
-                "code : ${response.statusCode} message : ${decodedResponse['message']}");
+            logger.d("code : ${response.statusCode} body: $decodedResponse");
             return ApiResponse(
               statusCode: response.statusCode,
               message: decodedResponse['message'],
@@ -110,16 +107,14 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
 
       if (response.statusCode == 200) {
         logger.d("점포 등록 성공");
-        logger.d(
-            "code : ${response.statusCode} message : ${decodedResponse['message']}");
+        logger.d("code : ${response.statusCode} body: $decodedResponse");
         return ApiResponse(
           statusCode: response.statusCode,
           message: decodedResponse['message'],
         );
       } else if (response.statusCode == 401) {
         logger.d("토큰 만료");
-        logger.d(
-            "code : ${response.statusCode} message : ${decodedResponse['message']}");
+        logger.d("code : ${response.statusCode} body: $decodedResponse");
         // 토큰 재발급
         final reissued = await reissueToken();
         if (reissued) {
@@ -132,8 +127,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
           if (retryResponse.statusCode == 200) {
             // 요청 성공
             logger.d("점포 등록 성공");
-            logger.d(
-                "code : ${response.statusCode} message : ${decodedResponse['message']}");
+            logger.d("code : ${response.statusCode} body: $decodedResponse");
             return ApiResponse(
               statusCode: retryResponse.statusCode,
               message: decodedResponse['message'],
@@ -252,8 +246,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
         );
       } else if (response.statusCode == 401) {
         // 토큰 만료
-        logger.d(
-            "code : ${response.statusCode} message : ${decodedResponse['message']}");
+        logger.d("code : ${response.statusCode} body: $decodedResponse");
         // 리프레쉬 토큰 재발급
         final reissued = await reissueToken();
         if (reissued) {
@@ -285,8 +278,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
           // if(e is TokenExpiredException) 로그인 페이지 이동
         }
       } else {
-        logger.e(
-            "code : ${response.statusCode} message : ${decodedResponse['message']}");
+        logger.e("code : ${response.statusCode} body: $decodedResponse");
         // 유저에게 에러 메시지 줘야함
         // 임시
         throw Exception(
@@ -317,14 +309,12 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
 
       if (response.statusCode == 200) {
         // 요청 성공
-        logger.d(
-            "code : ${response.statusCode} message : ${decodedResponse['message']}");
+        logger.d("code : ${response.statusCode} body: $decodedResponse");
         return ApiResponse.fromJson(response.statusCode, decodedResponse,
             (data) => StoreSangse.fromJson(data));
       } else if (response.statusCode == 401) {
         // 토큰 만료
-        logger.d(
-            "code : ${response.statusCode} message : ${decodedResponse['message']}");
+        logger.d("code : ${response.statusCode} body: $decodedResponse");
         // 리프레쉬 토큰 재발급
         final reissued = await reissueToken();
         if (reissued) {
@@ -335,9 +325,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
           decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
           if (retryResponse.statusCode == 200) {
             // 요청 성공
-            Map<String, dynamic> data = decodedResponse['data'];
-            logger.d(
-                "code : ${response.statusCode} message : ${decodedResponse['message']}");
+            logger.d("code : ${response.statusCode} body: $decodedResponse");
             return ApiResponse.fromJson(retryResponse.statusCode,
                 decodedResponse, (data) => StoreSangse.fromJson(data));
           } else {
@@ -349,8 +337,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
           throw TokenExpiredException();
         }
       } else {
-        logger.e(
-            "code : ${response.statusCode} message : ${decodedResponse['message']}");
+        logger.e("code : ${response.statusCode} body: $decodedResponse");
         // 유저에게 에러 메시지 줘야함
         // 임시
         throw Exception("HTTP ERROR! body : ${response.body}");

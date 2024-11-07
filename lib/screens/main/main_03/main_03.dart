@@ -11,10 +11,12 @@ import 'package:dongpo_test/screens/main/main_03/01_title.dart';
 import 'package:dongpo_test/screens/main/main_03/03_user_action.dart';
 import 'package:dongpo_test/screens/main/main_03/07_dangol.dart';
 import 'package:dongpo_test/screens/my_info/info_detail/bookmark_view_model.dart';
+import 'package:dongpo_test/service/store_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -29,6 +31,7 @@ class StoreInfo extends StatefulWidget {
 
 class _StoreInfoState extends State<StoreInfo> {
   BookmarkViewModel viewModel = BookmarkViewModel();
+  StoreApiService storeService = StoreApiService.instance;
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
   }
@@ -38,21 +41,32 @@ class _StoreInfoState extends State<StoreInfo> {
     super.initState();
     getBookmark();
     // 페이지가 처음 생성될 때 비동기 메서드 호출
-    _fetchStoreDetails();
+    _fetchStoreDetails(widget.idx);
   }
 
   // 비동기 메서드로 가게 정보를 가져옴
-  Future<void> _fetchStoreDetails() async {
+  Future<void> _fetchStoreDetails(int id) async {
     try {
-      final data = await _storeSangse(); // 비동기 호출
-      logger.d(
-          'StoreData Test : ${data.visitSuccessfulCount} : ${data.visitFailCount}');
-      logger.d('Store Review Data : ${data.reviews[1].memberMainTitle}');
-      setState(() {
-        storeData = data; // 가져온 데이터를 myStoreList에 할당
-      });
+      final response = await storeService.getStoreDetail(id);
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data;
+        logger.d(
+            'StoreData Test : ${data!.visitSuccessfulCount} : ${data.visitFailCount}');
+        if (!mounted) return;
+        setState(() {
+          storeData = data; // 가져온 데이터를 myStoreList에 할당
+        });
+      }
     } catch (e) {
       logger.e('가게 정보 불러오는데 뭔가 잘못됌 에러 사유: $e'); // 에러 처리
+      await Future.delayed(const Duration(milliseconds: 1200));
+      Fluttertoast.showToast(
+        msg: "점포 상세정보를 가져오는데 실패하였습니다.",
+        timeInSecForIosWeb: 2,
+      );
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -73,14 +87,14 @@ class _StoreInfoState extends State<StoreInfo> {
     };
 
     final includeTextData = {
-      "text": etcText + "테스트 ", // reason이 ETC일 경우 포함
+      "text": "$etcText테스트 ", // reason이 ETC일 경우 포함
       "reason": sendData,
     };
 
     final exceptTextData = {
       "reson": sendData,
     };
-    var data;
+    Map<String, String> data;
 
     if (value == 4) {
       data = includeTextData;
@@ -102,11 +116,11 @@ class _StoreInfoState extends State<StoreInfo> {
       final responsebody = utf8.decode(response.bodyBytes);
 
       if (response.statusCode == 200) {
-        logger.d('신고 완료!! 신고 내용 : ${sendData} & ETC : ${etcText}');
+        logger.d('신고 완료!! 신고 내용 : $sendData & ETC : $etcText');
         showSuccessDialog();
       } else {
         logger.e(
-            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responsebody}');
+            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : $responsebody');
       }
     } catch (e) {
       // TODO
