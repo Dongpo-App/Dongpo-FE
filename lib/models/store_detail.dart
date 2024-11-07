@@ -13,6 +13,7 @@ class StoreSangse {
   final List<String> operatingDays;
   final List<String> payMethods;
   final List<Review> reviews;
+  final List<MostVisitMembers>? mostVisitMembers;
   final String openPossibility;
   final bool isBookmarked;
   final int? visitSuccessfulCount;
@@ -33,6 +34,7 @@ class StoreSangse {
     required this.operatingDays,
     required this.payMethods,
     required this.reviews,
+    this.mostVisitMembers,
     required this.openPossibility,
     required this.isBookmarked,
     this.visitFailCount,
@@ -63,6 +65,12 @@ class StoreSangse {
               .map((reviewJson) => Review.fromJson(reviewJson))
               .toList()
           : [],
+      mostVisitMembers: json['mostVisitMembers'] != null
+          ? (json['mostVisitMembers'] as List)
+              .map((mostVisitMembersJson) =>
+                  MostVisitMembers.fromJson(mostVisitMembersJson))
+              .toList()
+          : [],
       openPossibility: json['openPossibility'] as String,
       isBookmarked: json['isBookmarked'] as bool,
       visitFailCount: json['visitFailCount'] as int?,
@@ -76,12 +84,14 @@ class Review {
   final int? storeId;
   final int? memberId;
   final int? reviewStar;
+  final String? memberNickname;
   final String? memberProfilePic;
   final String? text;
   final List<String>? reviewPics;
   final String? registerDate;
 
   Review({
+    required this.memberNickname,
     required this.id,
     required this.storeId,
     required this.memberId,
@@ -94,6 +104,7 @@ class Review {
 
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
+      memberNickname: json['memberNickname'] as String?,
       id: json['id'] as int?,
       storeId: json['storeId'] as int?,
       memberId: json['memberId'] as int?,
@@ -104,6 +115,30 @@ class Review {
           ? List<String>.from(json['reviewPics'])
           : null,
       registerDate: json['registerDate'] as String?,
+    );
+  }
+}
+
+class MostVisitMembers {
+  late final int? id;
+  late final String? nickname;
+  late final String? title;
+  late final String? profilePic;
+
+  MostVisitMembers({
+    this.id,
+    this.nickname,
+    this.title,
+    this.profilePic,
+  });
+
+  // JSON 데이터를 클래스 인스턴스로 변환하는 factory 생성자
+  factory MostVisitMembers.fromJson(Map<String, dynamic> json) {
+    return MostVisitMembers(
+      id: json['id'],
+      nickname: json['nickname'],
+      title: json['mainTitle'],
+      profilePic: json['profilePic'],
     );
   }
 }

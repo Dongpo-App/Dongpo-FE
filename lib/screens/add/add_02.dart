@@ -21,9 +21,9 @@ class GageAddSangsea extends StatefulWidget {
 
 class _GageAddSangseaState extends State<GageAddSangsea> {
   StoreApiService storeService = StoreApiService.instance;
-  String openTime = '00:00';
-  String closeTime = '00:00';
-  int bathSelected = 0; //화장실 라디오 버튼
+
+  // 입력 필드 관련
+  final TextEditingController _nameController = TextEditingController();
   final List<bool> _selectedDays = [
     false,
     false,
@@ -33,11 +33,13 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
     false,
     false
   ];
+  String openTime = '00:00';
+  String closeTime = '00:00';
   final List<bool> _selectedPaymentMethods = [false, false, false];
+  int bathSelected = 0; //화장실 라디오 버튼
+
   //버튼 활성화 비활성화를 위한 value값
   int value = 0;
-
-  final TextEditingController _nameController = TextEditingController();
 
   @override
   void initState() {
@@ -476,15 +478,13 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-                    height: 44,
-                    width: contentsWidth * 0.48,
-                    child: _bathSelected('있음', 1)
-                  ),
+                      height: 44,
+                      width: contentsWidth * 0.48,
+                      child: _bathSelected('있음', 1)),
                   SizedBox(
-                    height: 44,
-                    width: contentsWidth * 0.48,
-                    child: _bathSelected('없음 ', 2)
-                  ),
+                      height: 44,
+                      width: contentsWidth * 0.48,
+                      child: _bathSelected('없음 ', 2)),
                 ],
               ),
               //가게 등록버튼
@@ -633,8 +633,7 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       ),
       onPressed: () {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-              builder: (context) => const MyAppPage()),
+          MaterialPageRoute(builder: (context) => const MyAppPage()),
         );
       },
     );
@@ -682,11 +681,10 @@ class _GageAddSangseaState extends State<GageAddSangsea> {
       ),
       onPressed: () {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-              builder: (context) => const MyAppPage()),
+          MaterialPageRoute(builder: (context) => const MyAppPage()),
         );
       },
-          );
+    );
 
     // set up the AlertDialog
     // 완료되었을 때 Alert

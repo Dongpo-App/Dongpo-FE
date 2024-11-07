@@ -2,6 +2,7 @@ import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
+import 'package:geolocator/geolocator.dart';
 
 class MainTitle2 extends StatefulWidget {
   final int idx;
@@ -13,11 +14,13 @@ class MainTitle2 extends StatefulWidget {
 
 class _MainTitle2State extends State<MainTitle2> {
   late final SetOpenPossbility;
+  int betweenDistance = 0;
 
   @override
   void initState() {
     super.initState();
     SetOpenPossbility = getOpenPossibility();
+    _checkDistance();
   }
 
   @override
@@ -38,7 +41,7 @@ class _MainTitle2State extends State<MainTitle2> {
                     color: Color(0xffF15A2B)))
           ],
         ),
-        const Text("{A} M"),
+        Text("$betweenDistance M"),
         Row(
           children: [
             Icon(
@@ -59,6 +62,28 @@ class _MainTitle2State extends State<MainTitle2> {
       return true;
     } else {
       return false;
+    }
+  }
+
+  //사용자와 점포간의 거리계산
+  void _checkDistance() async {
+    Position myPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    if (widget.idx >= 0 && widget.idx < myDataList.length) {
+      // myDataList[widget.idx]에 안전하게 접근
+      var checkMeter = Geolocator.distanceBetween(
+        myPosition.latitude,
+        myPosition.longitude,
+        myDataList[widget.idx].latitude,
+        myDataList[widget.idx].longitude,
+      );
+
+      logger.d("checkMeter = ${checkMeter}");
+      // betweenDistance = checkMeter;
+      logger.d('나와 점포 거리 차이는 = $checkMeter M');
+    } else {
+      logger.e("유효하지 않은 인덱스: ${widget.idx}");
     }
   }
 }
@@ -96,18 +121,18 @@ class _MainPhotoState extends State<MainPhoto2> {
       child: imageList.isEmpty
           ? const Center(child: Text('등록된 이미지가 아직 없습니다!')) // 이미지가 없을 때 로딩 표시
           : isLoading
-            ? const CircularProgressIndicator()
-            : ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: imageList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  width: 200,
-                  margin: const EdgeInsets.fromLTRB(20, 0, 10, 10),
-                  child: imageList[index], // 이미지 리스트에서 이미지를 가져옴
-                );
-              },
-            ),
+              ? const CircularProgressIndicator()
+              : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: imageList.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                      width: 200,
+                      margin: const EdgeInsets.fromLTRB(20, 0, 10, 10),
+                      child: imageList[index], // 이미지 리스트에서 이미지를 가져옴
+                    );
+                  },
+                ),
     );
   }
 

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:dongpo_test/screens/login/login.dart';
+import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/store_service.dart';
@@ -304,7 +305,7 @@ class _ShowReviewState extends State<ShowReview> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ShowAllReviews(),
+                      builder: (context) => ShowAllReviews(idx: storeId),
                     ));
               },
               style: ElevatedButton.styleFrom(
@@ -404,27 +405,43 @@ class _ShowReviewState extends State<ShowReview> {
 
 //리뷰 등록 클릭시 실행 함수
 
-  showAlertDialog(BuildContext context) {
-    // set up the button
-    Widget okButton = TextButton(
-      child: const Text("확인"),
+  void sucessAddReviewAlert(BuildContext context) {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0, backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+      ),
       onPressed: () {
         Navigator.pop(context);
         Navigator.pop(context);
       },
     );
-
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: const Text("리뷰 등록"),
-      content: const Text("리뷰 등록이 완료되었습니다."),
+      backgroundColor: Colors.white,
+      title: const Text(
+        "리뷰 등록",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "리뷰 등록이 완료되었습니다.",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
       actions: [
-        okButton,
+        Center(child: okButton),
       ],
     );
 
-    // show the dialog
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return alert;
@@ -453,7 +470,7 @@ class _ShowReviewState extends State<ShowReview> {
                   children: [
                     Row(
                       children: [
-                        const Text('이름'),
+                        Text('${reviewList[index].memberNickname}'),
                         const SizedBox(width: 20),
                         Container(
                           padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
@@ -552,7 +569,7 @@ class _ShowReviewState extends State<ShowReview> {
                                               (value == 0)
                                                   ? null
                                                   : logger.d('버튼 활성화');
-                                              //dio.post()구현
+                                              reviewStoreReport(index);
                                             },
                                             style: ElevatedButton.styleFrom(
                                               splashFactory: (value ==
@@ -601,6 +618,127 @@ class _ShowReviewState extends State<ShowReview> {
           ],
         ),
       ),
+    );
+  }
+
+  String etcText = '';
+  // 리뷰 점포 신고
+  void reviewStoreReport(int idx) async {
+    String sendData = setReportData(value);
+    logger.d("sendData : $sendData");
+    final url = Uri.parse('$serverUrl/api/report/review/${reviewList[idx].id}');
+
+    final accessToken = await storage.read(key: 'accessToken');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+
+    final includeTextData = {
+      "text": etcText + "테스트 ", // reason이 ETC일 경우 포함
+      "reason": sendData,
+    };
+
+    final exceptTextData = {
+      "reson": sendData,
+    };
+    logger.d("_send : sendData");
+    var data;
+
+    if (value == 5) {
+      data = includeTextData;
+    } else {
+      data = exceptTextData;
+    }
+
+    logger.d('send Body check value : $value data : $data');
+
+    final body = jsonEncode(data);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: body,
+      );
+
+      final responsebody = utf8.decode(response.bodyBytes);
+
+      if (response.statusCode == 200) {
+        logger.d('신고 완료!! 신고 내용 : ${sendData} & ETC : ${etcText}');
+        logger.d('신고한 리뷰 ID = :${reviewList[idx].id}');
+        showSuccessDialog();
+      } else {
+        logger.e(
+            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responsebody}');
+      }
+    } catch (e) {
+      // TODO
+      logger.d("HTTP ERROR in storeReposrt method!! Error 내용 : $e");
+    }
+  }
+
+  String setReportData(int idx) {
+    switch (idx) {
+      case 1:
+        return "PROMOTIONAL_REVIEW";
+      case 2:
+        return "SPAM";
+      case 3:
+        return " INAPPOSITE_INFO";
+      case 4:
+        return "IRRELEVANT_CONTENT";
+      case 5:
+        return "ETC";
+      default:
+        "";
+    }
+
+    return "";
+  }
+
+  void showSuccessDialog() {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0, backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "신고 성공!",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "성공적으로 신고가 접수되었어요!",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      actions: [
+        Center(child: okButton),
+      ],
+    );
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
@@ -660,180 +798,326 @@ Widget _radioBtn(String text, int index, StateSetter setStater) {
   );
 }
 
-// 개별 리뷰를 표시하는 함수
-Widget _showReview2(BuildContext context, int rating, int index) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-    child: Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const CircleAvatar(
-                backgroundImage: AssetImage('assets/images/rakoon.png'),
-              ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Text('연수민'),
-                      const SizedBox(width: 20),
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.red[100],
-                        ),
-                        child: Text(
-                          "난 한 가게만 패",
-                          style: TextStyle(
-                              fontSize: 10, color: Colors.redAccent[400]),
-                        ),
-                      ),
-                    ],
-                  ),
-                  RatingWidget(rating: rating), // 별점 위젯 추가
-                ],
-              ),
-            ],
-          ),
-          const Text(''),
-          const SizedBox(height: 10),
-          SizedBox(
-            height: 100,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: const [
-                Image(image: AssetImage('assets/images/rakoon.png')),
-                Image(image: AssetImage('assets/images/rakoon.png')),
-                Image(image: AssetImage('assets/images/rakoon.png')),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              const Text("2024.04.02"),
-              const Spacer(),
-              TextButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return StatefulBuilder(builder:
-                          (BuildContext context, StateSetter setState) {
-                        return SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.6,
-                          child: Container(
-                            margin: const EdgeInsets.all(20),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    const Text(
-                                      "리뷰 신고하기",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 30),
-                                    ),
-                                    const Spacer(),
-                                    IconButton(
-                                        onPressed: () {
-                                          setState(() => value = 0);
-                                          Navigator.pop(context);
-                                        },
-                                        icon: const Icon(CupertinoIcons.xmark))
-                                  ],
-                                ),
-                                //버튼 모음
-                                Container(
-                                  height: 350,
-                                  padding: const EdgeInsets.all(20),
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      _radioBtn('홍보성 리뷰에요', 1, setState),
-                                      _radioBtn('도배 글이에요', 2, setState),
-                                      _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)', 3,
-                                          setState),
-                                      _radioBtn('가게에 무관한 리뷰에요', 4, setState),
-                                      _radioBtn('기타', 5, setState),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            (value == 0)
-                                                ? null
-                                                : logger.d('버튼 활성화');
-                                            //dio.post()구현
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            splashFactory: (value ==
-                                                    0) // 아무것도 터치 안했으면
-                                                ? NoSplash
-                                                    .splashFactory //스플레시 효과 비활성화
-                                                : InkSplash
-                                                    .splashFactory, //스플레시 효과 활성화
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(10))),
-                                            minimumSize:
-                                                const Size(double.infinity, 40),
-                                            backgroundColor: value != 0
-                                                ? const Color(0xffF15A2B)
-                                                : Colors.grey[300],
-                                          ),
-                                          child: Text(
-                                            "가게 신고",
-                                            style: TextStyle(
-                                                color: (value > 0)
-                                                    ? Colors.white
-                                                    : Colors.grey[600]),
-                                          )),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      });
-                    },
-                  );
-                },
-                child: const Text("신고",
-                    style: TextStyle(fontSize: 20, color: Colors.orange)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          const Divider(),
-        ],
-      ),
-    ),
-  );
+class ShowAllReviews extends StatefulWidget {
+  final int idx;
+  const ShowAllReviews({super.key, required this.idx});
+
+  @override
+  State<ShowAllReviews> createState() => _ShowAllReviewsState();
 }
 
-class ShowAllReviews extends StatelessWidget {
-  const ShowAllReviews({super.key});
-
+class _ShowAllReviewsState extends State<ShowAllReviews> {
+  StoreApiService storeService = StoreApiService.instance;
+  final reviewList = storeData?.reviews ?? []; // null일 경우 빈 리스트로 대체
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('리뷰 전체'),
+        appBar: AppBar(
+          title: const Text('리뷰 전체'),
+        ),
+        body: ListView.builder(
+          shrinkWrap: true, // 높이를 자동으로 조정
+          physics: const NeverScrollableScrollPhysics(), // 스크롤 비활성화
+          itemCount: reviewList.length,
+          itemBuilder: (context, index) {
+            final review = reviewList[index].reviewStar; // 항상 비어있지 않으므로 직접 접근
+            logger.d('리뷰 리스트에 들어있는 값 체크 : $reviewList');
+
+            return _showReview(context, review ?? 1, index); // 각 리뷰 위젯 생성
+          },
+        ));
+  }
+
+// 개별 리뷰를 표시하는 함수
+  Widget _showReview(BuildContext context, int rating, int index) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage:
+                      NetworkImage('${reviewList[index].memberProfilePic}'),
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text('${reviewList[index].memberNickname}'),
+                        const SizedBox(width: 20),
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(5, 2, 5, 2),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.red[100],
+                          ),
+                          child: Text(
+                            "난 한 가게만 패",
+                            style: TextStyle(
+                                fontSize: 10, color: Colors.redAccent[400]),
+                          ),
+                        ),
+                      ],
+                    ),
+                    RatingWidget(
+                        rating: reviewList[index].reviewStar ?? 0), // 별점 위젯 추가
+                  ],
+                ),
+              ],
+            ),
+            Text('${reviewList[index].text}'),
+            const SizedBox(height: 10),
+            SizedBox(
+                height: 100,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal, // 가로 스크롤
+                  itemCount: reviewList[index].reviewPics?.length ??
+                      0, // 사진 수만큼 아이템 생성
+                  itemBuilder: (context, idx) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.network(
+                        reviewList[index].reviewPics![idx], // 이미지 URL을 가져옴
+                        width: 100, // 각 이미지의 가로 크기 설정
+                        fit: BoxFit.cover, // 이미지가 잘 맞도록 설정
+                      ),
+                    );
+                  },
+                )),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Text('${reviewList[index].registerDate}'),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return StatefulBuilder(builder:
+                            (BuildContext context, StateSetter setState) {
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            child: Container(
+                              margin: const EdgeInsets.all(20),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        "리뷰 신고하기",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 30),
+                                      ),
+                                      const Spacer(),
+                                      IconButton(
+                                          onPressed: () {
+                                            setState(() => value = 0);
+                                            Navigator.pop(context);
+                                          },
+                                          icon:
+                                              const Icon(CupertinoIcons.xmark))
+                                    ],
+                                  ),
+                                  //버튼 모음
+                                  Container(
+                                    height: 350,
+                                    padding: const EdgeInsets.all(20),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        _radioBtn('홍보성 리뷰에요', 1, setState),
+                                        _radioBtn('도배 글이에요', 2, setState),
+                                        _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)', 3,
+                                            setState),
+                                        _radioBtn('가게에 무관한 리뷰에요', 4, setState),
+                                        _radioBtn('기타', 5, setState),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              (value == 0)
+                                                  ? null
+                                                  : logger.d('버튼 활성화');
+                                              reviewStoreReport(index);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              splashFactory: (value ==
+                                                      0) // 아무것도 터치 안했으면
+                                                  ? NoSplash
+                                                      .splashFactory //스플레시 효과 비활성화
+                                                  : InkSplash
+                                                      .splashFactory, //스플레시 효과 활성화
+                                              shape:
+                                                  const RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  10))),
+                                              minimumSize: const Size(
+                                                  double.infinity, 40),
+                                              backgroundColor: value != 0
+                                                  ? const Color(0xffF15A2B)
+                                                  : Colors.grey[300],
+                                            ),
+                                            child: Text(
+                                              "가게 신고",
+                                              style: TextStyle(
+                                                  color: (value > 0)
+                                                      ? Colors.white
+                                                      : Colors.grey[600]),
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                      },
+                    );
+                  },
+                  child: const Text("신고",
+                      style: TextStyle(fontSize: 20, color: Colors.orange)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Divider(),
+          ],
+        ),
       ),
-      body: ListView(
-        children: [
-          _showReview2(context, 4, 1),
-        ],
+    );
+  }
+
+  String etcText = '';
+  // 리뷰 점포 신고
+  void reviewStoreReport(int idx) async {
+    String sendData = setReportData(value);
+    logger.d("sendData : $sendData");
+    final url = Uri.parse('$serverUrl/api/report/review/${reviewList[idx].id}');
+
+    final accessToken = await storage.read(key: 'accessToken');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+
+    final includeTextData = {
+      "text": etcText + "테스트 ", // reason이 ETC일 경우 포함
+      "reason": sendData,
+    };
+
+    final exceptTextData = {
+      "reson": sendData,
+    };
+    logger.d("_send : sendData");
+    var data;
+
+    if (value == 5) {
+      data = includeTextData;
+    } else {
+      data = exceptTextData;
+    }
+
+    logger.d('send Body check value : $value data : $data');
+
+    final body = jsonEncode(data);
+
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: body,
+      );
+
+      final responsebody = utf8.decode(response.bodyBytes);
+
+      if (response.statusCode == 200) {
+        logger.d('신고 완료!! 신고 내용 : ${sendData} & ETC : ${etcText}');
+        logger.d('신고한 리뷰 ID = :${reviewList[idx].id}');
+        showSuccessDialog();
+      } else {
+        logger.e(
+            'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${responsebody}');
+      }
+    } catch (e) {
+      // TODO
+      logger.d("HTTP ERROR in storeReposrt method!! Error 내용 : $e");
+    }
+  }
+
+  String setReportData(int idx) {
+    switch (idx) {
+      case 1:
+        return "PROMOTIONAL_REVIEW";
+      case 2:
+        return "SPAM";
+      case 3:
+        return " INAPPOSITE_INFO";
+      case 4:
+        return "IRRELEVANT_CONTENT";
+      case 5:
+        return "ETC";
+      default:
+        "";
+    }
+
+    return "";
+  }
+
+  void showSuccessDialog() {
+    Widget okButton = ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          elevation: 0, backgroundColor: const Color(0xffF15A2B)),
+      child: const Text(
+        "확인",
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
       ),
+      onPressed: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+    );
+    AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.white,
+      title: const Text(
+        "신고 성공!",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: const Text(
+        "성공적으로 신고가 접수되었어요!",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      actions: [
+        Center(child: okButton),
+      ],
+    );
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

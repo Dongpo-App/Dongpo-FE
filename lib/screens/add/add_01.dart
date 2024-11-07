@@ -60,13 +60,23 @@ class _AddPageState extends State<AddPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         scrolledUnderElevation: 0,
-        automaticallyImplyLeading: false, // 뒤로가기 버튼 없애기
+        automaticallyImplyLeading: true, // 뒤로가기 버튼 없애기
         centerTitle: true,
         title: const Text(
           "가게 등록",
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
+          ),
+        ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context); //뒤로가기
+          },
+          icon: const Icon(
+            Icons.chevron_left,
+            size: 24,
+            color: Color(0xFF767676),
           ),
         ),
       ),
@@ -129,7 +139,7 @@ class _AddPageState extends State<AddPage> {
                   ),
                 ),
                 SizedBox(
-                  height: screenHeight * 0.5,
+                  height: screenHeight * 0.58,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -151,76 +161,85 @@ class _AddPageState extends State<AddPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
+                      height: screenHeight * 0.3,
                       padding: const EdgeInsets.all(24.0), // 패딩 설정
-                      color: Colors.white,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 24),
-                            child: const Text(
-                              "가게 위치를 알려주세요",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 24),
+                              child: const Text(
+                                "가게 위치를 알려주세요",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
-                          ),
-                          Container(
-                            height: 44,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF4F4F4),
-                              borderRadius: BorderRadius.circular(12),
+                            Container(
+                              height: 44,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF4F4F4),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: ValueListenableBuilder<String>(
+                                  valueListenable:
+                                      _addressNotifier, // 주소 변경 시 업데이트
+                                  builder: (context, address, child) {
+                                    return Text(
+                                      address,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        color: Color(0xFF767676),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                             ),
-                            child: Center(
-                              child: ValueListenableBuilder<String>(
-                                valueListenable:
-                                    _addressNotifier, // 주소 변경 시 업데이트
-                                builder: (context, address, child) {
-                                  return Text(
-                                    address,
-                                    style: const TextStyle(
+                            const SizedBox(height: 16), // margin
+                            Container(
+                              height: 44,
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(bottom: 24),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0, // 그림자 제거
+                                  backgroundColor:
+                                      const Color(0xFFF15A2B), // 버튼 색상 설정
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(12))),
+                                ),
+                                child: const Text(
+                                  '가게 등록',
+                                  style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xFF767676),
-                                    ),
-                                  );
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const GageAddSangsea()));
                                 },
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 16), // margin
-                          Container(
-                            height: 44,
-                            width: double.infinity,
-                            margin: const EdgeInsets.only(bottom: 24),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                elevation: 0, // 그림자 제거
-                                backgroundColor:
-                                    const Color(0xFFF15A2B), // 버튼 색상 설정
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(12))),
-                              ),
-                              child: const Text(
-                                '가게 등록',
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const GageAddSangsea()));
-                              },
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],

@@ -1,6 +1,8 @@
+import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 class MainTitle extends StatefulWidget {
   final int idx;
@@ -12,11 +14,13 @@ class MainTitle extends StatefulWidget {
 
 class _MainTitleState extends State<MainTitle> {
   late final SetOpenPossbility;
+  int betweenDistance = 0;
 
   @override
   void initState() {
     super.initState();
     SetOpenPossbility = getOpenPossibility();
+    _checkDistance();
   }
 
   @override
@@ -42,8 +46,8 @@ class _MainTitleState extends State<MainTitle> {
                         size: 24,
                         CupertinoIcons.arrow_up_right_diamond_fill,
                         color: Color(0xffF15A2B))),
-                const Text(
-                  "{A}m",
+                Text(
+                  "$betweenDistance M",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -75,6 +79,22 @@ class _MainTitleState extends State<MainTitle> {
         )
       ],
     );
+  }
+
+  //사용자와 점포간의 거리계산
+  void _checkDistance() async {
+    Position myPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    //int로 형변환
+    int checkMeter = Geolocator.distanceBetween(
+      myPosition.latitude,
+      myPosition.longitude,
+      storeData!.latitude,
+      storeData!.longitude,
+    ).floor();
+    betweenDistance = checkMeter;
+    logger.d('나와 점포 거리 차이는 = $checkMeter M');
   }
 
   bool getOpenPossibility() {
