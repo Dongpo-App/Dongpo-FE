@@ -364,44 +364,42 @@ class _StoreInfoState extends State<StoreInfo> {
       ),
       body: storeData == null // storeData가 null인 경우 로딩 표시
           ? const Center(child: CircularProgressIndicator())
-          : Container(
-              margin: const EdgeInsets.all(24),
-              child: ListView(
-                children: [
-                  //제목, 영업가능성, 거리
-                  MainTitle(idx: widget.idx),
-                  //사진
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  const MainPhoto(),
-                  const SizedBox(
-                    height: 32,
-                  ),
-                  //리뷰 갯수, 버튼
-                  UserAction(idx: widget.idx),
-                  const SizedBox(
-                    height: 96,
-                  ),
-                  //방문인증
-                  const BangMoon(),
-                  const SizedBox(
-                    height: 96,
-                  ),
-                  //리뷰 관련
-                  ShowReview(idx: widget.idx),
-                  const SizedBox(
-                    height: 80,
-                  ),
-                  //가게정보
-                  const GageJungbo(),
-                  const SizedBox(
-                    height: 80,
-                  ),
-                  //이 가게 단골 손님
-                  const DanGolGuest(),
-                ],
-              ),
+          : ListView(
+              children: [
+                const SizedBox(height: 24,),
+                //제목, 영업가능성, 거리
+                MainTitle(idx: widget.idx),
+                //사진
+                const SizedBox(
+                  height: 24,
+                ),
+                const MainPhoto(),
+                const SizedBox(
+                  height: 32,
+                ),
+                //리뷰 갯수, 버튼
+                UserAction(idx: widget.idx),
+                const SizedBox(
+                  height: 96,
+                ),
+                //방문인증
+                const BangMoon(),
+                const SizedBox(
+                  height: 96,
+                ),
+                //리뷰 관련
+                ShowReview(idx: widget.idx),
+                const SizedBox(
+                  height: 80,
+                ),
+                //가게정보
+                const GageJungbo(),
+                const SizedBox(
+                  height: 80,
+                ),
+                //이 가게 단골 손님
+                const DanGolGuest(),
+              ],
             ),
     );
   }

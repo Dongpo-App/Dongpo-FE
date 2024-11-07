@@ -19,124 +19,127 @@ class BangMoon extends StatelessWidget {
     // 좌우 마진 제외
     final contentsWidth = screenWidth - 48;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          '방문에 성공하셨나요?',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '방문에 성공하셨나요?',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        SizedBox(
-          height: 24,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            //방문 성공 컨테이너
-            Container(
-              height: 48,
-              width: contentsWidth * 0.48,
-              decoration: BoxDecoration(
-                  color: Color(0x3313C925),
-                  borderRadius: BorderRadius.circular(12.0)),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Icon(
+          SizedBox(
+            height: 24,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              //방문 성공 컨테이너
+              Container(
+                height: 48,
+                width: contentsWidth * 0.48,
+                decoration: BoxDecoration(
+                    color: Color(0x3313C925),
+                    borderRadius: BorderRadius.circular(12.0)),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Icon(
+                        size: 24,
+                        color: Color(0xFF10AA1F),
+                        Icons.sentiment_satisfied_alt),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      '방문 성공 ',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    Text(
+                      '${storeData?.visitSuccessfulCount ?? 0} 회',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              //방문 실패 컨테이너
+              Container(
+                height: 48,
+                width: contentsWidth * 0.48,
+                decoration: BoxDecoration(
+                    color: Color(0x33C91E13),
+                    borderRadius: BorderRadius.circular(12.0)),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Icon(
+                      color: Color(0xFFAD271F),
+                      Icons.sentiment_dissatisfied_outlined,
                       size: 24,
-                      color: Color(0xFF10AA1F),
-                      Icons.sentiment_satisfied_alt),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    '방문 성공 ',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
                     ),
-                  ),
-                  Text(
-                    '${storeData?.visitSuccessfulCount ?? 0} 회',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                    SizedBox(
+                      width: 8,
                     ),
-                  ),
-                ],
+                    Text(
+                      '방문 실패 ',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    Text(
+                      '${storeData?.visitFailCount ?? 0} 회',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            //방문 실패 컨테이너
-            Container(
-              height: 48,
-              width: contentsWidth * 0.48,
-              decoration: BoxDecoration(
-                  color: Color(0x33C91E13),
-                  borderRadius: BorderRadius.circular(12.0)),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Icon(
-                    color: Color(0xFFAD271F),
-                    Icons.sentiment_dissatisfied_outlined,
-                    size: 24,
-                  ),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Text(
-                    '방문 실패 ',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  Text(
-                    '${storeData?.visitFailCount ?? 0} 회',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 24,
-        ),
-        Container(
-          height: 44,
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => const BangMoonPage()));
-            },
-            style: ElevatedButton.styleFrom(
-              elevation: 0,
-              shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12))),
-              backgroundColor: const Color(0xffF15A2B),
-            ),
-            child: const Text(
-              '방문 인증 하러가기',
-              style: TextStyle(
-                  fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
-            ),
+            ],
           ),
-        )
-      ]
+          SizedBox(
+            height: 24,
+          ),
+          Container(
+            height: 44,
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => const BangMoonPage()));
+              },
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12))),
+                backgroundColor: const Color(0xffF15A2B),
+              ),
+              child: const Text(
+                '방문 인증 하러가기',
+                style: TextStyle(
+                    fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+            ),
+          )
+        ]
+      ),
     );
   }
 }

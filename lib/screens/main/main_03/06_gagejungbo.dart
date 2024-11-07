@@ -7,7 +7,7 @@ class GageJungbo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(4.0),
+      margin: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
           const Row(
@@ -85,9 +85,10 @@ class GageJungbo extends StatelessWidget {
                 }));
               },
               style: ElevatedButton.styleFrom(
+                elevation: 0,
                 minimumSize: const Size(double.infinity, 45),
                 shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                    borderRadius: BorderRadius.all(Radius.circular(12))),
                 backgroundColor: const Color(0xffF15A2B),
               ),
               child: const Text(
