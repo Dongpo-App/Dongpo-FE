@@ -1,17 +1,18 @@
 //가게정보 자세히
 import 'dart:convert';
 
-import 'package:dongpo_test/models/store_detail.dart';
+import 'package:dongpo_test/models/store/store_detail.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/04_bangmoon.dart';
 import 'package:dongpo_test/screens/main/main_03/06_gagejungbo.dart';
-import 'package:dongpo_test/screens/main/main_03/02_photo_List.dart';
+import 'package:dongpo_test/screens/main/main_03/02_photo_list.dart';
 import 'package:dongpo_test/screens/main/main_03/05_review.dart';
 import 'package:dongpo_test/screens/main/main_03/01_title.dart';
 import 'package:dongpo_test/screens/main/main_03/03_user_action.dart';
 import 'package:dongpo_test/screens/main/main_03/07_dangol.dart';
 import 'package:dongpo_test/screens/my_info/info_detail/bookmark_view_model.dart';
 import 'package:dongpo_test/service/store_service.dart';
+import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
@@ -32,6 +33,7 @@ class StoreInfo extends StatefulWidget {
 class _StoreInfoState extends State<StoreInfo> {
   BookmarkViewModel viewModel = BookmarkViewModel();
   StoreApiService storeService = StoreApiService.instance;
+  MapManager manager = MapManager();
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
   }
@@ -51,10 +53,10 @@ class _StoreInfoState extends State<StoreInfo> {
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data;
         logger.d(
-            'StoreData Test : ${data!.visitSuccessfulCount} : ${data.visitFailCount}');
+            'storeData Test : ${data!.visitSuccessfulCount} : ${data.visitFailCount}');
         if (!mounted) return;
         setState(() {
-          storeData = data; // 가져온 데이터를 myStoreList에 할당
+          manager.selectedDetail = data; // 가져온 데이터를 myStoreList에 할당
         });
       }
     } catch (e) {
@@ -362,11 +364,14 @@ class _StoreInfoState extends State<StoreInfo> {
           )
         ],
       ),
-      body: storeData == null // storeData가 null인 경우 로딩 표시
+      body: manager.selectedDetail ==
+              null // manager.selectedDetail가 null인 경우 로딩 표시
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               children: [
-                const SizedBox(height: 24,),
+                const SizedBox(
+                  height: 24,
+                ),
                 //제목, 영업가능성, 거리
                 MainTitle(idx: widget.idx),
                 //사진
@@ -383,7 +388,7 @@ class _StoreInfoState extends State<StoreInfo> {
                   height: 96,
                 ),
                 //방문인증
-                const BangMoon(),
+                BangMoon(),
                 const SizedBox(
                   height: 96,
                 ),
@@ -398,7 +403,7 @@ class _StoreInfoState extends State<StoreInfo> {
                   height: 80,
                 ),
                 //이 가게 단골 손님
-                const DanGolGuest(),
+                DanGolGuest(),
               ],
             ),
     );
@@ -435,33 +440,33 @@ class _StoreInfoState extends State<StoreInfo> {
     );
   }
 
-  Future<StoreSangse> _storeSangse() async {
-    final accessToken = await storage.read(key: 'accessToken');
+  // Future<StoreDetail> _storeDeStoreDetail() async {
+  //   final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('$serverUrl/api/store/${widget.idx}');
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
+  //   final url = Uri.parse('$serverUrl/api/store/${widget.idx}');
+  //   final headers = {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': 'Bearer $accessToken',
+  //   };
 
-    final response = await http.get(url, headers: headers);
-    final Map<String, dynamic> data =
-        json.decode(utf8.decode(response.bodyBytes));
+  //   final response = await http.get(url, headers: headers);
+  //   final Map<String, dynamic> data =
+  //       json.decode(utf8.decode(response.bodyBytes));
 
-    if (response.statusCode == 200) {
-      // 응답 데이터에서 'data' 필드 추출 후, StoreSangse 객체로 변환
-      final Map<String, dynamic> jsonData = data['data'];
+  //   if (response.statusCode == 200) {
+  //     // 응답 데이터에서 'data' 필드 추출 후, StoreDetail 객체로 변환
+  //     final Map<String, dynamic> jsonData = data['data'];
 
-      // StoreSangse 객체 생성
-      final StoreSangse storeData = StoreSangse.fromJson(jsonData);
+  //     // StoreDetail 객체 생성
+  //     final StoreDetail manager.selectedDetail = StoreDetail.fromJson(jsonData);
 
-      return storeData;
-    } else {
-      logger.e(
-          '가게정보 상세 불러오는 중 (가게 id : ${widget.idx}) HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답본문 : $data');
-      throw Exception('Failed to load 가게상세정보');
-    }
-  }
+  //     return manager.selectedDetail;
+  //   } else {
+  //     logger.e(
+  //         '가게정보 상세 불러오는 중 (가게 id : ${widget.idx}) HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답본문 : $data');
+  //     throw Exception('Failed to load 가게상세정보');
+  //   }
+  // }
 }
 
 

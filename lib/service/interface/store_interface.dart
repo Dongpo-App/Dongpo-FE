@@ -1,8 +1,8 @@
-import 'package:dongpo_test/models/clicked_marker_info.dart';
+import 'package:dongpo_test/models/store/clicked_marker_info.dart';
 import 'package:dongpo_test/models/request/add_store_request.dart';
 import 'package:dongpo_test/models/response/api_response.dart';
-import 'package:dongpo_test/models/store_detail.dart';
-import 'package:dongpo_test/models/store_marker.dart';
+import 'package:dongpo_test/models/store/store_detail.dart';
+import 'package:dongpo_test/models/store/store_marker.dart';
 import 'package:image_picker/image_picker.dart';
 
 abstract class StoreServiceInterface {
@@ -12,7 +12,7 @@ abstract class StoreServiceInterface {
   // 점포 등록
   Future<ApiResponse> addStore(AddStoreRequest storeInfo);
   // 점포 상세 조회
-  Future<ApiResponse<StoreSangse>> getStoreDetail(int id);
+  Future<ApiResponse<StoreDetail>> getStoreDetail(int id);
   // 점포 삭제
   Future<ApiResponse> deleteStore(int id);
   // 점포 정보 수정

@@ -1,4 +1,4 @@
-class StoreSangse {
+class StoreDetail {
   final int id;
   final String name;
   final String address;
@@ -20,7 +20,7 @@ class StoreSangse {
   final int? visitFailCount;
   final int? bookmarkCount;
 
-  StoreSangse({
+  StoreDetail({
     required this.bookmarkCount,
     required this.id,
     required this.name,
@@ -43,8 +43,8 @@ class StoreSangse {
     this.visitSuccessfulCount,
   });
 
-  factory StoreSangse.fromJson(Map<String, dynamic> json) {
-    return StoreSangse(
+  factory StoreDetail.fromJson(Map<String, dynamic> json) {
+    return StoreDetail(
       bookmarkCount: json['bookmarkCount'] as int,
       id: json['id'] as int,
       name: json['name'] as String,
