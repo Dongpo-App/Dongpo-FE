@@ -116,7 +116,7 @@ class InfoReviewPageState extends State<InfoReviewPage> {
               itemCount: _userReview.length,
               itemBuilder: (context, index) {
                 var review = _userReview[index];
-                String reviewDate = DateFormat('yyyy-MM-dd').format(_userReview[index].registerDate);
+                String reviewDate = DateFormat('yyyy-MM-dd').format(review.registerDate);
                 return Card(
                   elevation: 0,
                   color: const Color(0xFFFFFFFF),
@@ -205,8 +205,8 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                                 ),
                               ),
                               review.reviewPics.isEmpty // 리뷰 사진이 있으면 이미지 띄움
-                              ? const SizedBox(height: 24,)
-                              : reviewImageList(review.reviewPics),
+                                ? const SizedBox(height: 24,)
+                                : reviewImageList(review.reviewPics),
                               Row(
                                 children: [
                                   const Spacer(),

@@ -2,7 +2,7 @@ class UserReview {
   late final int id;
   late final int storeId;
   late final String storeName;
-  late final int reviewStar;
+  late final double reviewStar;
   late final String text;
   late final List<String> reviewPics;
   late final DateTime registerDate;
@@ -42,7 +42,7 @@ class UserReview {
   String getStoreName(){
     return storeName;
   }
-  int getReviewStar(){
+  double getReviewStar(){
     return reviewStar;
   }
   String getText(){

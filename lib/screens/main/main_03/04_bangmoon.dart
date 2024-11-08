@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
+import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -10,7 +11,8 @@ import 'package:dongpo_test/main.dart';
 import 'package:http/http.dart' as http;
 
 class BangMoon extends StatelessWidget {
-  const BangMoon({super.key});
+  final MapManager manager = MapManager();
+  BangMoon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,125 +23,124 @@ class BangMoon extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            '방문에 성공하셨나요?',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text(
+          '방문에 성공하셨나요?',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
           ),
-          SizedBox(
-            height: 24,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              //방문 성공 컨테이너
-              Container(
-                height: 48,
-                width: contentsWidth * 0.48,
-                decoration: BoxDecoration(
-                    color: Color(0x3313C925),
-                    borderRadius: BorderRadius.circular(12.0)),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Icon(
-                        size: 24,
-                        color: Color(0xFF10AA1F),
-                        Icons.sentiment_satisfied_alt),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      '방문 성공 ',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Text(
-                      '${storeData?.visitSuccessfulCount ?? 0} 회',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              //방문 실패 컨테이너
-              Container(
-                height: 48,
-                width: contentsWidth * 0.48,
-                decoration: BoxDecoration(
-                    color: Color(0x33C91E13),
-                    borderRadius: BorderRadius.circular(12.0)),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Icon(
-                      color: Color(0xFFAD271F),
-                      Icons.sentiment_dissatisfied_outlined,
+        ),
+        const SizedBox(
+          height: 24,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            //방문 성공 컨테이너
+            Container(
+              height: 48,
+              width: contentsWidth * 0.48,
+              decoration: BoxDecoration(
+                  color: const Color(0x3313C925),
+                  borderRadius: BorderRadius.circular(12.0)),
+              child: Row(
+                children: [
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  const Icon(
                       size: 24,
+                      color: Color(0xFF10AA1F),
+                      Icons.sentiment_satisfied_alt),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  const Text(
+                    '방문 성공 ',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
                     ),
-                    SizedBox(
-                      width: 8,
+                  ),
+                  Text(
+                    '${manager.selectedDetail?.visitSuccessfulCount ?? 0} 회',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
-                    Text(
-                      '방문 실패 ',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Text(
-                      '${storeData?.visitFailCount ?? 0} 회',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 24,
-          ),
-          Container(
-            height: 44,
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => const BangMoonPage()));
-              },
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12))),
-                backgroundColor: const Color(0xffF15A2B),
-              ),
-              child: const Text(
-                '방문 인증 하러가기',
-                style: TextStyle(
-                    fontSize: 14, color: Colors.white, fontWeight: FontWeight.w600),
+                  ),
+                ],
               ),
             ),
-          )
-        ]
-      ),
+            //방문 실패 컨테이너
+            Container(
+              height: 48,
+              width: contentsWidth * 0.48,
+              decoration: BoxDecoration(
+                  color: const Color(0x33C91E13),
+                  borderRadius: BorderRadius.circular(12.0)),
+              child: Row(
+                children: [
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  const Icon(
+                    color: Color(0xFFAD271F),
+                    Icons.sentiment_dissatisfied_outlined,
+                    size: 24,
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  const Text(
+                    '방문 실패 ',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  Text(
+                    '${manager.selectedDetail?.visitFailCount ?? 0} 회',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 24,
+        ),
+        SizedBox(
+          height: 44,
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => const BangMoonPage()));
+            },
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(12))),
+              backgroundColor: const Color(0xffF15A2B),
+            ),
+            child: const Text(
+              '방문 인증 하러가기',
+              style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+        )
+      ]),
     );
   }
 }
@@ -153,7 +154,7 @@ class BangMoonPage extends StatefulWidget {
 }
 
 class _BangMoonPageState extends State<BangMoonPage> {
-  late NaverMapController _mapController;
+  MapManager manager = MapManager();
   int okValue = 0;
   int noValue = 0;
 
@@ -164,8 +165,8 @@ class _BangMoonPageState extends State<BangMoonPage> {
   }
 
   @override
-  void dispose(){
-    _mapController.dispose();
+  void dispose() {
+    manager.mapController.dispose();
     super.dispose();
   }
 
@@ -205,7 +206,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
         ),
       ),
       body: FutureBuilder<NLatLng>(
-        future: getCurrentLocation(), // 현재 위치 정보를 가져오는 Future를 빌드
+        future: manager.getCurrentNLatLng(), // 현재 위치 정보를 가져오는 Future를 빌드
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // 로딩 중일 때 로딩 인디케이터 표시
@@ -219,8 +220,8 @@ class _BangMoonPageState extends State<BangMoonPage> {
               children: [
                 NaverMap(
                   onMapReady: (controller) {
-                    _onMapReady(controller);
-                    _mapController.updateCamera(
+                    manager.initialize(controller);
+                    manager.mapController.updateCamera(
                       NCameraUpdate.fromCameraPosition(
                         NCameraPosition(
                           target: snapshot.data!, // 초기 카메라 위치 설정
@@ -228,7 +229,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
                         ),
                       ),
                     );
-                    _SetMyMarkerAndStoreMarker();
+                    _setMyMarkerAndStoreMarker();
                   },
                   options: const NaverMapViewOptions(
                     zoomGesturesEnable: false,
@@ -246,7 +247,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
                             elevation: 8,
                             shape: const CircleBorder(),
                             padding: const EdgeInsets.all(4),
-                            foregroundColor: Color(0xFF003ACE),
+                            foregroundColor: const Color(0xFF003ACE),
                             backgroundColor: WidgetStateColor.resolveWith(
                                 (states) => Colors.white)),
                         onPressed: _checkDistance,
@@ -260,7 +261,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
                   children: [
                     Container(
                       height: screenHeight * 0.3,
-                      padding: EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(24),
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
@@ -269,155 +270,154 @@ class _BangMoonPageState extends State<BangMoonPage> {
                         ),
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 24),
-                            child: const Text(
-                              "가게 방문 인증",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              //방문 성공 버튼
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    okValue = 1;
-                                    noValue = 0;
-                                  });
-                                },
-                                child: Container(
-                                  height: 48,
-                                  width: contentsWidth * 0.48,
-                                  decoration: BoxDecoration(
-                                  color: okValue == 1
-                                  ? Color(0x3313C925)
-                                      : Color(0xFFF4F4F4),
-                                  borderRadius: BorderRadius.circular(12.0)),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 8,
-                                      ),
-                                      Icon(
-                                        color: okValue == 1
-                                          ? Color(0xFF10AA1F)
-                                          : Color(0xFF767676),
-                                        Icons.sentiment_satisfied_alt,
-                                        size: 24,
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      Text(
-                                        '방문 성공',
-                                        style: okValue == 1
-                                          ? const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600)
-                                          : const TextStyle(
-                                            fontSize: 14,
-                                            color: Color(0xFF767676),
-                                            fontWeight: FontWeight.w400,)
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              // 방문 실패 버튼
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    okValue = 0;
-                                    noValue = 1;
-                                  });
-                                },
-                                child: Container(
-                                  height: 48,
-                                  width: contentsWidth * 0.48,
-                                  decoration: BoxDecoration(
-                                    color: noValue == 1
-                                      ? Color(0x33C91E13)
-                                     : Color(0xFFF4F4F4),
-                                    borderRadius: BorderRadius.circular(12.0)
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 8,
-                                      ),
-                                      Icon(
-                                        size: 24,
-                                        color: noValue == 1
-                                          ? Color(0xFFAD271F)
-                                          : Color(0xFF767676),
-                                        Icons.sentiment_dissatisfied_outlined,
-                                      ),
-                                      const SizedBox(
-                                        width: 8,
-                                      ),
-                                      Text(
-                                        '방문 실패',
-                                        style: noValue == 1
-                                          ? const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600)
-                                          : const TextStyle(
-                                            fontSize: 14,
-                                            color: Color(0xFF767676),
-                                            fontWeight: FontWeight.w400,)
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 16,
-                          ),
-                          Container(
-                            height: 44,
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                (okValue == 1 || noValue == 1)
-                                  ? _checkDistance()
-                                  : null;
-                              },
-                              style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              splashFactory: (okValue == 0 && noValue == 0)
-                                ? NoSplash.splashFactory
-                                : InkSplash.splashFactory,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                BorderRadius.all(Radius.circular(12))),
-                              backgroundColor: (okValue == 1 || noValue == 1)
-                                ? const Color(0xffF15A2B)
-                                : const Color(0xFFF4F4F4),
-                              ),
-                              child: Text(
-                                '방문 인증',
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 24),
+                              child: const Text(
+                                "가게 방문 인증",
                                 style: TextStyle(
-                                  color: (okValue == 1 || noValue == 1)
-                                    ? Colors.white
-                                    : Color(0xFF767676),
-                                  fontWeight: (okValue == 1 || noValue == 1)
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
-                          )
-                        ]
-                      ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                //방문 성공 버튼
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      okValue = 1;
+                                      noValue = 0;
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 48,
+                                    width: contentsWidth * 0.48,
+                                    decoration: BoxDecoration(
+                                        color: okValue == 1
+                                            ? const Color(0x3313C925)
+                                            : const Color(0xFFF4F4F4),
+                                        borderRadius:
+                                            BorderRadius.circular(12.0)),
+                                    child: Row(
+                                      children: [
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Icon(
+                                          color: okValue == 1
+                                              ? const Color(0xFF10AA1F)
+                                              : const Color(0xFF767676),
+                                          Icons.sentiment_satisfied_alt,
+                                          size: 24,
+                                        ),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text('방문 성공',
+                                            style: okValue == 1
+                                                ? const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600)
+                                                : const TextStyle(
+                                                    fontSize: 14,
+                                                    color: Color(0xFF767676),
+                                                    fontWeight: FontWeight.w400,
+                                                  )),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                // 방문 실패 버튼
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      okValue = 0;
+                                      noValue = 1;
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 48,
+                                    width: contentsWidth * 0.48,
+                                    decoration: BoxDecoration(
+                                        color: noValue == 1
+                                            ? const Color(0x33C91E13)
+                                            : const Color(0xFFF4F4F4),
+                                        borderRadius:
+                                            BorderRadius.circular(12.0)),
+                                    child: Row(
+                                      children: [
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Icon(
+                                          size: 24,
+                                          color: noValue == 1
+                                              ? const Color(0xFFAD271F)
+                                              : const Color(0xFF767676),
+                                          Icons.sentiment_dissatisfied_outlined,
+                                        ),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text('방문 실패',
+                                            style: noValue == 1
+                                                ? const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w600)
+                                                : const TextStyle(
+                                                    fontSize: 14,
+                                                    color: Color(0xFF767676),
+                                                    fontWeight: FontWeight.w400,
+                                                  )),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            SizedBox(
+                              height: 44,
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  (okValue == 1 || noValue == 1)
+                                      ? _checkDistance()
+                                      : null;
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  splashFactory: (okValue == 0 && noValue == 0)
+                                      ? NoSplash.splashFactory
+                                      : InkSplash.splashFactory,
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(12))),
+                                  backgroundColor:
+                                      (okValue == 1 || noValue == 1)
+                                          ? const Color(0xffF15A2B)
+                                          : const Color(0xFFF4F4F4),
+                                ),
+                                child: Text(
+                                  '방문 인증',
+                                  style: TextStyle(
+                                    color: (okValue == 1 || noValue == 1)
+                                        ? Colors.white
+                                        : const Color(0xFF767676),
+                                    fontWeight: (okValue == 1 || noValue == 1)
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ]),
                     ),
                   ],
                 ),
@@ -431,25 +431,15 @@ class _BangMoonPageState extends State<BangMoonPage> {
     );
   }
 
-  void _onMapReady(NaverMapController controller) {
-    _mapController = controller;
-  }
-
-  Future<NLatLng> getCurrentLocation() async {
-    // 현재 위치 정보를 가져와 NLatLng 객체로 반환
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    return NLatLng(position.latitude, position.longitude);
-  }
-
-  Future<void> _SetMyMarkerAndStoreMarker() async {
+  Future<void> _setMyMarkerAndStoreMarker() async {
     // 내위치로 화면 이동
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
 
       final myLocation = NLatLng(position.latitude, position.longitude);
-      final storeLocation = NLatLng(storeData!.latitude, storeData!.longitude);
+      final storeLocation = NLatLng(
+          manager.selectedDetail!.latitude, manager.selectedDetail!.longitude);
 
       //내위치 마커 추가
       NMarker myLocationMarker = NMarker(
@@ -463,8 +453,8 @@ class _BangMoonPageState extends State<BangMoonPage> {
       NMarker storeLocationMarker = NMarker(
         id: "store_location_marker",
         position: storeLocation,
-        icon:
-            const NOverlayImage.fromAssetImage('assets/icons/clicked_marker.png'),
+        icon: const NOverlayImage.fromAssetImage(
+            'assets/icons/clicked_marker.png'),
       );
 
       //가게 기준 100m 반경 원 추가
@@ -478,12 +468,11 @@ class _BangMoonPageState extends State<BangMoonPage> {
       );
 
       myLocationMarker.setSize(const Size(24, 24));
-      _mapController.addOverlay(myLocationMarker);
-      _mapController.addOverlay(circleOverlay);
+      manager.mapController.addOverlay(myLocationMarker);
+      manager.mapController.addOverlay(circleOverlay);
 
       storeLocationMarker.setSize(const Size(24, 24));
-      _mapController.addOverlay(storeLocationMarker);
-
+      manager.mapController.addOverlay(storeLocationMarker);
     } catch (e) {
       // 에러 발생 시 로그 출력
       logger.d("Error in _moveToCurrentLocation: $e");
@@ -495,8 +484,11 @@ class _BangMoonPageState extends State<BangMoonPage> {
         desiredAccuracy: LocationAccuracy.high);
 
     //int로 형변환
-    int checkMeter = Geolocator.distanceBetween(storeData!.latitude,
-            storeData!.longitude, myPosition.latitude, myPosition.longitude)
+    int checkMeter = Geolocator.distanceBetween(
+            manager.selectedDetail!.latitude,
+            manager.selectedDetail!.longitude,
+            myPosition.latitude,
+            myPosition.longitude)
         .floor();
 
     logger.d('두 개의 거리 차이는 = $checkMeter M');
@@ -525,7 +517,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
     final data = {
       "latitude": myPosition.latitude, // '방문인증'을 지도에서 누른 기준 사용자의 위도
       "longitude": myPosition.longitude, // '방문인증'을 지도에서 누른 기준 사용자의 경도
-      "storeId": storeData!.id, // 방문인증 하고자 하는 점포의 id
+      "storeId": manager.selectedDetail!.id, // 방문인증 하고자 하는 점포의 id
       "isVisitSuccessful": setTrueFaileValue // 방문인증 성공 여부 ? true : false
     };
 
@@ -607,7 +599,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
       onPressed: () {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => MainPage()), // 1페이지로 이동
+          MaterialPageRoute(builder: (context) => const MainPage()), // 1페이지로 이동
           (Route<dynamic> route) => false, // 모든 이전 스택을 삭제
         );
 
@@ -616,7 +608,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
           context,
           MaterialPageRoute(
               builder: (context) => StoreInfo(
-                    idx: storeData!.id,
+                    idx: manager.selectedDetail!.id,
                   )), // 2페이지로 이동
         );
       },

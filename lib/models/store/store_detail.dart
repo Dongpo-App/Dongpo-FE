@@ -1,4 +1,4 @@
-class StoreSangse {
+class StoreDetail {
   final int id;
   final String name;
   final String address;
@@ -20,7 +20,7 @@ class StoreSangse {
   final int? visitFailCount;
   final int? bookmarkCount;
 
-  StoreSangse({
+  StoreDetail({
     required this.bookmarkCount,
     required this.id,
     required this.name,
@@ -43,8 +43,8 @@ class StoreSangse {
     this.visitSuccessfulCount,
   });
 
-  factory StoreSangse.fromJson(Map<String, dynamic> json) {
-    return StoreSangse(
+  factory StoreDetail.fromJson(Map<String, dynamic> json) {
+    return StoreDetail(
       bookmarkCount: json['bookmarkCount'] as int,
       id: json['id'] as int,
       name: json['name'] as String,
@@ -91,7 +91,7 @@ class Review {
   final String? memberProfilePic;
   final String? text;
   final List<String>? reviewPics;
-  final String? registerDate;
+  final DateTime registerDate;
   final String? memberMainTitle;
 
   Review({
@@ -120,7 +120,7 @@ class Review {
       reviewPics: json['reviewPics'] != null
           ? List<String>.from(json['reviewPics'])
           : null,
-      registerDate: json['registerDate'] as String?,
+      registerDate: DateTime.parse(json['registerDate']),
     );
   }
 }

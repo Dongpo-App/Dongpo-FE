@@ -1,6 +1,7 @@
 import 'dart:convert'; // JSON 데이터를 다루기 위해 사용
 import 'package:dongpo_test/screens/add_store_page/add_detail_page.dart';
 import 'package:dongpo_test/widgets/dialog_method_mixin.dart';
+import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart'; // Naver Map API를 사용하기 위해 사용
 import 'package:geolocator/geolocator.dart'; // 위치 정보를 얻기 위해 사용
@@ -16,7 +17,7 @@ class AddPage extends StatefulWidget {
 }
 
 class _AddPageState extends State<AddPage> with DialogMethodMixin {
-  late NaverMapController _mapController;
+  final MapManager manager = MapManager();
   late ValueNotifier<String> _addressNotifier;
   late NLatLng _position;
   bool _isCameraMoving = false; // 카메라 이동 상태를 추적하기 위한 변수
@@ -32,7 +33,7 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
 
   @override
   void dispose() {
-    _mapController.dispose();
+    manager.mapController.dispose();
     super.dispose();
   }
 
@@ -64,7 +65,7 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
         ),
       ),
       body: FutureBuilder<NLatLng>(
-        future: getCurrentLocation(), // 현재 위치 정보를 가져오는 Future를 빌드
+        future: manager.getCurrentNLatLng(), // 현재 위치 정보를 가져오는 Future를 빌드
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // 로딩 중일 때 로딩 인디케이터 표시
@@ -81,15 +82,8 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
                     // 맵이 준비되었을 때 컨트롤러 초기화
                     logger.d(
                         "time: ${DateTime.now()} controller : ${controller.hashCode}");
-                    _mapController = controller;
-                    await _mapController.updateCamera(
-                      NCameraUpdate.fromCameraPosition(
-                        NCameraPosition(
-                          target: snapshot.data!, // 초기 카메라 위치 설정
-                          zoom: 17,
-                        ),
-                      ),
-                    );
+                    manager.initialize(controller);
+                    await manager.moveCamera(snapshot.data!);
                     _position = snapshot.data!;
                     startAddPage = true; // 화면 로딩 완료
                   },
@@ -243,9 +237,9 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
 
   Future<void> _updateAddress() async {
     logger.d(
-        "time : ${DateTime.now()} is map ready? $startAddPage\n_controller : ${_mapController.hashCode}");
+        "time : ${DateTime.now()} is map ready? $startAddPage\n_controller : ${manager.mapController.hashCode}");
 
-    final position = await _mapController.getCameraPosition();
+    final position = await manager.mapController.getCameraPosition();
     _position = position.target;
     final address = await _reverseGeocode(_position);
     _addressNotifier.value = address; // 주소 업데이트
@@ -275,17 +269,10 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
     return '주소를 불러올 수 없습니다.';
   }
 
-  Future<NLatLng> getCurrentLocation() async {
-    // 현재 위치 정보를 가져와 NLatLng 객체로 반환
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    return NLatLng(position.latitude, position.longitude);
-  }
-
   Future<void> _moveToCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    _mapController.updateCamera(
+    manager.mapController.updateCamera(
       NCameraUpdate.fromCameraPosition(
         NCameraPosition(
           target: NLatLng(position.latitude, position.longitude),
@@ -298,7 +285,7 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
   // 거리 체크
   // 500 미터 미만이면 참
   Future<bool> _checkDistance() async {
-    final userPosition = await getCurrentLocation();
+    final userPosition = await manager.getCurrentNLatLng();
     final distance = Geolocator.distanceBetween(userPosition.latitude,
         userPosition.longitude, _position.latitude, _position.longitude);
     logger.d("distance : $distance");

@@ -36,6 +36,14 @@ class BookmarkViewModel{
         }
       } else {
         // 실패
+        await Future.delayed(const Duration(milliseconds: 1200));
+        Fluttertoast.showToast(
+          msg: "북마크 정보를 읽어오는 데 실패하였습니다.",
+          timeInSecForIosWeb: 2,
+        );
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
         throw UserBookmarkException(
             "Fail to load. status code: ${response.statusCode}");
       }
@@ -58,6 +66,11 @@ class BookmarkViewModel{
       final response = await http.delete(url, headers: headers);
       if (response.statusCode == 200) {
         logger.d("bookmark Delete : $storeId");
+        await Future.delayed(const Duration(milliseconds: 1200));
+        Fluttertoast.showToast(
+          msg: "북마크가 삭제되었어요",
+          timeInSecForIosWeb: 2,
+        );
         return true;
       } else if(response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
@@ -79,9 +92,6 @@ class BookmarkViewModel{
         msg: "북마크 삭제에 실패하였습니다.",
         timeInSecForIosWeb: 2,
       );
-      if (context.mounted) {
-        Navigator.of(context).pop();
-      }
       throw UserBookmarkException("Error occurred: $e");
     }
   }

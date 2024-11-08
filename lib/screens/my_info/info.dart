@@ -524,7 +524,7 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
 
   void showEditProfileBottomSheet(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height; // 현재 화면 높이
-    final bottomSheetHeight = screenHeight * 0.45; // 화면 높이의 45%
+    final bottomSheetHeight = screenHeight * 0.5;
 
     // TextEditingController를 사용하여 초기값 설정
     String nickname = nicknameController.text;
@@ -555,243 +555,246 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: GestureDetector(
-                onTap: () {
-                  FocusScope.of(context).unfocus();
-                },
-                child: Container(
-                  height: bottomSheetHeight,
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(24),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12)),
-                  ),
-                  child: SafeArea(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "프로필 편집",
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const Spacer(),
-                              IconButton(
-                                onPressed: () {
-                                  updateValue = 0;
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(
-                                  CupertinoIcons.xmark,
-                                  size: 24,
-                                ),
-                              )
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 24,
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              pickedFile = await picker.pickImage(
-                                source: ImageSource.gallery,
-                                imageQuality: 30,
-                              );
-                              if (pickedFile != null && mounted) {
-                                setState(() {
-                                  updateValue = 1;
-                                  // 서버에 보낼 이미지 경로 XFile? image;
-                                  sendData = pickedFile!.path;
-                                });
-                              }
-                            },
-                            child: Stack(
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                  },
+                  child: Container(
+                    height: bottomSheetHeight,
+                    width: double.infinity,
+                    margin: const EdgeInsets.all(24),
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12)),
+                    ),
+                    child: SafeArea(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                CircleAvatar(
-                                  radius: 40, // 80 / 2
-                                  backgroundImage: (pickedFile != null &&
-                                          pickedFile!.path.isNotEmpty)
-                                      ? FileImage(File(pickedFile!.path))
-                                      : (_userProfile.profilePic != null)
-                                          ? NetworkImage(userPic)
-                                              as ImageProvider
-                                          : AssetImage(userPic),
+                                const Text(
+                                  "프로필 편집",
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                                Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.white,
-                                    ),
-                                    padding: const EdgeInsets.all(4),
-                                    child: const Icon(
-                                      Icons.camera_alt,
-                                      color: Color(0xFF767676),
-                                      size: 24,
-                                    ),
+                                const Spacer(),
+                                IconButton(
+                                  onPressed: () {
+                                    updateValue = 0;
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(
+                                    CupertinoIcons.xmark,
+                                    size: 24,
                                   ),
                                 )
                               ],
                             ),
-                          ),
-                          const SizedBox(
-                            height: 16,
-                          ),
-                          SizedBox(
-                            height: 44,
-                            width: double.infinity,
-                            child: TextField(
-                              textAlignVertical: TextAlignVertical.center,
-                              controller:
-                                  nicknameController, // TextEditingController를 연결
-                              onChanged: (text) {
-                                if (mounted) {
+                            const SizedBox(
+                              height: 24,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                pickedFile = await picker.pickImage(
+                                  source: ImageSource.gallery,
+                                  imageQuality: 30,
+                                );
+                                if (pickedFile != null && mounted) {
                                   setState(() {
-                                    if (text.length <= 7 && text.isNotEmpty) {
-                                      nickname = text;
-                                      updateValue = 1;
-                                    } else {
-                                      updateValue = 0;
-                                    }
+                                    updateValue = 1;
+                                    // 서버에 보낼 이미지 경로 XFile? image;
+                                    sendData = pickedFile!.path;
                                   });
                                 }
                               },
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w400,
-                                fontSize: 16,
-                              ),
-                              decoration: const InputDecoration(
-                                labelText: "닉네임",
-                                hintText: '7글자까지 입력 가능해요',
-                                hintStyle: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xFF767676),
-                                ),
-                                labelStyle: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xFF767676),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(12)),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: Color(0xFF767676),
-                                    )),
-                                border: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(12)),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: Color(0xFF767676),
-                                    )),
+                              child: Stack(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 40, // 80 / 2
+                                    backgroundImage: (pickedFile != null &&
+                                            pickedFile!.path.isNotEmpty)
+                                        ? FileImage(File(pickedFile!.path))
+                                        : (_userProfile.profilePic != null)
+                                            ? NetworkImage(userPic)
+                                                as ImageProvider
+                                            : AssetImage(userPic),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                      ),
+                                      padding: const EdgeInsets.all(4),
+                                      child: const Icon(
+                                        Icons.camera_alt,
+                                        color: Color(0xFF767676),
+                                        size: 24,
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-                          SizedBox(
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Container(
+                              height: 64,
                               width: double.infinity,
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<UserTitle>(
-                                  value: _userProfile.titles.firstWhere(
-                                      (title) =>
-                                          title.title ==
-                                          mainTitle), // 현재 선택된 항목
-                                  items: _userProfile.titles
-                                      .map<DropdownMenuItem<UserTitle>>(
-                                          (UserTitle title) {
-                                    return DropdownMenuItem<UserTitle>(
-                                      value: title, // UserTitle 객체를 value로 사용
-                                      child: Text(title
-                                          .description), // description을 보여줌
-                                    );
-                                  }).toList(),
-                                  onChanged: (UserTitle? selectedTitle) {
-                                    if (selectedTitle != null && mounted) {
-                                      setState(() {
-                                        dropDownValue = selectedTitle
-                                            .description; // dropDownValue에 description 저장
-                                        mainTitle = selectedTitle
-                                            .title; // mainTitle에 title 저장
+                              child: TextField(
+                                maxLength: 7,
+                                textAlignVertical: TextAlignVertical.center,
+                                controller:
+                                    nicknameController, // TextEditingController를 연결
+                                onChanged: (text) {
+                                  if (mounted) {
+                                    setState(() {
+                                      if (text.length <= 7 && text.isNotEmpty) {
+                                        nickname = text;
                                         updateValue = 1;
-                                        logger.d("userTitle : $mainTitle");
-                                        logger.d(
-                                            "userTitleDescription : $dropDownValue");
-                                      });
-                                    }
-                                  },
-                                  style: const TextStyle(
+                                      } else {
+                                        updateValue = 0;
+                                      }
+                                    });
+                                  }
+                                },
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                ),
+                                decoration: const InputDecoration(
+                                  labelText: "닉네임",
+                                  hintText: '7글자까지 입력 가능해요',
+                                  hintStyle: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
                                     color: Color(0xFF767676),
                                   ),
+                                  labelStyle: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFF767676),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Color(0xFF767676),
+                                    )
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Color(0xFF767676),
+                                    )
+                                  ),
                                 ),
-                              )),
-                          const SizedBox(height: 24),
-                          SizedBox(
-                            height: 44,
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  elevation: 0, // 그림자 제거
-                                  splashFactory: (updateValue == 0)
-                                      ? NoSplash.splashFactory
-                                      : InkSplash.splashFactory,
-                                  // 수정이 있을 경우 버튼 활성화
-                                  backgroundColor: (updateValue == 1)
-                                      ? const Color(0xffF15A2B)
-                                      : const Color(0xFFF4F4F4),
-                                  minimumSize: const Size(double.infinity, 40),
-                                  shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(12)))),
-                              onPressed: () async {
-                                if (updateValue == 0) return;
-
-                                userProfileUpdate =
-                                    await viewModel.userProfileUpdateAPI(
-                                        context, sendData, nickname, mainTitle);
-                                logger.d("profile update : $userProfileUpdate");
-
-                                if (userProfileUpdate) {
-                                  // 상태 업데이트를 제거하고 바로 네비게이션 수행
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const MyAppPage(initialIndex: 3)),
-                                    (route) => false,
-                                  );
-                                }
-                              },
-                              child: Text(
-                                '저장',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16,
-                                    color: (updateValue == 1)
-                                        ? Colors.white
-                                        : const Color(0xFF767676)),
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 24),
+                            SizedBox(
+                                width: double.infinity,
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<UserTitle>(
+                                    value: _userProfile.titles.firstWhere(
+                                        (title) =>
+                                            title.title ==
+                                            mainTitle), // 현재 선택된 항목
+                                    items: _userProfile.titles
+                                        .map<DropdownMenuItem<UserTitle>>(
+                                            (UserTitle title) {
+                                      return DropdownMenuItem<UserTitle>(
+                                        value: title, // UserTitle 객체를 value로 사용
+                                        child: Text(title
+                                            .description), // description을 보여줌
+                                      );
+                                    }).toList(),
+                                    onChanged: (UserTitle? selectedTitle) {
+                                      if (selectedTitle != null && mounted) {
+                                        setState(() {
+                                          dropDownValue = selectedTitle
+                                              .description; // dropDownValue에 description 저장
+                                          mainTitle = selectedTitle
+                                              .title; // mainTitle에 title 저장
+                                          updateValue = 1;
+                                          logger.d("userTitle : $mainTitle");
+                                          logger.d(
+                                              "userTitleDescription : $dropDownValue");
+                                        });
+                                      }
+                                    },
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xFF767676),
+                                    ),
+                                  ),
+                                )),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              height: 44,
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    elevation: 0, // 그림자 제거
+                                    splashFactory: (updateValue == 0)
+                                        ? NoSplash.splashFactory
+                                        : InkSplash.splashFactory,
+                                    // 수정이 있을 경우 버튼 활성화
+                                    backgroundColor: (updateValue == 1)
+                                        ? const Color(0xffF15A2B)
+                                        : const Color(0xFFF4F4F4),
+                                    minimumSize: const Size(double.infinity, 40),
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(12)))),
+                                onPressed: () async {
+                                  if (updateValue == 0) return;
+              
+                                  userProfileUpdate =
+                                      await viewModel.userProfileUpdateAPI(
+                                          context, sendData, nickname, mainTitle);
+                                  logger.d("profile update : $userProfileUpdate");
+              
+                                  if (userProfileUpdate) {
+                                    // 상태 업데이트를 제거하고 바로 네비게이션 수행
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const MyAppPage(initialIndex: 3)),
+                                      (route) => false,
+                                    );
+                                  }
+                                },
+                                child: Text(
+                                  '저장',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: (updateValue == 1)
+                                          ? Colors.white
+                                          : const Color(0xFF767676)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

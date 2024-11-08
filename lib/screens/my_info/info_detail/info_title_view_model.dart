@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dongpo_test/main.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import '../../../models/info_user_title.dart';
 import '../../login/login_view_model.dart';
@@ -35,6 +36,14 @@ class InfoTitleViewModel{
         }
       } else {
         // 실패
+        await Future.delayed(const Duration(milliseconds: 1200));
+        Fluttertoast.showToast(
+          msg: "칭호 정보를 읽어오는 데 실패하였습니다.",
+          timeInSecForIosWeb: 2,
+        );
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
         throw InfoTitleViewModelException(
             "Fail to load. status code: ${response.statusCode}");
       }

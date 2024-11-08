@@ -1,18 +1,20 @@
 import 'package:dongpo_test/screens/main/main_01.dart';
+import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:geolocator/geolocator.dart';
 
-class MainTitle2 extends StatefulWidget {
+class StoreSummaryTitle extends StatefulWidget {
   final int idx;
-  const MainTitle2({super.key, required this.idx});
+  const StoreSummaryTitle({super.key, required this.idx});
 
   @override
-  State<MainTitle2> createState() => _MainTitle2State();
+  State<StoreSummaryTitle> createState() => _StoreSummaryTitleState();
 }
 
-class _MainTitle2State extends State<MainTitle2> {
+class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
+  MapManager manager = MapManager();
   bool setOpenPossbility = false;
   int betweenDistance = 0;
 
@@ -31,7 +33,7 @@ class _MainTitle2State extends State<MainTitle2> {
         Row(
           children: [
             Text(
-              markerInfo.name,
+              manager.selectedSummary!.name,
               style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
             const Spacer(),
@@ -58,7 +60,7 @@ class _MainTitle2State extends State<MainTitle2> {
   }
 
   bool getOpenPossibility() {
-    if (storeData?.openPossibility == "HIGH") {
+    if (manager.selectedDetail?.openPossibility == "HIGH") {
       return true;
     } else {
       return false;
@@ -67,26 +69,23 @@ class _MainTitle2State extends State<MainTitle2> {
 
   //사용자와 점포간의 거리계산
   void _checkDistance() async {
+    if (!mounted) return;
+
     Position myPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
-    if (widget.idx >= 0 && widget.idx < myDataList.length) {
-      // myDataList[widget.idx]에 안전하게 접근
-      var checkMeter = Geolocator.distanceBetween(
-        myPosition.latitude,
-        myPosition.longitude,
-        myDataList[widget.idx].latitude,
-        myDataList[widget.idx].longitude,
-      );
+    var checkMeter = Geolocator.distanceBetween(
+      myPosition.latitude,
+      myPosition.longitude,
+      manager.selectedMarker!.latitude,
+      manager.selectedMarker!.longitude,
+    );
 
-      betweenDistance = checkMeter.floor();
-      setState(() {});
+    betweenDistance = checkMeter.floor();
+    setState(() {});
 
-      logger.d('00_marker 나와 점포 거리 차이는 = $checkMeter M');
-      logger.d('00_marker betwwenDistance = $betweenDistance');
-    } else {
-      logger.e("유효하지 않은 인덱스: ${widget.idx}");
-    }
+    logger.d('00_marker 나와 점포 거리 차이는 = $checkMeter M');
+    logger.d('00_marker betwwenDistance = $betweenDistance');
   }
 }
 
@@ -98,6 +97,7 @@ class MainPhoto2 extends StatefulWidget {
 }
 
 class _MainPhotoState extends State<MainPhoto2> {
+  MapManager manager = MapManager();
   final List<Image> imageList = [];
 
   // 로딩
@@ -139,10 +139,10 @@ class _MainPhotoState extends State<MainPhoto2> {
   }
 
   void loadPhoto() {
-    // storeData가 null이 아니고 reviews가 있는지 확인
+    // manager.selectedDetail가 null이 아니고 reviews가 있는지 확인
     try {
-      for (int i = 0; i < markerInfo.reviewPics.length; i++) {
-        imageList.add(Image.network(markerInfo.reviewPics[i]));
+      for (int i = 0; i < manager.selectedSummary!.reviewPics.length; i++) {
+        imageList.add(Image.network(manager.selectedSummary!.reviewPics[i]));
       }
       setState(() {});
     } catch (e) {

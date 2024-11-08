@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/user_review.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../../login/login_view_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -35,6 +36,14 @@ class InfoReviewViewModel{
         }
       } else {
         // 실패
+        await Future.delayed(const Duration(milliseconds: 1200));
+        Fluttertoast.showToast(
+          msg: "리뷰 정보를 읽어오는 데 실패하였습니다.",
+          timeInSecForIosWeb: 2,
+        );
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
         throw InfoReviewViewException(
             "Fail to load. status code: ${response.statusCode}");
       }
@@ -56,6 +65,11 @@ class InfoReviewViewModel{
       final response = await http.delete(url, headers: headers);
       if (response.statusCode == 200) {
         logger.d("review Delete : $reviewId");
+        await Future.delayed(const Duration(milliseconds: 1200));
+        Fluttertoast.showToast(
+          msg: "리뷰가 삭제되었어요",
+          timeInSecForIosWeb: 2,
+        );
         return true;
       } else if(response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
@@ -67,6 +81,11 @@ class InfoReviewViewModel{
         }
       } else {
         // 실패
+        await Future.delayed(const Duration(milliseconds: 1200));
+        Fluttertoast.showToast(
+          msg: "리뷰를 삭제하는 데 실패하였습니다.",
+          timeInSecForIosWeb: 2,
+        );
         throw InfoReviewViewException(
             "Fail to load. status code: ${response.statusCode} / ${utf8.decode(response.bodyBytes)}");
       }

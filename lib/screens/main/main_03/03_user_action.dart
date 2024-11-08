@@ -1,5 +1,6 @@
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
+import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
 
@@ -25,14 +26,17 @@ class UserAction extends StatefulWidget {
 }
 
 class _UserActionState extends State<UserAction> {
+  MapManager manager = MapManager();
+  int? userActionCount = 0;
   @override
   void initState() {
     super.initState();
     checkedBookMark();
+    userActionCount = manager.selectedDetail?.bookmarkCount;
   }
 
   bool _selected = false;
-  int? userActionCount = storeData?.bookmarkCount;
+
   @override
   Widget build(BuildContext context) {
     logger.d("userActionCount : $userActionCount");
@@ -51,8 +55,8 @@ class _UserActionState extends State<UserAction> {
             ),
           ),
           Text(
-            "${storeData?.reviews.length}",
-            style: TextStyle(
+            "${manager.selectedDetail?.reviews.length}",
+            style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
                 color: Color(0xFF767676)),
@@ -81,7 +85,7 @@ class _UserActionState extends State<UserAction> {
                   ),
                   style: ButtonStyle(
                       iconColor: WidgetStateColor.resolveWith(
-                          (states) => Color(0xffF15A2B))),
+                          (states) => const Color(0xffF15A2B))),
                 )
               : IconButton(
                   onPressed: () {
@@ -163,7 +167,8 @@ class _UserActionState extends State<UserAction> {
   }
 
   void removeBookMark() async {
-    final url = Uri.parse('$serverUrl/api/bookmark/${storeData?.id}');
+    final url =
+        Uri.parse('$serverUrl/api/bookmark/${manager.selectedDetail?.id}');
     final accessToken = await storage.read(key: 'accessToken');
     final headers = {
       'Content-Type': 'application/json',

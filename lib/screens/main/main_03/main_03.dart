@@ -1,17 +1,18 @@
 //가게정보 자세히
 import 'dart:convert';
 
-import 'package:dongpo_test/models/store_detail.dart';
+import 'package:dongpo_test/models/store/store_detail.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/04_bangmoon.dart';
 import 'package:dongpo_test/screens/main/main_03/06_gagejungbo.dart';
-import 'package:dongpo_test/screens/main/main_03/02_photo_List.dart';
+import 'package:dongpo_test/screens/main/main_03/02_photo_list.dart';
 import 'package:dongpo_test/screens/main/main_03/05_review.dart';
 import 'package:dongpo_test/screens/main/main_03/01_title.dart';
 import 'package:dongpo_test/screens/main/main_03/03_user_action.dart';
 import 'package:dongpo_test/screens/main/main_03/07_dangol.dart';
 import 'package:dongpo_test/screens/my_info/info_detail/bookmark_view_model.dart';
 import 'package:dongpo_test/service/store_service.dart';
+import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
@@ -32,6 +33,7 @@ class StoreInfo extends StatefulWidget {
 class _StoreInfoState extends State<StoreInfo> {
   BookmarkViewModel viewModel = BookmarkViewModel();
   StoreApiService storeService = StoreApiService.instance;
+  MapManager manager = MapManager();
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
   }
@@ -51,14 +53,14 @@ class _StoreInfoState extends State<StoreInfo> {
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data;
         logger.d(
-            'StoreData Test : ${data!.visitSuccessfulCount} : ${data.visitFailCount}');
+            'storeData Test : ${data!.visitSuccessfulCount} : ${data.visitFailCount}');
         if (!mounted) return;
         setState(() {
-          storeData = data; // 가져온 데이터를 myStoreList에 할당
+          manager.selectedDetail = data; // 가져온 데이터를 myStoreList에 할당
         });
       }
     } catch (e) {
-      logger.e('가게 정보 불러오는데 뭔가 잘못됌 에러 사유: $e'); // 에러 처리
+      logger.e('가게 정보 불러오는데 뭔가 잘못됨 에러 사유: $e'); // 에러 처리
       await Future.delayed(const Duration(milliseconds: 1200));
       Fluttertoast.showToast(
         msg: "점포 상세 정보를 가져오는 데 실패하였습니다.",
@@ -211,8 +213,7 @@ class _StoreInfoState extends State<StoreInfo> {
         actions: [
           IconButton(
             onPressed: () {
-              TextEditingController textController =
-                  TextEditingController(); // TextEditingController 정의
+              TextEditingController textController = TextEditingController(); // TextEditingController 정의
 
               showModalBottomSheet(
                 isScrollControlled: true,
@@ -220,132 +221,162 @@ class _StoreInfoState extends State<StoreInfo> {
                 builder: (context) {
                   return StatefulBuilder(
                     builder: (BuildContext context, StateSetter setState) {
-                      return FractionallySizedBox(
-                        heightFactor: value == 4 ? 0.8 : 0.6,
-                        child: Container(
-                          color: Colors.white,
-                          padding: const EdgeInsets.only(top: 24),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0),
-                                child: Row(
-                                  children: [
-                                    const Text(
-                                      "가게에 문제가 있나요?",
-                                      style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    const Spacer(),
-                                    IconButton(
-                                      onPressed: () {
-                                        setState(() => value = 0);
-                                        Navigator.pop(context);
-                                      },
-                                      icon: const Icon(
-                                        CupertinoIcons.xmark,
-                                        size: 24,
-                                        color: Color(0xFF767676),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 24.0),
-                                child: Text(
-                                  "항목에 알맞게 선택해주세요.",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              ),
-                              const SizedBox(height: 40),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    _radioBtn('없어진 가게에요', 1, setState),
-                                    const SizedBox(height: 16),
-                                    _radioBtn('위치가 틀려요', 2, setState),
-                                    const SizedBox(height: 16),
-                                    _radioBtn('부적절한 정보가 포함되어 있어요', 3, setState),
-                                    const SizedBox(height: 16),
-                                    _radioBtn('기타', 4, setState),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-
-                              // 기타 선택 시 텍스트박스 표시
-                              if (value == 4)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 24.0),
-                                  child: TextField(
-                                    controller:
-                                        textController, // TextEditingController 연결
-                                    maxLength: 100,
-                                    maxLines: 3,
-                                    decoration: const InputDecoration(
-                                      hintText: '기타 사항을 입력해주세요',
-                                      border: OutlineInputBorder(),
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: GestureDetector(
+                          onTap: () {
+                            FocusScope.of(context).unfocus();
+                          },
+                          child: SingleChildScrollView(
+                            child: Container(
+                              color: Colors.white,
+                              padding: const EdgeInsets.only(top: 24),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24.0),
+                                    child: Row(
+                                      children: [
+                                        const Text(
+                                          "가게에 문제가 있나요?",
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w600
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        IconButton(
+                                          onPressed: () {
+                                            setState(() => value = 0);
+                                            Navigator.pop(context);
+                                          },
+                                          icon: const Icon(
+                                            CupertinoIcons.xmark,
+                                            size: 24,
+                                            color: Color(0xFF767676),
+                                          ),
+                                        )
+                                      ],
                                     ),
                                   ),
-                                ),
-
-                              const SizedBox(height: 16),
-
-                              // 버튼 위치 고정 및 크기 조정
-                              Padding(
-                                padding: const EdgeInsets.all(24.0),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      if (value != 0) {
-                                        etcText =
-                                            textController.text; // 텍스트를 변수에 저장
-                                        logger.d("입력된 기타 내용: $etcText");
-                                        storeReport(value);
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      splashFactory: (value == 0)
-                                          ? NoSplash.splashFactory
-                                          : InkSplash.splashFactory,
-                                      minimumSize:
-                                          const Size(double.infinity, 40),
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(0)),
-                                      ),
-                                      backgroundColor: value != 0
-                                          ? const Color(0xffF15A2B)
-                                          : const Color(0xFFF4F4F4),
-                                    ),
+                                  const SizedBox(height: 8),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 24.0),
                                     child: Text(
-                                      "가게 신고",
+                                      "항목에 알맞게 선택해주세요.",
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                        color: (value > 0)
-                                            ? Colors.white
-                                            : const Color(0xFF767676),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 40),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24.0),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        _radioBtn('없어진 가게에요', 1, setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('위치가 틀려요', 2, setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('부적절한 정보가 포함되어 있어요', 3, setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('기타', 4, setState),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+
+                                  // 기타 선택 시 텍스트박스 표시
+                                  if (value == 4)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 24.0),
+                                      child: TextField(
+                                        controller:
+                                            textController, // TextEditingController 연결
+                                        maxLength: 100,
+                                        maxLines: 3,
+                                        decoration: const InputDecoration(
+                                          hintText: '기타 사항을 입력해주세요',
+                                          hintStyle: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xFF767676),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(Radius.circular(12)),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xFF767676),
+                                              )
+                                          ),
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                              BorderRadius.all(Radius.circular(12)),
+                                              borderSide: BorderSide(
+                                                width: 1,
+                                                color: Color(0xFF767676),
+                                              )
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                  const SizedBox(height: 16),
+
+                                  // 버튼 위치 고정 및 크기 조정
+                                  Padding(
+                                    padding: const EdgeInsets.all(24.0),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          if (value != 0) {
+                                            etcText =
+                                                textController.text; // 텍스트를 변수에 저장
+                                            logger.d("입력된 기타 내용: $etcText");
+                                            storeReport(value);
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 0,
+                                          splashFactory: (value == 0)
+                                              ? NoSplash.splashFactory
+                                              : InkSplash.splashFactory,
+                                          minimumSize:
+                                              const Size(double.infinity, 44),
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(12)),
+                                          ),
+                                          backgroundColor: value != 0
+                                              ? const Color(0xffF15A2B)
+                                              : const Color(0xFFF4F4F4),
+                                        ),
+                                        child: Text(
+                                          "가게 신고",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14,
+                                            color: (value > 0)
+                                                ? Colors.white
+                                                : const Color(0xFF767676),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       );
@@ -362,11 +393,14 @@ class _StoreInfoState extends State<StoreInfo> {
           )
         ],
       ),
-      body: storeData == null // storeData가 null인 경우 로딩 표시
+      body: manager.selectedDetail ==
+              null // manager.selectedDetail가 null인 경우 로딩 표시
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               children: [
-                const SizedBox(height: 24,),
+                const SizedBox(
+                  height: 24,
+                ),
                 //제목, 영업가능성, 거리
                 MainTitle(idx: widget.idx),
                 //사진
@@ -383,7 +417,7 @@ class _StoreInfoState extends State<StoreInfo> {
                   height: 96,
                 ),
                 //방문인증
-                const BangMoon(),
+                BangMoon(),
                 const SizedBox(
                   height: 96,
                 ),
@@ -398,7 +432,7 @@ class _StoreInfoState extends State<StoreInfo> {
                   height: 80,
                 ),
                 //이 가게 단골 손님
-                const DanGolGuest(),
+                DanGolGuest(),
               ],
             ),
     );
@@ -417,7 +451,7 @@ class _StoreInfoState extends State<StoreInfo> {
         },
         style: ElevatedButton.styleFrom(
           elevation: 0,
-          minimumSize: const Size(double.infinity, 40),
+          minimumSize: const Size(double.infinity, 44),
           backgroundColor: (value == index)
               ? const Color(0xFFF15A2B)
               : const Color(0xFFF4F4F4),
@@ -435,33 +469,33 @@ class _StoreInfoState extends State<StoreInfo> {
     );
   }
 
-  Future<StoreSangse> _storeSangse() async {
-    final accessToken = await storage.read(key: 'accessToken');
+  // Future<StoreDetail> _storeDeStoreDetail() async {
+  //   final accessToken = await storage.read(key: 'accessToken');
 
-    final url = Uri.parse('$serverUrl/api/store/${widget.idx}');
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
+  //   final url = Uri.parse('$serverUrl/api/store/${widget.idx}');
+  //   final headers = {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': 'Bearer $accessToken',
+  //   };
 
-    final response = await http.get(url, headers: headers);
-    final Map<String, dynamic> data =
-        json.decode(utf8.decode(response.bodyBytes));
+  //   final response = await http.get(url, headers: headers);
+  //   final Map<String, dynamic> data =
+  //       json.decode(utf8.decode(response.bodyBytes));
 
-    if (response.statusCode == 200) {
-      // 응답 데이터에서 'data' 필드 추출 후, StoreSangse 객체로 변환
-      final Map<String, dynamic> jsonData = data['data'];
+  //   if (response.statusCode == 200) {
+  //     // 응답 데이터에서 'data' 필드 추출 후, StoreDetail 객체로 변환
+  //     final Map<String, dynamic> jsonData = data['data'];
 
-      // StoreSangse 객체 생성
-      final StoreSangse storeData = StoreSangse.fromJson(jsonData);
+  //     // StoreDetail 객체 생성
+  //     final StoreDetail manager.selectedDetail = StoreDetail.fromJson(jsonData);
 
-      return storeData;
-    } else {
-      logger.e(
-          '가게정보 상세 불러오는 중 (가게 id : ${widget.idx}) HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답본문 : $data');
-      throw Exception('Failed to load 가게상세정보');
-    }
-  }
+  //     return manager.selectedDetail;
+  //   } else {
+  //     logger.e(
+  //         '가게정보 상세 불러오는 중 (가게 id : ${widget.idx}) HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답본문 : $data');
+  //     throw Exception('Failed to load 가게상세정보');
+  //   }
+  // }
 }
 
 

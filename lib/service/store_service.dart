@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dongpo_test/main.dart';
-import 'package:dongpo_test/models/clickedMarkerInfo.dart';
-import 'package:dongpo_test/models/store_marker.dart';
+import 'package:dongpo_test/models/store/clicked_marker_info.dart';
+import 'package:dongpo_test/models/store/store_marker.dart';
 import 'package:dongpo_test/models/request/add_review_request.dart';
 import 'package:dongpo_test/models/request/add_store_request.dart';
 import 'package:dongpo_test/models/response/api_response.dart';
-import 'package:dongpo_test/models/store_detail.dart';
+import 'package:dongpo_test/models/store/store_detail.dart';
 import 'package:dongpo_test/service/base_api_service.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/interface/store_interface.dart';
@@ -296,7 +296,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   }
 
   @override
-  Future<ApiResponse<StoreSangse>> getStoreDetail(int id) async {
+  Future<ApiResponse<StoreDetail>> getStoreDetail(int id) async {
     await loadToken();
 
     final url = Uri.parse("$serverUrl/api/store/$id");
@@ -311,7 +311,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
         // 요청 성공
         logger.d("code : ${response.statusCode} body: $decodedResponse");
         return ApiResponse.fromJson(response.statusCode, decodedResponse,
-            (data) => StoreSangse.fromJson(data));
+            (data) => StoreDetail.fromJson(data));
       } else if (response.statusCode == 401) {
         // 토큰 만료
         logger.d("code : ${response.statusCode} body: $decodedResponse");
@@ -327,7 +327,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
             // 요청 성공
             logger.d("code : ${response.statusCode} body: $decodedResponse");
             return ApiResponse.fromJson(retryResponse.statusCode,
-                decodedResponse, (data) => StoreSangse.fromJson(data));
+                decodedResponse, (data) => StoreDetail.fromJson(data));
           } else {
             await resetToken();
             throw TokenExpiredException();

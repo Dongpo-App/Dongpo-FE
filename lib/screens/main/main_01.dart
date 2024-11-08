@@ -1,7 +1,6 @@
 import 'package:dongpo_test/models/response/api_response.dart';
-import 'package:dongpo_test/models/store_detail.dart';
-import 'package:dongpo_test/models/clickedMarkerInfo.dart';
-import 'package:dongpo_test/models/store_marker.dart';
+import 'package:dongpo_test/models/store/clicked_marker_info.dart';
+import 'package:dongpo_test/models/store/store_marker.dart';
 import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/main/main_03/00_marker_title.dart';
@@ -9,6 +8,7 @@ import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:dongpo_test/screens/my_info/info_detail/add_store.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/store_service.dart';
+import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
@@ -20,6 +20,8 @@ import 'package:dongpo_test/main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'main_03/03_user_action.dart';
+
 /*
 메인페이지 맨처음 보여줄 때 
 1)내위치로 카메라 옮기기 => init 초기화할때 함수 사용
@@ -28,13 +30,11 @@ import 'dart:convert';
 */
 
 //여러개 띄울 마커 받아놓을 마커리스트
-
-StoreSangse? storeData; // storeData를 nullable로 변경
-
-List<NMarker> markers = []; //마커 담는 리스트
-List<StoreMarker> myDataList = []; //가게 기본정보 담는 리스트
+//StoreDetail? storeData; // storeData를 nullable로 변경
+//List<NMarker> markers = []; //마커 담는 리스트
+//List<StoreMarker> manager.storeList = []; //가게 기본정보 담는 리스트
 List<UserBookmark> userBookmark = []; //북마크 체크를 위한 클래스
-late MarkerInfo markerInfo;
+//late MarkerInfo markerInfo;
 
 // 바텀시트에 표시되는 주소
 String bsAddress = '';
@@ -50,9 +50,9 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage>
     with SingleTickerProviderStateMixin {
   StoreApiService storeService = StoreApiService.instance;
-
+  MapManager manager = MapManager();
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
-  late NaverMapController _mapController;
+  //late NaverMapController _mapController;
   String _searchBarInnerText = "구, 동, 도로명, 장소명으로 검색";
   bool _showReSearchButton = false; // 재검색 버튼 표시 여부
   NMarker? _selectedMarker;
@@ -103,14 +103,14 @@ class _MainPageState extends State<MainPage>
       curve: Curves.easeInOut,
     ));
 
-    markers = [];
-    logger.d("marker reset $markers");
+    // markers = [];
+    // logger.d("marker reset $markers");
   }
 
   @override
   void dispose() {
     _controller.dispose(); // 애니메이션 컨트롤러 해제
-    _mapController.dispose();
+    manager.mapController.dispose();
     super.dispose();
   }
 
@@ -146,13 +146,12 @@ class _MainPageState extends State<MainPage>
                 NaverMap(
                   onMapReady: (controller) async {
                     logger.d("controller : ${controller.hashCode}");
-                    _onMapReady(controller);
-                    await _clearMarkers(); // 기존 마커 제거
+                    manager.initialize(controller);
+                    await manager.clearMarkers(); // 기존 마커 제거
                     await _initUserMarker();
-                    await _moveCamera(_userMarker.position);
+                    await manager.moveCamera(_userMarker.position);
                     await _searchStoreCurrentLocation(_userMarker.position);
-                    logger.d(
-                        "초기 마커 생성 sample : ${myDataList.isEmpty ? "마커가 안들어있음" : myDataList[0]}");
+                    logger.d("marker init : ${manager.storeList.length}");
                     setState(() {
                       _showReSearchButton = false;
                     });
@@ -213,10 +212,13 @@ class _MainPageState extends State<MainPage>
                         );
                         _searchBarInnerText = searchResult['place_name'];
                         logger.d("검색창에 표시할 데이터 : $_searchBarInnerText");
-                        await _moveCamera(target);
+                        await manager.moveCamera(target);
                         await _searchStoreCurrentLocation(target);
+                        setState(() {
+                          _showReSearchButton = false;
+                        });
                         logger.d(
-                            "검색 이후 마커 생성 : sample ${myDataList.isEmpty ? "no sample" : myDataList[0]}");
+                            "marker after search : ${manager.storeList.length}");
                       }
                     },
                     child: Container(
@@ -290,7 +292,7 @@ class _MainPageState extends State<MainPage>
                             child: ListView.builder(
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
-                              itemCount: myDataList.length,
+                              itemCount: manager.storeList.length,
                               itemBuilder: (BuildContext ctx, int idx) {
                                 return Row(
                                   children: [
@@ -302,7 +304,7 @@ class _MainPageState extends State<MainPage>
                                           MaterialPageRoute(
                                             builder: (context) {
                                               return StoreInfo(
-                                                  idx: myDataList[idx]
+                                                  idx: manager.storeList[idx]
                                                       .id); // 터치하면 해당 가게 상세보기로
                                             },
                                           ),
@@ -338,7 +340,7 @@ class _MainPageState extends State<MainPage>
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  myDataList[idx].name,
+                                                  manager.storeList[idx].name,
                                                   style: const TextStyle(
                                                     fontWeight: FontWeight.w600,
                                                     fontSize: 16,
@@ -394,7 +396,8 @@ class _MainPageState extends State<MainPage>
                   right: MediaQuery.of(context).size.width / 3.5,
                   child: GestureDetector(
                     onTap: () async {
-                      final position = await _mapController.getCameraPosition();
+                      final position =
+                          await manager.mapController.getCameraPosition();
                       await _searchStoreCurrentLocation(position.target);
                       setState(() {
                         _showReSearchButton = false;
@@ -444,13 +447,15 @@ class _MainPageState extends State<MainPage>
                           shape: const CircleBorder(),
                           padding: const EdgeInsets.all(4),
                           foregroundColor: const Color(0xFF003ACE),
-                          backgroundColor: WidgetStateColor.resolveWith((states) => Colors.white)
-                        ),
+                          backgroundColor: WidgetStateColor.resolveWith((states) => Colors.white)),
                         onPressed: () async {
-                          NLatLng target = await _getCurrentNLatLng();
+                          NLatLng target = await manager.getCurrentNLatLng();
                           _userMarker.setPosition(target);
-                          await _moveCamera(target);
+                          await manager.moveCamera(target);
                           await _searchStoreCurrentLocation(target);
+                          setState(() {
+                            _showReSearchButton = false;
+                          });
                         },
                         child: const Icon(Icons.my_location),
                       ),
@@ -497,49 +502,49 @@ class _MainPageState extends State<MainPage>
 
   // 함수 정의
 
-  void _onMapReady(NaverMapController controller) {
-    _mapController = controller;
-  }
+  // void _onMapReady(NaverMapController controller) {
+  //   _mapController = controller;
+  // }
 
   //마커 관련
   // 기존 마커 삭제 함수
-  Future<void> _clearMarkers() async {
-    logger.d('마커가 정상적으로 들어왔음 ${markers.length}');
-    await _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
+  // Future<void> _clearMarkers() async {
+  //   logger.d('마커가 정상적으로 들어왔음 ${markers.length}');
+  //   await _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
 
-    markers.clear(); // 리스트 초기화
-    logger.d('마커 전체 삭제 : $markers');
-  }
+  //   markers.clear(); // 리스트 초기화
+  //   logger.d('마커 전체 삭제 : $markers');
+  // }
 
   // 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
-  void _addMarkers(List<StoreMarker> dataList) async {
-    //여러개 마커 담는 리스트
-    try {
-      var defaultMarkerSize = const Size(32, 32);
+  // void _addMarkers(List<StoreMarker> dataList) async {
+  //   //여러개 마커 담는 리스트
+  //   try {
+  //     var defaultMarkerSize = const Size(32, 32);
 
-      for (var data in dataList) {
-        NMarker marker = NMarker(
-          id: data.id.toString(),
-          position: NLatLng(data.latitude, data.longitude),
-          icon: const NOverlayImage.fromAssetImage(
-              'assets/icons/default_marker.png'),
-        );
+  //     for (var data in dataList) {
+  //       NMarker marker = NMarker(
+  //         id: data.id.toString(),
+  //         position: NLatLng(data.latitude, data.longitude),
+  //         icon: const NOverlayImage.fromAssetImage(
+  //             'assets/icons/default_marker.png'),
+  //       );
 
-        //마커 사이즈 조절
-        marker.setSize(defaultMarkerSize);
+  //       //마커 사이즈 조절
+  //       marker.setSize(defaultMarkerSize);
 
-        // 마커 클릭
-        marker.setOnTapListener((overlay) {
-          _onMarkerTapped(marker, data);
-        });
-        // 마커 리스트에 추가
-        await _mapController.addOverlay(marker);
-        markers.add(marker);
-      }
-    } catch (e) {
-      logger.w('에러발생 :$e');
-    }
-  }
+  //       // 마커 클릭
+  //       marker.setOnTapListener((overlay) {
+  //         _onMarkerTapped(marker, data);
+  //       });
+  //       // 마커 리스트에 추가
+  //       await _mapController.addOverlay(marker);
+  //       markers.add(marker);
+  //     }
+  //   } catch (e) {
+  //     logger.w('에러발생 :$e');
+  //   }
+  // }
 
   // 마커 클릭 이벤트 함수
   void _onMarkerTapped(NMarker marker, StoreMarker data) {
@@ -559,14 +564,8 @@ class _MainPageState extends State<MainPage>
 
       //해당 위치로 이동
       logger.d("클릭된 마커 id =  ${marker.info.id}");
-      _mapController.updateCamera(
-        NCameraUpdate.fromCameraPosition(
-          NCameraPosition(
-            target: NLatLng(data.latitude, data.longitude),
-            zoom: 16,
-          ),
-        ),
-      );
+      manager.moveCamera(NLatLng(data.latitude, data.longitude));
+
       _showBottomSheet(
         context,
         marker.info.id,
@@ -581,7 +580,7 @@ class _MainPageState extends State<MainPage>
 
   // 사용자 마커 초기화
   Future<void> _initUserMarker() async {
-    NLatLng position = await _getCurrentNLatLng();
+    NLatLng position = await manager.getCurrentNLatLng();
     // 사용자 위치 아이콘 에셋 지정
     const myLocationIcon =
         NOverlayImage.fromAssetImage('assets/icons/my_location.png');
@@ -594,7 +593,7 @@ class _MainPageState extends State<MainPage>
     _userMarker.setZIndex(100);
     // 마커 사이즈 지정 및 지도에 추가
     _userMarker.setSize(const Size(24, 24));
-    _mapController.addOverlay(_userMarker);
+    manager.mapController.addOverlay(_userMarker);
   }
 
   Future<void> _searchStoreCurrentLocation(NLatLng target) async {
@@ -608,9 +607,13 @@ class _MainPageState extends State<MainPage>
       );
 
       if (response.statusCode == 200 && response.data != null) {
-        myDataList = response.data!;
         bsAddress = await _reverseGeocode(target);
-        _addMarkers(myDataList);
+        manager.addMarkers(
+          response.data!,
+          (marker, store) {
+            _onMarkerTapped(marker, store);
+          },
+        );
       } else {
         logger.e("Erorr in fetching store list: ${response.message}");
       }
@@ -626,30 +629,6 @@ class _MainPageState extends State<MainPage>
       }
     } on Exception catch (e) {
       logger.e("Error! message: $e");
-    }
-  }
-
-  // 현재 위치를 NLatLng 으로 받기
-  Future<NLatLng> _getCurrentNLatLng() async {
-    Position position = await Geolocator.getCurrentPosition();
-    return NLatLng(position.latitude, position.longitude);
-  }
-
-  // 위치 정보를 받아 해당 위치로 이동
-  // 내 위치로 또는 특정 위치로 이동
-  Future<void> _moveCamera(NLatLng position) async {
-    try {
-      // 카메라 이동
-      await _mapController.updateCamera(
-        NCameraUpdate.fromCameraPosition(
-          NCameraPosition(
-            target: position,
-            zoom: 16,
-          ),
-        ),
-      );
-    } catch (e) {
-      logger.e("Error in _moveToCurrentLocation: $e");
     }
   }
 
@@ -750,7 +729,7 @@ class _MainPageState extends State<MainPage>
       ApiResponse<MarkerInfo> response =
           await storeService.getStoreSummary(index);
       if (response.statusCode == 200 && response.data != null) {
-        markerInfo = response.data!;
+        manager.selectedSummary = response.data!;
       }
     } catch (e) {
       logger.e("Error in show bottomSheet");
@@ -762,19 +741,21 @@ class _MainPageState extends State<MainPage>
         builder: (BuildContext context) {
           return DraggableScrollableSheet(
             expand: false,
-            initialChildSize: 0.4,
-            minChildSize: 0.2,
-            maxChildSize: 0.7, // 드래그할 최대 크기 설정
+            initialChildSize: 0.3,
+            minChildSize: 0.1,
+            maxChildSize: 0.4, // 드래그할 최대 크기 설정
             shouldCloseOnMinExtent: false,
             snap: true,
-            snapSizes: [0.2, 0.7],
+            snapSizes: [0.1, 0.4],
             snapAnimationDuration: const Duration(milliseconds: 300),
             builder: (context, scrollController) {
               return NotificationListener<ScrollNotification>(
                 onNotification: (scrollNotification) {
                   if (!isNavigating) {
+                    logger.d("extentBefore : ${scrollNotification.metrics.extentBefore}");
+                    logger.d("screenHeight :; ${screenHeight}");
                     // 상단으로 드래그
-                    if (scrollNotification.metrics.extentBefore >= screenHeight * 0.6) {
+                    if (scrollNotification.metrics.extentBefore >= screenHeight * 0.02) {
                       isNavigating = true;
                       setState(() {
                         _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage('assets/icons/default_marker.png'));
@@ -782,14 +763,18 @@ class _MainPageState extends State<MainPage>
                       });
                       if (mounted) {
                         // 페이지 전환
-                        Navigator.popAndPushNamed(context, '/addStorePage').then((_) {
+                        Navigator.popAndPushNamed(
+                          context,
+                          '/storeInfo',
+                          arguments: index, // index 값을 전달
+                        ).then((_) {
                           isNavigating = false; // 페이지 이동 후 플래그 해제
                         });
                       }
                       return true;
                     }
                     // 하단으로 드래그
-                    if (scrollNotification.metrics.extentInside <= screenHeight * 0.3) { // minScrollExtent * 1.3 으로 최소 영역 하한 조정
+                    if (scrollNotification.metrics.extentInside <= screenHeight * 0.2) { // minScrollExtent * 1.3 으로 최소 영역 하한 조정
                       setState(() {
                         _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage('assets/icons/default_marker.png'));
                         _selectedMarker = null;
@@ -816,10 +801,12 @@ class _MainPageState extends State<MainPage>
                                 size: 36,
                                 Icons.remove,
                                 color: Color(0xff767676))),
-                        MainTitle2(idx: index),
-                        const SizedBox(height: 30),
+                        StoreSummaryTitle(idx: index),
+                        const SizedBox(height: 32),
                         const MainPhoto2(),
-                        const SizedBox(height: 20),
+                        const SizedBox(
+                          height: 32,
+                        ),
                       ],
                     ),
                   ),
@@ -831,37 +818,4 @@ class _MainPageState extends State<MainPage>
       );
     }
   }
-
-  // //마커 서버통신
-  // Future<MarkerInfo> _getClickedMarkerInfo(
-  //     BuildContext context, int markerId) async {
-  //   final url = Uri.parse('$serverUrl/api/store/$markerId/summary');
-
-  //   final accessToken = await storage.read(key: 'accessToken');
-  //   final headers = {
-  //     'Content-Type': 'application/json',
-  //     'Authorization': 'Bearer $accessToken',
-  //   };
-
-  //   final response = await http.get(
-  //     url,
-  //     headers: headers,
-  //   );
-
-  //   if (response.statusCode == 200) {
-  //     logger.d('데이터 통신 성공 !! (Marker) 상태코드 : ${response.statusCode}');
-
-  //     // 단일 객체를 처리하는 부분
-  //     var jsonResponse = json.decode(utf8.decode(response.bodyBytes))['data'];
-  //     return MarkerInfo.fromJson(jsonResponse); // 객체로 변환
-  //   } else if (response.statusCode == 401) {
-  //     logger.d('token expired! 상태코드 : ${response.statusCode}');
-  //     await reissue(context); // 토큰 갱신 함수
-  //     return _getClickedMarkerInfo(context, markerId); // 갱신 후 다시 호출
-  //   } else {
-  //     logger.e(
-  //         'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-  //     throw Exception('HTTP ERROR !!! ${response.body}');
-  //   }
-  // }
 }

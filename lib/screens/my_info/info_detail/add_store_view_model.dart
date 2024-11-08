@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/user_add_store.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import '../../login/login_view_model.dart';
 
@@ -36,6 +37,14 @@ class AddStoreViewModel{
         }
       } else {
         // 실패
+        await Future.delayed(const Duration(milliseconds: 1200));
+        Fluttertoast.showToast(
+          msg: "가게 정보를 읽어오는 데 실패하였습니다.",
+          timeInSecForIosWeb: 2,
+        );
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
         throw AddStoreException(
             "Fail to load. status code: ${response.statusCode}");
       }

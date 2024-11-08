@@ -1,5 +1,6 @@
 import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/screens/login/splash_page.dart';
+import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:dongpo_test/screens/my_info/info_detail/add_store.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +63,19 @@ class MyApp extends StatelessWidget {
       home: const SplashPage(), // 로그인 페이지 이동
       routes: {
         '/home': (context) => const MyAppPage(),
-        '/addStorePage': (context) => AddStorePage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/storeInfo') {
+          // 전달된 arguments를 int로 캐스팅
+          final index = settings.arguments as int;
+          return MaterialPageRoute(
+            builder: (context) {
+              // idx 값을 포함하여 StoreInfo 페이지 생성
+              return StoreInfo(idx: index);
+            },
+          );
+        }
+        return null; // 설정되지 않은 경로는 null 반환
       },
     );
   }
