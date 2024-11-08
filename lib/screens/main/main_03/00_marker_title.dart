@@ -69,8 +69,6 @@ class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
 
   //사용자와 점포간의 거리계산
   void _checkDistance() async {
-    if (!mounted) return;
-
     Position myPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 

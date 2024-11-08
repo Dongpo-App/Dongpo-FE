@@ -307,23 +307,6 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
                   ),
                 ),
               ),
-              // 내 칭호, 내가 쓴 리뷰, 북마크한 가게, 선물함
-              // Container(
-              //   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              //   child: ListTile(
-              //     title: Text(
-              //       '내 칭호',
-              //       style: TextStyle(
-              //           fontSize: 16,
-              //           fontWeight: FontWeight.w400,
-              //           color: Color(0xFF767676)),
-              //     ),
-              //     trailing: Icon(Icons.keyboard_arrow_right),
-              //     onTap: () {
-              //       // 내 칭호 버튼이 클릭되었을 때의 액션
-              //     },
-              //   ),
-              // ),
               Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 4),

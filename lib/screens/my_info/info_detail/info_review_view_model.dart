@@ -38,7 +38,7 @@ class InfoReviewViewModel{
         // 실패
         await Future.delayed(const Duration(milliseconds: 1200));
         Fluttertoast.showToast(
-          msg: "리뷰 정보를 읽어오는 데 실패하였습니다.",
+          msg: "리뷰 정보를 읽어오는 데 실패 했어요",
           timeInSecForIosWeb: 2,
         );
         if (context.mounted) {
@@ -83,7 +83,7 @@ class InfoReviewViewModel{
         // 실패
         await Future.delayed(const Duration(milliseconds: 1200));
         Fluttertoast.showToast(
-          msg: "리뷰를 삭제하는 데 실패하였습니다.",
+          msg: "리뷰를 삭제하는 데 실패 했어요",
           timeInSecForIosWeb: 2,
         );
         throw InfoReviewViewException(

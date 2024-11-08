@@ -38,7 +38,7 @@ class BookmarkViewModel{
         // 실패
         await Future.delayed(const Duration(milliseconds: 1200));
         Fluttertoast.showToast(
-          msg: "북마크 정보를 읽어오는 데 실패하였습니다.",
+          msg: "북마크 정보를 읽어오는 데 실패 했어요",
           timeInSecForIosWeb: 2,
         );
         if (context.mounted) {
@@ -89,7 +89,7 @@ class BookmarkViewModel{
       logger.d("error : $e / bookmarkId : ${storeId}");
       await Future.delayed(const Duration(milliseconds: 1200));
       Fluttertoast.showToast(
-        msg: "북마크 삭제에 실패하였습니다.",
+        msg: "북마크 삭제에 실패 했어요",
         timeInSecForIosWeb: 2,
       );
       throw UserBookmarkException("Error occurred: $e");

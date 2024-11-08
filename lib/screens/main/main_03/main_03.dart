@@ -37,6 +37,8 @@ class _StoreInfoState extends State<StoreInfo> {
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
   }
+  // 가게 신고 텍스트 확인용
+  bool reportTextChecked = false;
 
   @override
   void initState() {
@@ -302,6 +304,13 @@ class _StoreInfoState extends State<StoreInfo> {
                                       child: TextField(
                                         controller:
                                             textController, // TextEditingController 연결
+                                        onChanged: (text) {
+                                          if (text.isNotEmpty) {
+                                            reportTextChecked = true;
+                                          } else {
+                                            reportTextChecked = false;
+                                          }
+                                        },
                                         maxLength: 100,
                                         maxLines: 3,
                                         decoration: const InputDecoration(
@@ -339,6 +348,9 @@ class _StoreInfoState extends State<StoreInfo> {
                                       width: double.infinity,
                                       child: ElevatedButton(
                                         onPressed: () {
+                                          if (value == 4 && !reportTextChecked) {
+                                            return;
+                                          }
                                           if (value != 0) {
                                             etcText =
                                                 textController.text; // 텍스트를 변수에 저장
@@ -348,16 +360,13 @@ class _StoreInfoState extends State<StoreInfo> {
                                         },
                                         style: ElevatedButton.styleFrom(
                                           elevation: 0,
-                                          splashFactory: (value == 0)
-                                              ? NoSplash.splashFactory
-                                              : InkSplash.splashFactory,
                                           minimumSize:
                                               const Size(double.infinity, 44),
                                           shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(12)),
                                           ),
-                                          backgroundColor: value != 0
+                                          backgroundColor: ((value > 0 && value < 4) || (value == 4 && reportTextChecked))
                                               ? const Color(0xffF15A2B)
                                               : const Color(0xFFF4F4F4),
                                         ),
@@ -366,7 +375,7 @@ class _StoreInfoState extends State<StoreInfo> {
                                           style: TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 14,
-                                            color: (value > 0)
+                                            color: ((value > 0 && value < 4) || (value == 4 && reportTextChecked))
                                                 ? Colors.white
                                                 : const Color(0xFF767676),
                                           ),

@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/store/store_detail.dart';
 import 'package:dongpo_test/widgets/map_manager.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:dongpo_test/screens/login/login.dart';
@@ -49,6 +51,8 @@ class _ShowReviewState extends State<ShowReview> {
     final screenWidth = MediaQuery.of(context).size.width;
     // 좌우 마진 제외
     final contentsWidth = screenWidth - 48;
+    // 리뷰 텍스트 확인용
+    bool reviewTextChecked = false;
 
     return SingleChildScrollView(
       child: Column(
@@ -73,6 +77,7 @@ class _ShowReviewState extends State<ShowReview> {
               child: ElevatedButton(
                 onPressed: () {
                   showModalBottomSheet(
+                    backgroundColor: Colors.white,
                     isScrollControlled: true,
                     context: context,
                     builder: (context) {
@@ -169,9 +174,8 @@ class _ShowReviewState extends State<ShowReview> {
                                       const SizedBox(height: 8),
                                       // 사진 첨부 버튼과 이미지 미리보기 //상단 4
                                       Row(
-                                        children: List.generate(
-                                          3,
-                                              (index) => Container(
+                                        children: List.generate(3, (index) =>
+                                          Container(
                                             margin: const EdgeInsets.all(5),
                                             width: 80,
                                             height: 80,
@@ -207,6 +211,13 @@ class _ShowReviewState extends State<ShowReview> {
                                         height: 200,
                                         child: TextField(
                                           controller: _reviewController,
+                                          onChanged: (text) {
+                                            if (text.isNotEmpty) {
+                                              reviewTextChecked = true;
+                                            } else {
+                                              reviewTextChecked = false;
+                                            }
+                                          },
                                           maxLength: 200,
                                           maxLines: 4,
                                           decoration: const InputDecoration(
@@ -240,13 +251,27 @@ class _ShowReviewState extends State<ShowReview> {
                                         height: 44,
                                         child: ElevatedButton(
                                           onPressed: () async {
+                                            if (!reviewTextChecked) {
+                                              return;
+                                            }
                                             try {
-                                              await storeService.addReview(
+                                              ApiResponse apiResponse = await storeService.addReview(
                                                 id: storeId,
                                                 reviewText: _reviewController.text,
                                                 images: _pickedImgs,
                                                 rating: _rating,
                                               );
+                                              logger.d("review post api statusCode : ${apiResponse.statusCode}");
+                                              if (apiResponse.statusCode == 200) {
+                                                await Future.delayed(const Duration(milliseconds: 1200));
+                                                Fluttertoast.showToast(
+                                                  msg: "리뷰 등록 완료",
+                                                  timeInSecForIosWeb: 2,
+                                                );
+                                                if (context.mounted) {
+                                                  Navigator.of(context).pop();
+                                                }
+                                              }
                                             } on TokenExpiredException catch (e) {
                                               if (mounted) {
                                                 ScaffoldMessenger.of(context)
@@ -274,14 +299,18 @@ class _ShowReviewState extends State<ShowReview> {
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(12))),
-                                            backgroundColor:
-                                            const Color(0xffF15A2B),
+                                            backgroundColor: (reviewTextChecked)
+                                                ? const Color(0xffF15A2B)
+                                                : const Color(0xFFF4F4F4),
                                           ),
-                                          child: const Text(
+                                          child: Text(
                                             "리뷰 등록",
                                             style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.white),
+                                              fontWeight: FontWeight.w600,
+                                              color: (reviewTextChecked)
+                                                ? Colors.white
+                                                : const Color(0xFF767676),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -604,6 +633,7 @@ class _ShowReviewState extends State<ShowReview> {
 // 개별 리뷰를 표시하는 함수
   Widget _showReview(BuildContext context, int index) {
     String reviewDate = DateFormat('yyyy-MM-dd').format(reviewList[index].registerDate);
+    bool reportTextChecked = false;
 
     return Container(
       padding: const EdgeInsets.only(top: 24),
@@ -746,127 +776,142 @@ class _ShowReviewState extends State<ShowReview> {
                     isScrollControlled: true, // 모달 시트의 크기를 조절 가능하게 설정
                     builder: (context) {
                       return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
-                        return SingleChildScrollView(
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              top: 24,
-                              bottom: MediaQuery.of(context)
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            top: 24,
+                            bottom: MediaQuery.of(context)
                                 .viewInsets
                                 .bottom, // 키보드가 올라오면 그만큼 패딩 추가
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Text(
-                                        "리뷰 신고하기",
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.w600
+                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).unfocus();
+                            },
+                            child: SingleChildScrollView(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Text(
+                                          "리뷰 신고하기",
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w600
+                                          ),
                                         ),
-                                      ),
-                                      const Spacer(),
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() => value = 0);
-                                          Navigator.pop(context);
-                                        },
-                                        icon: const Icon(
-                                          CupertinoIcons.xmark,
-                                          size: 24,
-                                          color: Color(0xFF767676),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(height: 40,),
-                                  Column(
-                                    children: [
-                                      _radioBtn('홍보성 리뷰에요', 1, setState),
-                                      const SizedBox(height: 16),
-                                      _radioBtn('도배 글이에요', 2, setState),
-                                      const SizedBox(height: 16),
-                                      _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)', 3,
-                                          setState),
-                                      const SizedBox(height: 16),
-                                      _radioBtn('가게에 무관한 리뷰에요', 4, setState),
-                                      const SizedBox(height: 16),
-                                      _radioBtn('기타', 5, setState),
-                                      if (value == 5)
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 16.0),
-                                          child: TextField(
-                                            controller: textController2,
-                                            maxLength: 100,
-                                            decoration: const InputDecoration(
-                                              hintText: '기타 사항을 입력해주세요',
-                                              hintStyle: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                color: Color(0xFF767676),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                                                  borderSide: BorderSide(
-                                                    width: 1,
-                                                    color: Color(0xFF767676),
-                                                  )
-                                              ),
-                                              border: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.all(Radius.circular(12)),
-                                                  borderSide: BorderSide(
-                                                    width: 1,
-                                                    color: Color(0xFF767676),
-                                                  )
+                                        const Spacer(),
+                                        IconButton(
+                                          onPressed: () {
+                                            setState(() => value = 0);
+                                            Navigator.pop(context);
+                                          },
+                                          icon: const Icon(
+                                            CupertinoIcons.xmark,
+                                            size: 24,
+                                            color: Color(0xFF767676),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(height: 40,),
+                                    Column(
+                                      children: [
+                                        _radioBtn('홍보성 리뷰에요', 1, setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('도배 글이에요', 2, setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)', 3,
+                                            setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('가게에 무관한 리뷰에요', 4, setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('기타', 5, setState),
+                                        if (value == 5)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 16.0),
+                                            child: TextField(
+                                              controller: textController2,
+                                              onChanged: (text) {
+                                                if (text.isNotEmpty) {
+                                                  reportTextChecked = true;
+                                                } else {
+                                                  reportTextChecked = false;
+                                                }
+                                              },
+                                              maxLength: 100,
+                                              decoration: const InputDecoration(
+                                                hintText: '기타 사항을 입력해주세요',
+                                                hintStyle: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Color(0xFF767676),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Color(0xFF767676),
+                                                    )
+                                                ),
+                                                border: OutlineInputBorder(
+                                                    borderRadius:
+                                                    BorderRadius.all(Radius.circular(12)),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Color(0xFF767676),
+                                                    )
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      const SizedBox(height: 32),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          if (value != 0) {
-                                            etcText = (value == 5)
-                                              ? textController2.text
-                                              : "";
-                                            reviewStoreReport(index, etcText);
-                                          }
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          elevation: 0,
-                                          splashFactory: value == 0
-                                              ? NoSplash.splashFactory
-                                              : InkSplash.splashFactory,
-                                          shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(12)),
+                                        const SizedBox(height: 32),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            if (value == 5 && !reportTextChecked) {
+                                              return;
+                                            }
+                                            if (value != 0) {
+                                              etcText = (value == 5)
+                                                ? textController2.text
+                                                : "";
+                                              reviewStoreReport(index, etcText);
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            elevation: 0,
+                                            splashFactory: value == 0
+                                                ? NoSplash.splashFactory
+                                                : InkSplash.splashFactory,
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(12)),
+                                            ),
+                                            minimumSize:
+                                            const Size(double.infinity, 44),
+                                            backgroundColor: ((value > 0 && value < 5) || (value == 5 && reportTextChecked))
+                                                ? const Color(0xffF15A2B)
+                                                : const Color(0xFFF4F4F4),
                                           ),
-                                          minimumSize:
-                                          const Size(double.infinity, 44),
-                                          backgroundColor: value != 0
-                                              ? const Color(0xffF15A2B)
-                                              : const Color(0xFFF4F4F4),
-                                        ),
-                                        child: Text(
-                                          "가게 신고",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14,
-                                            color: value > 0
-                                              ? Colors.white
-                                              : const Color(0xFF767676),
+                                          child: Text(
+                                            "리뷰 신고",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
+                                              color: ((value > 0 && value < 5) || (value == 5 && reportTextChecked))
+                                                ? Colors.white
+                                                : const Color(0xFF767676),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 24),
-                                    ],
-                                  ),
-                                ],
+                                        const SizedBox(height: 24),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -1137,6 +1182,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
 // 개별 리뷰를 표시하는 함수
   Widget _showReview(BuildContext context, int index) {
     String reviewDate = DateFormat('yyyy-MM-dd').format(reviewList[index].registerDate);
+    bool reportTextChecked = false;
 
     return Container(
       margin: const EdgeInsets.only(top: 24, right: 24, left: 24),
@@ -1282,128 +1328,143 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
                     builder: (context) {
                       return StatefulBuilder(builder:
                           (BuildContext context, StateSetter setState) {
-                        return SingleChildScrollView(
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              top: 24,
-                              bottom: MediaQuery.of(context)
-                                  .viewInsets
-                                  .bottom, // 키보드가 올라오면 그만큼 패딩 추가
-                            ),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    children: [
-                                      const Text(
-                                        "리뷰 신고하기",
-                                        style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.w600
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            top: 24,
+                            bottom: MediaQuery.of(context)
+                                .viewInsets
+                                .bottom, // 키보드가 올라오면 그만큼 패딩 추가
+                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              FocusScope.of(context).unfocus();
+                            },
+                            child: SingleChildScrollView(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Text(
+                                          "리뷰 신고하기",
+                                          style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w600
+                                          ),
                                         ),
-                                      ),
-                                      const Spacer(),
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() => value = 0);
-                                          Navigator.pop(context);
-                                        },
-                                        icon:
-                                        const Icon(
-                                          CupertinoIcons.xmark,
-                                          size: 24,
-                                          color: Color(0xFF767676),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(height: 40,),
-                                  Column(
-                                    children: [
-                                      _radioBtn('홍보성 리뷰에요', 1, setState),
-                                      const SizedBox(height: 16),
-                                      _radioBtn('도배 글이에요', 2, setState),
-                                      const SizedBox(height: 16),
-                                      _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)', 3, setState),
-                                      const SizedBox(height: 16),
-                                      _radioBtn('가게에 무관한 리뷰에요', 4, setState),
-                                      const SizedBox(height: 16),
-                                      _radioBtn('기타', 5, setState),
-                                      if (value == 5)
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 16.0),
-                                          child: TextField(
-                                            controller: textController,
-                                            maxLength: 100,
-                                            decoration:
-                                            const InputDecoration(
-                                              hintText: '기타 사항을 입력해주세요',
-                                              hintStyle: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                color: Color(0xFF767676),
-                                              ),
-                                              focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                                                  borderSide: BorderSide(
-                                                    width: 1,
-                                                    color: Color(0xFF767676),
-                                                  )
-                                              ),
-                                              border: OutlineInputBorder(
-                                                  borderRadius:
-                                                  BorderRadius.all(Radius.circular(12)),
-                                                  borderSide: BorderSide(
-                                                    width: 1,
-                                                    color: Color(0xFF767676),
-                                                  )
+                                        const Spacer(),
+                                        IconButton(
+                                          onPressed: () {
+                                            setState(() => value = 0);
+                                            Navigator.pop(context);
+                                          },
+                                          icon:
+                                          const Icon(
+                                            CupertinoIcons.xmark,
+                                            size: 24,
+                                            color: Color(0xFF767676),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(height: 40,),
+                                    Column(
+                                      children: [
+                                        _radioBtn('홍보성 리뷰에요', 1, setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('도배 글이에요', 2, setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('부적절한 내용이에요(욕설, 선정적 내용 등)', 3, setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('가게에 무관한 리뷰에요', 4, setState),
+                                        const SizedBox(height: 16),
+                                        _radioBtn('기타', 5, setState),
+                                        if (value == 5)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 16.0),
+                                            child: TextField(
+                                              controller: textController,
+                                              onChanged: (text) {
+                                                if (text.isNotEmpty) {
+                                                  reportTextChecked = true;
+                                                } else {
+                                                  reportTextChecked = false;
+                                                }
+                                              },
+                                              maxLength: 100,
+                                              decoration:
+                                              const InputDecoration(
+                                                hintText: '기타 사항을 입력해주세요',
+                                                hintStyle: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Color(0xFF767676),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Color(0xFF767676),
+                                                    )
+                                                ),
+                                                border: OutlineInputBorder(
+                                                    borderRadius:
+                                                    BorderRadius.all(Radius.circular(12)),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Color(0xFF767676),
+                                                    )
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      const SizedBox(height: 32),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          if (value != 0) {
-                                            etcText2 = (value == 5)
-                                              ? textController.text
-                                              : "";
-                                            reviewStoreReport2(index, etcText2);
-                                          }
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          elevation: 0,
-                                          splashFactory: value == 0
-                                              ? NoSplash.splashFactory
-                                              : InkSplash.splashFactory,
-                                          shape: const RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(12)),
+                                        const SizedBox(height: 32),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            if (value == 5 && !reportTextChecked) {
+                                              return;
+                                            }
+                                            if (value != 0) {
+                                              etcText2 = (value == 5)
+                                                ? textController.text
+                                                : "";
+                                              reviewStoreReport2(index, etcText2);
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            elevation: 0,
+                                            splashFactory: value == 0
+                                                ? NoSplash.splashFactory
+                                                : InkSplash.splashFactory,
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(12)),
+                                            ),
+                                            minimumSize: const Size(
+                                                double.infinity, 44),
+                                            backgroundColor: ((value > 0 && value < 5) || (value == 5 && reportTextChecked))
+                                                ? const Color(0xffF15A2B)
+                                                : const Color(0xFFF4F4F4),
                                           ),
-                                          minimumSize: const Size(
-                                              double.infinity, 44),
-                                          backgroundColor: value != 0
-                                              ? const Color(0xffF15A2B)
-                                              : const Color(0xFFF4F4F4),
-                                        ),
-                                        child: Text(
-                                          "가게 신고",
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14,
-                                            color: value > 0
-                                              ? Colors.white
-                                              : const Color(0xFF767676),
+                                          child: Text(
+                                            "리뷰 신고",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
+                                              color: ((value > 0 && value < 5) || (value == 5 && reportTextChecked))
+                                                ? Colors.white
+                                                : const Color(0xFF767676),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 24),
-                                    ],
-                                  ),
-                                ],
+                                        const SizedBox(height: 24),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),

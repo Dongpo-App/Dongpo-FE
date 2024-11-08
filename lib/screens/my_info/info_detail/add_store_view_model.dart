@@ -39,7 +39,7 @@ class AddStoreViewModel{
         // 실패
         await Future.delayed(const Duration(milliseconds: 1200));
         Fluttertoast.showToast(
-          msg: "가게 정보를 읽어오는 데 실패하였습니다.",
+          msg: "가게 정보를 읽어오는 데 실패 했어요",
           timeInSecForIosWeb: 2,
         );
         if (context.mounted) {
