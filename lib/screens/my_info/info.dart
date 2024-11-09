@@ -742,7 +742,7 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
                                     backgroundColor: (updateValue == 1)
                                         ? const Color(0xffF15A2B)
                                         : const Color(0xFFF4F4F4),
-                                    minimumSize: const Size(double.infinity, 40),
+                                    minimumSize: const Size(double.infinity, 44),
                                     shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(12)))),

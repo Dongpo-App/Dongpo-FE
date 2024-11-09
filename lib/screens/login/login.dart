@@ -1,4 +1,5 @@
 import 'package:dongpo_test/models/response/api_response.dart';
+import 'package:dongpo_test/screens/login/terms_and_conditions.dart';
 import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
@@ -152,6 +153,27 @@ class _LoginPageState extends State<LoginPage> {
                       'assets/images/login_kakao.png',
                       fit: BoxFit.contain, // 이미지가 컨테이너에 맞게 조정되도록 설정
                     ),
+                  ),
+                ),
+              ),
+            ),
+            // 이용약관 확인용
+            SizedBox(height: 24,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: InkWell(
+                onTap: () async {
+                  showEditProfileBottomSheet(context);
+                },
+                child: Container(
+                  height: 44,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFFFF),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Text(
+                    '이용약관 테스트',
                   ),
                 ),
               ),
