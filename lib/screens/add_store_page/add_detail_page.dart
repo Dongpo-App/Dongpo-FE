@@ -209,7 +209,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Color(0xFF67676)),
+                                borderSide: const BorderSide(color: Color(0xFF767676)),
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
@@ -336,7 +336,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Color(0xFF67676)),
+                                    borderSide: const BorderSide(color: Color(0xFF767676)),
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
@@ -401,7 +401,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Color(0xFF67676)),
+                                    borderSide: const BorderSide(color: Color(0xFF767676)),
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(

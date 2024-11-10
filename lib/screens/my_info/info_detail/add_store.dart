@@ -94,7 +94,7 @@ class AddStorePageState extends State<AddStorePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             const CircleAvatar(
-                              radius: 18,
+                              radius: 16,
                               backgroundImage:
                                   AssetImage('assets/images/icon.png'),
                             ),

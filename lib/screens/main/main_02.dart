@@ -121,64 +121,118 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('카카오맵 주소 검색'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: '주소를 입력하세요',
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    _searchKeyword(_controller.text);
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: true,
+          title: const Text(
+            "주소 검색",
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context); //뒤로가기
+            },
+            icon: const Icon(
+              Icons.chevron_left,
+              size: 24,
+              color: Color(0xFF767676),
+            ),
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: '주소를 입력하세요',
+                  hintStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF767676),
+                  ),
+                  border: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Color(0xFF767676)),
+                      borderRadius: BorderRadius.circular(12.0)
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFF767676)), // 비활성화 상태 테두리
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFF767676)),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Color(0xFFF15A2B)), // 포커스 + 에러 상태 테두리
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: const Icon(
+                      Icons.search,
+                      size: 24,
+                    ),
+                    onPressed: () {
+                      _searchKeyword(_controller.text);
+                    },
+                  ),
+                ),
+                onChanged: _onSearchChanged,
+                onSubmitted: (value) {
+                  //_searchKeyword(value);
+                },
+              ),
+              Expanded(
+                child: ListView.separated(
+                  itemCount: _results.length,
+                  separatorBuilder: (context, index) {
+                    return const Divider(
+                      thickness: 1,
+                      height: 1,
+                      color: Colors.black12,
+                    );
+                  },
+                  itemBuilder: (context, index) {
+                    final item = _results[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 24, bottom: 16),
+                      child: ListTile(
+                        title: Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            item['place_name'],
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                          ),
+                        ),
+                        subtitle: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(item['address_name'], style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16),),
+                            Text(alterDistance(item['distance']), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),),
+                          ],
+                        ),
+                        onTap: () {
+                          Map data = {
+                            'lat': item['y'],
+                            'lng': item['x'],
+                            'place_name': item['place_name'],
+                          };
+                          Navigator.pop(context, data);
+                        },
+                      ),
+                    );
                   },
                 ),
               ),
-              onChanged: _onSearchChanged,
-              onSubmitted: (value) {
-                //_searchKeyword(value);
-              },
-            ),
-            Expanded(
-              child: ListView.separated(
-                itemCount: _results.length,
-                separatorBuilder: (context, index) {
-                  return const Divider(
-                    thickness: 1,
-                    height: 1,
-                    color: Colors.black12,
-                  );
-                },
-                itemBuilder: (context, index) {
-                  final item = _results[index];
-                  return ListTile(
-                    title: Text(item['place_name']),
-                    subtitle: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(item['address_name']),
-                        Text(alterDistance(item['distance'])),
-                      ],
-                    ),
-                    onTap: () {
-                      Map data = {
-                        'lat': item['y'],
-                        'lng': item['x'],
-                        'place_name': item['place_name'],
-                      };
-                      Navigator.pop(context, data);
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
