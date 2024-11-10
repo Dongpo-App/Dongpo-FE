@@ -65,7 +65,7 @@ class InfoReviewViewModel{
       final response = await http.delete(url, headers: headers);
       if (response.statusCode == 200) {
         logger.d("review Delete : $reviewId");
-        await Future.delayed(const Duration(milliseconds: 1200));
+        await Future.delayed(const Duration(milliseconds: 100));
         Fluttertoast.showToast(
           msg: "리뷰가 삭제되었어요",
           timeInSecForIosWeb: 2,
@@ -81,7 +81,7 @@ class InfoReviewViewModel{
         }
       } else {
         // 실패
-        await Future.delayed(const Duration(milliseconds: 1200));
+        await Future.delayed(const Duration(milliseconds: 100));
         Fluttertoast.showToast(
           msg: "리뷰를 삭제하는 데 실패 했어요",
           timeInSecForIosWeb: 2,

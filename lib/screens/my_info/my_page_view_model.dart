@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:dongpo_test/models/user_profile.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
 import '../login/login_view_model.dart';
@@ -36,7 +37,14 @@ class MyPageViewModel {
         }
       } else {
         logger.d("Fail to load. status code : ${response.statusCode}");
-        // 실패
+        await Future.delayed(const Duration(milliseconds: 1200));
+        Fluttertoast.showToast(
+          msg: "사용자 정보를 가져오는 데 실패 했어요",
+          timeInSecForIosWeb: 2,
+        );
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
         throw UserProfileException(
             "Fail to load. status code: ${response.statusCode}");
       }
@@ -76,6 +84,12 @@ class MyPageViewModel {
     try {
       final response = await http.patch(url, headers: headers, body: body);
       if (response.statusCode == 200) {
+        logger.d("Fail to load $data. status code : ${response.statusCode}");
+        await Future.delayed(const Duration(milliseconds: 100));
+        Fluttertoast.showToast(
+          msg: "사용자 정보를 수정 했어요",
+          timeInSecForIosWeb: 2,
+        );
         return true;
       } else if (response.statusCode == 401) {
         logger.d("status code : ${response.statusCode}");
@@ -89,6 +103,14 @@ class MyPageViewModel {
       } else {
         // 실패
         logger.d("Fail to load $data. status code : ${response.statusCode}");
+        await Future.delayed(const Duration(milliseconds: 1200));
+        Fluttertoast.showToast(
+          msg: "사용자 정보를 수정하는 데 실패 했어요",
+          timeInSecForIosWeb: 2,
+        );
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
         throw UserProfileException(
             "Fail to load. status code: ${response.statusCode}");
       }
@@ -134,6 +156,14 @@ class MyPageViewModel {
         // 실패
         logger.d(
             "Fail to upload $formData. status code : ${response.statusCode}");
+        await Future.delayed(const Duration(milliseconds: 1200));
+        Fluttertoast.showToast(
+          msg: "사용자 프로필 사진을 수정하는 데 실패 했어요",
+          timeInSecForIosWeb: 2,
+        );
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
         throw UserProfileException(
             "Fail to load. status code: ${response.statusCode}");
       }
