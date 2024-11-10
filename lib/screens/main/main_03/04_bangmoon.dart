@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dongpo_test/screens/login/login_view_model.dart';
-import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,8 @@ import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:http/http.dart' as http;
+
+import '../../../widgets/bottom_navigation_bar.dart';
 
 class BangMoon extends StatelessWidget {
   final MapManager manager = MapManager();
@@ -599,7 +600,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
       onPressed: () {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const MainPage()), // 1페이지로 이동
+          MaterialPageRoute(builder: (context) => const MyAppPage()), // 1페이지로 이동
           (Route<dynamic> route) => false, // 모든 이전 스택을 삭제
         );
 

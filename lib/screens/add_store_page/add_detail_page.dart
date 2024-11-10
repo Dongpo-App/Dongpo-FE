@@ -123,7 +123,6 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                         ),
                         // 가게 위치 검색바
                         SizedBox(
-                          height: 70,
                           child: TextFormField(
                             controller: _addressController,
                             style: const TextStyle(
@@ -137,15 +136,18 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                             },
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Colors.transparent),
+                                  borderSide: const BorderSide(color: Color(0xFFF4F4F4)),
                                   borderRadius: BorderRadius.circular(12.0)),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Color(0xFFF4F4F4)), // 비활성화 상태 테두리
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
                               fillColor: const Color(0xFFF4F4F4),
                               filled: true,
                               suffixIcon: const Icon(
                                   size: 16, CupertinoIcons.right_chevron),
                               contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 12),
+                                  vertical: 12, horizontal: 24),
                               helperText: "", // 크기 유지를 위해
                             ),
                             validator: (value) {
@@ -157,7 +159,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                           ),
                         ),
                         const SizedBox(
-                          height: 14,
+                          height: 40,
                         ),
                         // 가게 이름
                         const Row(
@@ -165,7 +167,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                             Text(
                               '가게 이름',
                               style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 16),
+                                fontWeight: FontWeight.w600, fontSize: 16),
                             ),
                             SizedBox(
                               width: 4,
@@ -184,7 +186,6 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                         ),
                         // 가게이름 필드
                         SizedBox(
-                          height: 70,
                           child: TextFormField(
                             controller: _nameController,
                             style: const TextStyle(
@@ -194,14 +195,31 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                             ),
                             decoration: InputDecoration(
                               hintText: "가게 이름을 입력해 주세요.",
+                              hintStyle: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF767676),
+                              ),
                               border: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Colors.transparent),
-                                  borderRadius: BorderRadius.circular(12.0)),
+                                borderSide: const BorderSide(color: Color(0xFFF4F4F4)),
+                                borderRadius: BorderRadius.circular(12.0)
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Color(0xFFF4F4F4)), // 비활성화 상태 테두리
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Color(0xFF67676)),
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(color: Color(0xFFF15A2B)), // 포커스 + 에러 상태 테두리
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
                               fillColor: const Color(0xFFF4F4F4),
                               filled: true,
                               contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 12),
+                                  vertical: 12, horizontal: 24),
                               helperText: "",
                             ),
                             validator: (value) {
@@ -213,7 +231,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                           ),
                         ),
                         const SizedBox(
-                          height: 12,
+                          height: 40,
                         ),
                         // 오픈 요일
                         const Row(
@@ -238,7 +256,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                           ],
                         ),
                         const SizedBox(
-                          height: 14,
+                          height: 16,
                         ),
                         // 요일 선택
                         Center(
@@ -275,7 +293,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                             Text(
                               '영업 시간',
                               style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 16),
+                                fontWeight: FontWeight.w600, fontSize: 16),
                             ),
                             SizedBox(
                               width: 4,
@@ -293,6 +311,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                           height: 16,
                         ),
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // 오픈 시간 입력 필드
                             Expanded(
@@ -302,11 +321,36 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                                 onTap: () => _showCupertinoTimePicker(context,
                                     isOpenTime: true),
                                 decoration: InputDecoration(
-                                  hintText: "시간 선택",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                  hintText: "오픈 시간",
+                                  hintStyle: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFF767676),
                                   ),
-                                  suffixIcon: const Icon(Icons.access_time),
+                                  border: OutlineInputBorder(
+                                      borderSide: const BorderSide(color: Color(0xFFF4F4F4)),
+                                      borderRadius: BorderRadius.circular(12.0)
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: Color(0xFFF4F4F4)), // 비활성화 상태 테두리
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: Color(0xFF67676)),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: Color(0xFFF15A2B)), // 포커스 + 에러 상태 테두리
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                                  fillColor: const Color(0xFFF4F4F4),
+                                  filled: true,
+                                  suffixIcon: const Icon(
+                                    size: 24,
+                                    color: Color(0xFF767676),
+                                    Icons.access_time
+                                  ),
                                   helperText: "",
                                 ),
                                 validator: (value) {
@@ -320,7 +364,17 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                             const SizedBox(
                               width: 8,
                             ),
-                            const Text("~"),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12,),
+                              child: Text(
+                                "~",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF767676),
+                                ),
+                              ),
+                            ),
                             const SizedBox(
                               width: 8,
                             ),
@@ -332,11 +386,36 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                                 onTap: () => _showCupertinoTimePicker(context,
                                     isOpenTime: false),
                                 decoration: InputDecoration(
-                                  hintText: "시간 선택",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                  hintText: "마감 시간",
+                                  hintStyle: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFF767676),
                                   ),
-                                  suffixIcon: const Icon(Icons.access_time),
+                                  border: OutlineInputBorder(
+                                      borderSide: const BorderSide(color: Color(0xFFF4F4F4)),
+                                      borderRadius: BorderRadius.circular(12.0)
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: Color(0xFFF4F4F4)), // 비활성화 상태 테두리
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: Color(0xFF67676)),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: Color(0xFFF15A2B)), // 포커스 + 에러 상태 테두리
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                                  fillColor: const Color(0xFFF4F4F4),
+                                  filled: true,
+                                  suffixIcon: const Icon(
+                                    size: 24,
+                                    color: Color(0xFF767676),
+                                    Icons.access_time
+                                  ),
                                   helperText: "",
                                 ),
                                 validator: (value) {
@@ -349,15 +428,14 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 40),
                         // 결제 방식
                         const Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
                               '결제 방식',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 16),
+                              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                             ),
                             SizedBox(
                               width: 8,
@@ -409,8 +487,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                           children: [
                             Text(
                               '화장실',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 16),
+                              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                             ),
                           ],
                         ),
@@ -441,8 +518,8 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                                       selected: _isToilets,
                                       entry: isthere,
                                       isCircle: false,
-                                      itemSize: contentsWidth * 0.4,
-                                      margin: 16.0,
+                                      itemSize: contentsWidth * 0.45,
+                                      margin: 8.0,
                                     ),
                                   )
                                   .toList()),
@@ -582,7 +659,6 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
       context: context,
       builder: (BuildContext builder) {
         return SizedBox(
-          height: 250,
           child: CupertinoDatePicker(
             mode: CupertinoDatePickerMode.time, // 시, 분 선택
             initialDateTime: isOpenTime
