@@ -121,12 +121,12 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
                     children: [
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            elevation: 8,
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(4),
-                            foregroundColor: const Color(0xFF003ACE),
-                            backgroundColor: WidgetStateColor.resolveWith(
-                                (states) => Colors.white)),
+                          elevation: 8,
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(4),
+                          foregroundColor: const Color(0xFF003ACE),
+                          backgroundColor: WidgetStateColor.resolveWith(
+                              (states) => Colors.white)),
                         onPressed: _moveToCurrentLocation,
                         child: const Icon(Icons.my_location),
                       ),
