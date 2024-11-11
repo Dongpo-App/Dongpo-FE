@@ -14,11 +14,13 @@ class GageJungbo extends StatefulWidget {
 class GageJungboState extends State<GageJungbo> {
   MapManager manager = MapManager();
 
+  // 가게 정보 데이터
   List<String> operatingDays = [];
   String openTime = "";
   String closeTime = "";
   List<String> payMethods = [];
   bool isToiletValid = false;
+  int memberId = 0;
 
   @override
   void initState() {
@@ -35,6 +37,7 @@ class GageJungboState extends State<GageJungbo> {
     closeTime = manager.selectedDetail?.closeTime ?? "";
     payMethods = manager.selectedDetail?.payMethods ?? [];
     isToiletValid = manager.selectedDetail?.isToiletValid ?? false;
+    memberId = manager.selectedDetail?.memberId ?? 0;
   }
 
   String formatTime(String time) {

@@ -10,8 +10,8 @@ mixin DialogMethodMixin<T extends StatefulWidget> on State<T> {
         "확인",
         style: TextStyle(
           color: Color(0xffF15A2B),
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
         ),
       ),
       onPressed: () {
@@ -24,9 +24,9 @@ mixin DialogMethodMixin<T extends StatefulWidget> on State<T> {
       child: const Text(
         "취소",
         style: TextStyle(
-          color: Color(0xffF15A2B),
-          fontWeight: FontWeight.w400,
-          fontSize: 16,
+          color: Color(0xFF33393F),
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
         ),
       ),
       onPressed: () {
@@ -41,15 +41,18 @@ mixin DialogMethodMixin<T extends StatefulWidget> on State<T> {
       title: Text(
         title,
         style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
         ),
       ),
       content: Padding(
         padding: const EdgeInsets.only(top: 8.0),
         child: Text(
           message,
-          style: const TextStyle(fontSize: 14),
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       ),
       actions: [

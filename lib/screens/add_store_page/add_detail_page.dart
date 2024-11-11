@@ -53,9 +53,6 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
   int _toiletIndex = 1; // 0 있음, 1 없음
   final List<String> _toilet = ["있음", "없음"]; // 요소
 
-  // 등록 상태 변수
-  bool isAddCehck = false;
-
   @override
   void initState() {
     super.initState();

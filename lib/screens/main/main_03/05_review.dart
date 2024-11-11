@@ -47,10 +47,6 @@ class _ShowReviewState extends State<ShowReview> {
   @override
   Widget build(BuildContext context) {
     int storeId = widget.idx;
-    // 전체 화면 너비
-    final screenWidth = MediaQuery.of(context).size.width;
-    // 좌우 마진 제외
-    final contentsWidth = screenWidth - 48;
     // 리뷰 텍스트 확인용
     bool reviewTextChecked = false;
 
@@ -176,7 +172,7 @@ class _ShowReviewState extends State<ShowReview> {
                                       Row(
                                         children: List.generate(3, (index) =>
                                           Container(
-                                            margin: const EdgeInsets.all(5),
+                                            margin: const EdgeInsets.all(4),
                                             width: 80,
                                             height: 80,
                                             decoration: BoxDecoration(
@@ -263,7 +259,6 @@ class _ShowReviewState extends State<ShowReview> {
                                               );
                                               logger.d("review post api statusCode : ${apiResponse.statusCode}");
                                               if (apiResponse.statusCode == 200) {
-                                                await Future.delayed(const Duration(milliseconds: 1200));
                                                 Fluttertoast.showToast(
                                                   msg: "리뷰 등록 완료",
                                                   timeInSecForIosWeb: 2,
@@ -357,17 +352,15 @@ class _ShowReviewState extends State<ShowReview> {
                 return _showReview(context, index); // 각 리뷰 위젯 생성
               },
             )
-            : Container(
-                child: const Center(
-                  child: Text(
-                    '리뷰가 아직 없는 가게예요',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF767676)),
-                  )
-                ),
-              ), // 리뷰가 없을 경우 빈 컨테이너 또는 메시지를 반환
+            : const Center(
+              child: Text(
+                '리뷰가 아직 없는 가게예요',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF767676)),
+              )
+            ), // 리뷰가 없을 경우 빈 컨테이너 또는 메시지를 반환
 
           const SizedBox(height: 24,),
           Container(
@@ -409,13 +402,13 @@ class _ShowReviewState extends State<ShowReview> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.6),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.orange, width: 1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xffF15A2B), width: 1),
         ),
         child: const Icon(
           CupertinoIcons.camera,
-          color: Colors.orange,
-          size: 30,
+          color: Color(0xffF15A2B),
+          size: 24,
         ),
       ),
     );
@@ -436,23 +429,49 @@ class _ShowReviewState extends State<ShowReview> {
       barrierDismissible: false, // user must tap button
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('리뷰 작성을 종료하시겠습니까?'),
+          title: const Text(
+            '리뷰 작성 종료',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('저장된 정보가 전부 사라집니다!'),
+                Text(
+                  '작성한 리뷰가 사라집니다!',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('아니오'),
+              child: const Text(
+                '아니오',
+                style: TextStyle(
+                  color: Color(0xFF33393F),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('네'),
+              child: const Text(
+                '네',
+                style: TextStyle(
+                  color: Color(0xffF15A2B),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               onPressed: () {
                 _resetReview();
                 Navigator.of(context).pop();
@@ -686,7 +705,7 @@ class _ShowReviewState extends State<ShowReview> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 4,),
+                  const SizedBox(height: 4,),
                   RatingBarIndicator(
                     rating: reviewList[index].reviewStar!,
                     itemCount: 5,
@@ -703,7 +722,7 @@ class _ShowReviewState extends State<ShowReview> {
               ),
             ],
           ),
-          SizedBox(height: 24,),
+          const SizedBox(height: 24,),
           Text(
             '${reviewList[index].text}',
             style: const TextStyle(
@@ -1170,7 +1189,6 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
         physics: const NeverScrollableScrollPhysics(), // 스크롤 비활성화
         itemCount: reviewList.length,
         itemBuilder: (context, index) {
-          final review = reviewList[index].reviewStar; // 항상 비어있지 않으므로 직접 접근
           logger.d('리뷰 리스트에 들어있는 값 체크 : $reviewList');
 
           return _showReview(context, index); // 각 리뷰 위젯 생성
@@ -1235,7 +1253,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 4,),
+                  const SizedBox(height: 4,),
                   RatingBarIndicator(
                     rating: reviewList[index].reviewStar!,
                     itemCount: 5,
@@ -1252,7 +1270,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
               ),
             ],
           ),
-          SizedBox(height: 24,),
+          const SizedBox(height: 24,),
           Text(
             '${reviewList[index].text}',
             style: const TextStyle(

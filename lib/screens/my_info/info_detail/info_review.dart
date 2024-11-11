@@ -172,7 +172,7 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                               Row(
                                 children: [
                                   RatingBarIndicator(
-                                    rating: review.reviewStar.toDouble(),
+                                    rating: review.reviewStar,
                                     itemCount: 5,
                                     itemSize: 16.0,
                                     unratedColor: const Color(0xFF767676),

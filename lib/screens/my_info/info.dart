@@ -442,7 +442,7 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
                         onTap: () async {
                           // 확인창 띄워야함
                           final dialogResult = await showChoiceDialog(context,
-                              title: "회원 탈퇴", message: "정말로 탈퇴하시겠습니까?");
+                              title: "회원 탈퇴", message: "탈퇴한 계정으로 재가입이 불가합니다.");
                           if (dialogResult == true) {
                             // 사용자가 확인을 누른 경우
                             try {
