@@ -295,7 +295,7 @@ class _MainPageState extends State<MainPage>
                               itemBuilder: (BuildContext ctx, int idx) {
                                 return Row(
                                   children: [
-                                    SizedBox(width: 24,),
+                                    const SizedBox(width: 24,),
                                     GestureDetector(
                                       onTap: () {
                                         Navigator.push(
@@ -310,39 +310,44 @@ class _MainPageState extends State<MainPage>
                                         );
                                       },
                                       child: Container(
-                                        padding: const EdgeInsets.all(20),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFF4F4F4),
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
+                                        padding: const EdgeInsets.only(left: 16),
                                         height: 100,
                                         width: 220,
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                           children: [
                                             const SizedBox(
-                                              height: 30,
-                                              width: 40,
+                                              height: 32,
+                                              width: 32,
                                               child: CircleAvatar(
-                                                minRadius: 15,
+                                                minRadius: 16,
                                                 backgroundImage: AssetImage(
                                                     'assets/images/icon.png'),
                                               ),
                                             ),
                                             const SizedBox(
-                                              width: 8,
+                                              width: 16,
                                             ),
                                             Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
                                               children: [
-                                                Text(
-                                                  manager.storeList[idx].name,
-                                                  style: const TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 16,
+                                                Container(
+                                                  constraints: const BoxConstraints(maxWidth: 100),
+                                                  child: Text(
+                                                    manager.storeList[idx].name,
+                                                    style: const TextStyle(
+                                                      fontWeight: FontWeight.w600,
+                                                      fontSize: 16,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                                 const SizedBox(height: 4),
@@ -361,10 +366,10 @@ class _MainPageState extends State<MainPage>
                                                       '영업 가능성 있어요!',
                                                       style: TextStyle(
                                                         fontWeight:
-                                                            FontWeight.w600,
+                                                            FontWeight.w400,
                                                         fontSize: 12,
                                                         color:
-                                                            Color(0xFF767676),
+                                                            Colors.black,
                                                       ),
                                                     ),
                                                   ],

@@ -637,14 +637,14 @@ class _BangMoonPageState extends State<BangMoonPage> {
     AlertDialog alert = AlertDialog(
       backgroundColor: Colors.white,
       title: const Text(
-        "인증 성공!",
+        "방문 인증이 완료되었어요!",
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
       ),
       content: const Text(
-        "방문 인증이 완료되었어요!",
+        "24시간 동안 리뷰 작성과 가게 신고가 가능해요",
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w400,

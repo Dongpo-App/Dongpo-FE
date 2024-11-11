@@ -80,7 +80,7 @@ class InfoTitlePageState extends State<InfoTitlePage> {
                             ),
                           ),
                           const SizedBox( // 테스트용
-                            width: 30,
+                            width: 24,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

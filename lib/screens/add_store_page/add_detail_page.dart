@@ -191,13 +191,16 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                         SizedBox(
                           child: TextFormField(
                             controller: _nameController,
+                            maxLength: 14,
+
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                               color: Color(0xFF767676),
                             ),
                             decoration: InputDecoration(
-                              hintText: "가게 이름을 입력해 주세요.",
+                              counterText: "",
+                              hintText: "최대 14글자까지 입력 가능해요",
                               hintStyle: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
@@ -580,7 +583,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
     });
 
     if (_formKey.currentState!.validate()) {
-      // 폼이 성공적으로 채워졌을때
+      // 폼이 성공적으로 채워졌을 때
       final userLocation =
       await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
@@ -591,7 +594,8 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
         latitude: widget.position.latitude,
         longitude: widget.position.longitude,
         isToiletValid:
-        _isToilets[0], // 첫 번째 요소가 있음으로 true면 있는 것
+        _isToilets[0],
+        // 첫 번째 요소가 있음으로 true면 있는 것
         openTime: _formatValueTime(_openTime),
         closeTime: _formatValueTime(_closeTime),
         operatingDays:
@@ -602,47 +606,53 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
         currentLongitude: userLocation.longitude,
       );
       logger.d("data ${storeInfo.toJson()}");
-      final response =
-      await storeService.addStore(storeInfo);
-      if (response.statusCode == 200) {
-        Fluttertoast.showToast(
-          msg: "성공적으로 점포를 등록했습니다.",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-        );
-        if (mounted) {
-          setState(() {
-            isLoading = false; // 로딩 상태를 false로 전환
-          });
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => const MyAppPage()),
-            ModalRoute.withName("/home"),
+
+      final dialogResult = await showChoiceDialog(context, title: "가게 정보 수정은 불가능해요!", message: "입력한 정보로 가게를 등록할까요?");
+      logger.d("dialog result : $dialogResult");
+
+      if (dialogResult == true) {
+        final response =
+        await storeService.addStore(storeInfo);
+        if (response.statusCode == 200) {
+          Fluttertoast.showToast(
+            msg: "가게를 등록했어요",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
           );
-        }
-      } else if (response.statusCode == 400) {
-        if (mounted) {
-          setState(() {
-            isLoading = false; // 로딩 상태를 false로 전환
-          });
-          showAlertDialog(
-            context,
-            title: "위치 오류",
-            message: response.message,
-          );
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            isLoading = false; // 로딩 상태를 false로 전환
-          });
-          showAlertDialog(
-            context,
-            title: "에러",
-            message: "오류가 발생했습니다.",
-          );
+          if (mounted) {
+            setState(() {
+              isLoading = false; // 로딩 상태를 false로 전환
+            });
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MyAppPage()),
+              ModalRoute.withName("/home"),
+            );
+          }
+        } else if (response.statusCode == 400) {
+          if (mounted) {
+            setState(() {
+              isLoading = false; // 로딩 상태를 false로 전환
+            });
+            showAlertDialog(
+              context,
+              title: "위치 오류",
+              message: response.message,
+            );
+          }
+        } else {
+          if (mounted) {
+            setState(() {
+              isLoading = false; // 로딩 상태를 false로 전환
+            });
+            showAlertDialog(
+              context,
+              title: "에러",
+              message: "오류가 발생했습니다.",
+            );
+          }
         }
       }
     }

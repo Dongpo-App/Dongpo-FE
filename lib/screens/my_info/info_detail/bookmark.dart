@@ -100,16 +100,19 @@ class BookmarkPageState extends State<BookmarkPage> {
                             ),
                           ),
                           const SizedBox( // 테스트용
-                            width: 30,
+                            width: 24,
                           ),
-                          Text(
-                            bookmark.storeName,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                          Expanded(
+                            child: Text(
+                              bookmark.storeName,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1, // 한 줄로 제한
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const Spacer(),
                           GestureDetector(
                             onTap: () {
                               // 버튼이 눌리면 북마크 취소됨

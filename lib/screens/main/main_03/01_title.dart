@@ -33,52 +33,62 @@ class _MainTitleState extends State<MainTitle> {
         children: [
           Row(
             children: [
-              Text(
-                manager.selectedDetail?.name ?? '이름이 없습니다',
-                style: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: Text(
+                  manager.selectedDetail?.name ?? '이름이 없습니다',
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  // maxLines: 2,
+                  // overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Spacer(),
-              Column(
-                children: [
-                  IconButton(
+              Padding(
+                padding: const EdgeInsets.only(left: 24.0),
+                child: Column(
+                  children: [
+                    IconButton(
                       onPressed: () {},
                       icon: const Icon(
-                          size: 24,
-                          CupertinoIcons.arrow_up_right_diamond_fill,
-                          color: Color(0xffF15A2B))),
-                  Text(
-                    "$betweenDistance M",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
+                        size: 24,
+                        CupertinoIcons.arrow_up_right_diamond_fill,
+                        color: Color(0xffF15A2B))
                     ),
-                  ),
-                ],
+                    Text(
+                      "$betweenDistance M",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
               )
             ],
           ),
-          Row(
-            children: [
-              const Icon(
-                Icons.lightbulb_outline_rounded,
-                size: 16,
-                color: Color(0xffF15A2B),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              Text(
-                setOpenPossbility ? "영업 가능성이 높아요!" : "영업 가능성이 있어요!",
-                style: const TextStyle(
-                  color: Color(0xFF767676),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.lightbulb_outline_rounded,
+                  size: 16,
+                  color: Color(0xffF15A2B),
                 ),
-              )
-            ],
+                const SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  setOpenPossbility ? "영업 가능성이 높아요!" : "영업 가능성이 있어요!",
+                  style: const TextStyle(
+                    color: Color(0xFF767676),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                )
+              ],
+            ),
           )
         ],
       ),
