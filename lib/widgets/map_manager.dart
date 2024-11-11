@@ -56,6 +56,7 @@ class MapManager {
       void Function(NMarker marker, StoreMarker store) listener) {
     storeList = dataList;
     try {
+      logger.d("add markers");
       const defaultMarkerSize = Size(32, 32);
 
       for (StoreMarker data in storeList) {
@@ -68,6 +69,7 @@ class MapManager {
         marker.setSize(defaultMarkerSize);
 
         marker.setOnTapListener((overlay) {
+          logger.d("marger ontap ${overlay.info.id}");
           selectedMarker = data;
           listener(marker, data);
         });

@@ -79,9 +79,6 @@ class CommunityPageState extends State<CommunityPage> {
       recommendMessage = recommendResponse.recommendationCategory;
       isLoading = false;
     });
-    logger.d("recommend response : $recommendResponse");
-    logger.d("recommend stores : $recommendList");
-    logger.d("recommend message : $recommendMessage");
   }
 
   @override

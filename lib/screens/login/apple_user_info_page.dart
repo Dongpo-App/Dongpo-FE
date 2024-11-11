@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import '../../widgets/bottom_navigation_bar.dart';
-import 'apple_kakao_naver_login.dart';
+import 'apple_kakao_login.dart';
 import 'login_view_model.dart';
 
 class AppleUserInfoPage extends StatefulWidget {
@@ -23,7 +23,7 @@ class AppleUserInfoPage extends StatefulWidget {
 }
 
 class AppleUserInfoPageState extends State<AppleUserInfoPage> {
-  final viewModel = LoginViewModel(AppleKakaoNaverLogin());
+  final viewModel = LoginViewModel(AppleKakaoLogin());
   LoginApiService loginService = LoginApiService.instance;
 
   // 이메일 컨트롤러

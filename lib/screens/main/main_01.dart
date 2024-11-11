@@ -69,7 +69,6 @@ class _MainPageState extends State<MainPage>
   //초기화
   void initState() {
     super.initState();
-
     // 애니메이션 컨트롤러 초기화 (300ms 동안 애니메이션 실행)
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -612,6 +611,7 @@ class _MainPageState extends State<MainPage>
           response.data!,
           (marker, store) {
             _onMarkerTapped(marker, store);
+            logger.d("main marker ontap : ${store.id}");
           },
         );
       } else {

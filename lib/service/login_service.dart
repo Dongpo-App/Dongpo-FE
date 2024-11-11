@@ -65,6 +65,9 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
             statusCode: response.statusCode,
             message: "additional info required for signup",
             data: data);
+      } else if (response.statusCode == 403) {
+        return ApiResponse(
+            statusCode: response.statusCode, message: "leave member");
       } else if (response.statusCode == 409) {
         logger.w(
             "code: ${response.statusCode} body: ${decodedResponse.toString()}");

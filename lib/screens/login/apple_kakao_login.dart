@@ -2,11 +2,10 @@ import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/screens/login/social_login.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'login_platform.dart';
 
-class AppleKakaoNaverLogin implements SocialLogin {
+class AppleKakaoLogin implements SocialLogin {
   @override
   Future<String?> isKakaoLogin() async {
     try {
@@ -49,21 +48,6 @@ class AppleKakaoNaverLogin implements SocialLogin {
       }
     } catch (e) {
       logger.d("e : $e");
-      return null;
-    }
-  }
-
-  @override
-  Future<String?> isNaverLogin() async {
-    try {
-      // 네이버 로그인 시도
-      NaverLoginResult result = await FlutterNaverLogin.logIn();
-      logger.d("naver login 결과 ${result.toString()}");
-      NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
-      logger.d("naver login accessToken : ${token.accessToken}");
-      return token.accessToken.toString();
-    } catch (e) {
-      logger.d("naver login error : $e");
       return null;
     }
   }
@@ -118,16 +102,6 @@ class AppleKakaoNaverLogin implements SocialLogin {
           return true;
         } catch (e) {
           logger.d("kakao logout error : $e");
-          return false;
-        }
-      case LoginPlatform.naver:
-        try {
-          // logout 실행 코드. SDK에서 토큰 삭제
-          await FlutterNaverLogin.logOut();
-          logger.d("$loginPlatform : logout");
-          return true;
-        } catch (e) {
-          logger.d("naver logout error : $e");
           return false;
         }
       case LoginPlatform.apple:

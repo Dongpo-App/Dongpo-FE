@@ -369,7 +369,7 @@ class _ShowReviewState extends State<ShowReview> {
                 ),
               ), // 리뷰가 없을 경우 빈 컨테이너 또는 메시지를 반환
 
-          SizedBox(height: 24,),
+          const SizedBox(height: 24,),
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 24),
             child: ElevatedButton(

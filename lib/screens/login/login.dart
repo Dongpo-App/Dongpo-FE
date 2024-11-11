@@ -86,42 +86,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 24),
-            // 소셜 로그인 - 네이버
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: InkWell(
-                onTap: () async {
-                  ApiResponse response = await loginService.naverLogin();
-                  if (response.statusCode == 200) {
-                    if (mounted) {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MyAppPage()));
-                    }
-                  } else if (response.statusCode == 409) {
-                    httpStatusCode409();
-                  }
-                },
-                child: Container(
-                  height: 44,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF03C75A),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                        12.0), // 이미지가 컨테이너 경계를 넘지 않도록 둥근 모서리 설정
-                    child: Image.asset(
-                      'assets/images/login_naver.png',
-                      fit: BoxFit.contain, // 이미지가 컨테이너에 맞게 조정되도록 설정
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
+
             // 소셜 로그인 - 카카오
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),

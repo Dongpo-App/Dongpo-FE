@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
-import 'apple_kakao_naver_login.dart';
+import 'apple_kakao_login.dart';
 import 'login.dart';
 import 'login_platform.dart';
 
@@ -47,7 +47,7 @@ Future<void> reissue(BuildContext context) async {
       await storage.write(key: 'accessToken', value: token['accessToken']);
       await storage.write(key: 'refreshToken', value: token['refreshToken']);
     } else if (response.statusCode == 401) {
-      final loginViewModel = LoginViewModel(AppleKakaoNaverLogin());
+      final loginViewModel = LoginViewModel(AppleKakaoLogin());
       String isLogouted = "";
 
       String? loginPlatform = await storage.read(key: 'loginPlatform');
@@ -105,19 +105,6 @@ class LoginViewModel {
       return responseStatusCode;
     } else {
       logger.d("kakao login fail");
-      return responseStatusCode;
-    }
-  }
-
-  Future<String> naverLogin(BuildContext context) async {
-    socialToken = await _socialLogin.isNaverLogin();
-    if (socialToken != null) {
-      // 네이버 로그인 성공함
-      loginPlatform = LoginPlatform.naver;
-      responseStatusCode = (await tokenAPI(context));
-      return responseStatusCode;
-    } else {
-      logger.d("naver login fail");
       return responseStatusCode;
     }
   }
