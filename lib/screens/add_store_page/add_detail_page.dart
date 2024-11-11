@@ -53,6 +53,9 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
   int _toiletIndex = 1; // 0 있음, 1 없음
   final List<String> _toilet = ["있음", "없음"]; // 요소
 
+  // 가게 등록 상태 관리 변수
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -539,67 +542,8 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
               width: double.infinity,
               height: MediaQuery.of(context).size.height * 0.085,
               child: ElevatedButton(
-                onPressed: _isFormValid
-                    ? () async {
-                        if (_formKey.currentState!.validate()) {
-                          // 폼이 성공적으로 채워졌을때
-                          final userLocation =
-                              await Geolocator.getCurrentPosition(
-                                  desiredAccuracy: LocationAccuracy.high);
-
-                          AddStoreRequest storeInfo = AddStoreRequest(
-                            name: _nameController.text,
-                            address: _addressController.text,
-                            latitude: widget.position.latitude,
-                            longitude: widget.position.longitude,
-                            isToiletValid:
-                                _isToilets[0], // 첫 번째 요소가 있음으로 true면 있는 것
-                            openTime: _formatValueTime(_openTime),
-                            closeTime: _formatValueTime(_closeTime),
-                            operatingDays:
-                                _getSelectedToValue(_selectedDays, _days),
-                            payMethods: _getSelectedToValue(
-                                _selectedPaymentMethods, _payments),
-                            currentLatitude: userLocation.latitude,
-                            currentLongitude: userLocation.longitude,
-                          );
-                          logger.d("data ${storeInfo.toJson()}");
-                          final response =
-                              await storeService.addStore(storeInfo);
-                          if (response.statusCode == 200) {
-                            Fluttertoast.showToast(
-                              msg: "성공적으로 점포를 등록했습니다.",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              timeInSecForIosWeb: 1,
-                            );
-                            if (mounted) {
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const MyAppPage()),
-                                ModalRoute.withName("/home"),
-                              );
-                            }
-                          } else if (response.statusCode == 400) {
-                            if (mounted) {
-                              showAlertDialog(
-                                context,
-                                title: "위치 오류",
-                                message: response.message,
-                              );
-                            }
-                          } else {
-                            if (mounted) {
-                              showAlertDialog(
-                                context,
-                                title: "에러",
-                                message: "오류가 발생했습니다.",
-                              );
-                            }
-                          }
-                        }
-                      }
+                onPressed: (_isFormValid && !isLoading)
+                    ? () async { await submitStoreAdd();}
                     : null,
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
@@ -607,18 +551,19 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.zero,
                   ),
-                  backgroundColor: _isFormValid
+                  backgroundColor: (_isFormValid && !isLoading)
                       ? const Color(0xffF15A2B)
                       : const Color(0xFFF4F4F4),
                 ),
-                child: Text(
-                  "가게 등록",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color:
-                        _isFormValid ? Colors.white : const Color(0xFF767676),
+                child: isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : Text(
+                    "가게 등록",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: (_isFormValid && !isLoading) ? Colors.white : const Color(0xFF767676),
+                    ),
                   ),
-                ),
               ),
             ),
           ],
@@ -628,6 +573,81 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
   }
 
   // 메서드
+  Future<void> submitStoreAdd() async {
+    if (isLoading) return;
+    setState(() {
+      isLoading = true; // 버튼 비활성화
+    });
+
+    if (_formKey.currentState!.validate()) {
+      // 폼이 성공적으로 채워졌을때
+      final userLocation =
+      await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      AddStoreRequest storeInfo = AddStoreRequest(
+        name: _nameController.text,
+        address: _addressController.text,
+        latitude: widget.position.latitude,
+        longitude: widget.position.longitude,
+        isToiletValid:
+        _isToilets[0], // 첫 번째 요소가 있음으로 true면 있는 것
+        openTime: _formatValueTime(_openTime),
+        closeTime: _formatValueTime(_closeTime),
+        operatingDays:
+        _getSelectedToValue(_selectedDays, _days),
+        payMethods: _getSelectedToValue(
+            _selectedPaymentMethods, _payments),
+        currentLatitude: userLocation.latitude,
+        currentLongitude: userLocation.longitude,
+      );
+      logger.d("data ${storeInfo.toJson()}");
+      final response =
+      await storeService.addStore(storeInfo);
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(
+          msg: "성공적으로 점포를 등록했습니다.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+        );
+        if (mounted) {
+          setState(() {
+            isLoading = false; // 로딩 상태를 false로 전환
+          });
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const MyAppPage()),
+            ModalRoute.withName("/home"),
+          );
+        }
+      } else if (response.statusCode == 400) {
+        if (mounted) {
+          setState(() {
+            isLoading = false; // 로딩 상태를 false로 전환
+          });
+          showAlertDialog(
+            context,
+            title: "위치 오류",
+            message: response.message,
+          );
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            isLoading = false; // 로딩 상태를 false로 전환
+          });
+          showAlertDialog(
+            context,
+            title: "에러",
+            message: "오류가 발생했습니다.",
+          );
+        }
+      }
+    }
+  }
+
   // 폼이 원하는 값이 다 채워졌는지 확인하는 함수
   void _validateForm() {
     bool formValid = _formKey.currentState?.validate() ?? false;

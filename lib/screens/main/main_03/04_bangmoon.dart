@@ -159,6 +159,9 @@ class _BangMoonPageState extends State<BangMoonPage> {
   int okValue = 0;
   int noValue = 0;
 
+  // 방문 인증 상태 관리 변수
+  bool isLoading = false;
+
   @override
   //초기화
   void initState() {
@@ -387,11 +390,12 @@ class _BangMoonPageState extends State<BangMoonPage> {
                               height: 44,
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  (okValue == 1 || noValue == 1)
-                                      ? _checkDistance()
-                                      : null;
-                                },
+                                onPressed: isLoading ? null
+                                  : () {
+                                    (okValue == 1 || noValue == 1)
+                                        ? _checkDistance()
+                                        : null;
+                                    },
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
                                   splashFactory: (okValue == 0 && noValue == 0)
@@ -405,17 +409,19 @@ class _BangMoonPageState extends State<BangMoonPage> {
                                           ? const Color(0xffF15A2B)
                                           : const Color(0xFFF4F4F4),
                                 ),
-                                child: Text(
-                                  '방문 인증',
-                                  style: TextStyle(
-                                    color: (okValue == 1 || noValue == 1)
-                                        ? Colors.white
-                                        : const Color(0xFF767676),
-                                    fontWeight: (okValue == 1 || noValue == 1)
-                                        ? FontWeight.w600
-                                        : FontWeight.w400,
+                                child: isLoading
+                                  ? const CircularProgressIndicator(color: Colors.white)
+                                  : Text(
+                                    '방문 인증',
+                                    style: TextStyle(
+                                      color: ((okValue == 1 || noValue == 1) && !isLoading)
+                                          ? Colors.white
+                                          : const Color(0xFF767676),
+                                      fontWeight: ((okValue == 1 || noValue == 1) && !isLoading)
+                                          ? FontWeight.w600
+                                          : FontWeight.w400,
+                                    ),
                                   ),
-                                ),
                               ),
                             )
                           ]),
@@ -481,6 +487,13 @@ class _BangMoonPageState extends State<BangMoonPage> {
   }
 
   void _checkDistance() async {
+    if (isLoading || !mounted) {
+      return;
+    }
+    setState(() {
+      isLoading = true; // 버튼 비활성화
+    });
+
     Position myPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
 
@@ -498,7 +511,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
       _checkBangMoon(myPosition);
       logger.d('_checkBangMoon실행');
     }
-    //아니라면 100미터 이내에 와야된다하고 경고 후 내위치 보여주기
+    //아니라면 100미터 이내에 와야된다 하고 경고 후 내위치 보여주기
     else {
       showFailDialog();
     }
@@ -533,15 +546,22 @@ class _BangMoonPageState extends State<BangMoonPage> {
       final response = await http.post(url, headers: headers, body: body);
       if (response.statusCode == 200) {
         logger.d('성공 보낸 데이터: $data');
+        setState(() {
+          isLoading = false;
+        });
         showSuccessDialog();
       } else {
         final errorData = utf8.decode(response.bodyBytes);
         logger.d('전송 실패 ${response.statusCode} 에러 내용 : $errorData ');
-
-        //실패했을 떄
+        setState(() {
+          isLoading = false;
+        });
       }
     } catch (e) {
       logger.d('Error $e');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 

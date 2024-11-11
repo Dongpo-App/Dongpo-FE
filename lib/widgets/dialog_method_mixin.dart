@@ -76,10 +76,11 @@ mixin DialogMethodMixin<T extends StatefulWidget> on State<T> {
       {required String title, required String message}) {
     // 확인 버튼
     Widget okButton = ElevatedButton(
-      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xffF15A2B)),
+      style: ElevatedButton.styleFrom(elevation: 0, backgroundColor: const Color(0xffF15A2B)),
       child: const Text(
         "확인",
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
       ),
       onPressed: () {
         Navigator.of(context).pop();
@@ -93,19 +94,22 @@ mixin DialogMethodMixin<T extends StatefulWidget> on State<T> {
       title: Text(
         title,
         style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
         ),
       ),
       content: Padding(
         padding: const EdgeInsets.only(top: 8.0),
         child: Text(
           message,
-          style: const TextStyle(fontSize: 14),
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       ),
       actions: [
-        okButton,
+        Center(child: okButton),
       ],
     );
 

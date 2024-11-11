@@ -37,6 +37,11 @@ class _ShowReviewState extends State<ShowReview> {
   List<Review> reviewList = [];
   String etcText = ''; //리뷰 신고
 
+  // 리뷰 텍스트 확인용
+  bool reviewTextChecked = false;
+  // 리뷰 등록 상태 관리 변수
+  bool isLoading = false;
+
   @override
   void initState() {
     reviewList = manager.selectedDetail?.reviews ?? []; // null일 경우 빈 리스트로 대체
@@ -47,8 +52,6 @@ class _ShowReviewState extends State<ShowReview> {
   @override
   Widget build(BuildContext context) {
     int storeId = widget.idx;
-    // 리뷰 텍스트 확인용
-    bool reviewTextChecked = false;
 
     return SingleChildScrollView(
       child: Column(
@@ -246,46 +249,10 @@ class _ShowReviewState extends State<ShowReview> {
                                       SizedBox(
                                         height: 44,
                                         child: ElevatedButton(
-                                          onPressed: () async {
-                                            if (!reviewTextChecked) {
-                                              return;
-                                            }
-                                            try {
-                                              ApiResponse apiResponse = await storeService.addReview(
-                                                id: storeId,
-                                                reviewText: _reviewController.text,
-                                                images: _pickedImgs,
-                                                rating: _rating,
-                                              );
-                                              logger.d("review post api statusCode : ${apiResponse.statusCode}");
-                                              if (apiResponse.statusCode == 200) {
-                                                Fluttertoast.showToast(
-                                                  msg: "리뷰 등록 완료",
-                                                  timeInSecForIosWeb: 2,
-                                                );
-                                                if (context.mounted) {
-                                                  Navigator.of(context).pop();
-                                                }
-                                              }
-                                            } on TokenExpiredException catch (e) {
-                                              if (mounted) {
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(const SnackBar(
-                                                    content: Text(
-                                                        "세션이 만료되었습니다. 다시 로그인해주세요.")));
-                                                Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                        const LoginPage()));
-                                              } else {
-                                                logger.e(
-                                                    "Error! while replace to Login page");
-                                                logger.e("message: $e");
-                                              }
-                                            } on Exception catch (e) {
-                                              logger.e("Error! message: $e");
-                                            }
+                                          onPressed: isLoading
+                                          ? null
+                                          : () async {
+                                            await submitReview(storeId);
                                           },
                                           style: ElevatedButton.styleFrom(
                                             elevation: 0,
@@ -294,19 +261,21 @@ class _ShowReviewState extends State<ShowReview> {
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(12))),
-                                            backgroundColor: (reviewTextChecked)
+                                            backgroundColor: (reviewTextChecked && !isLoading)
                                                 ? const Color(0xffF15A2B)
                                                 : const Color(0xFFF4F4F4),
                                           ),
-                                          child: Text(
-                                            "리뷰 등록",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: (reviewTextChecked)
-                                                ? Colors.white
-                                                : const Color(0xFF767676),
+                                          child: isLoading
+                                            ? const CircularProgressIndicator(color: Colors.white)
+                                            : Text(
+                                              "리뷰 등록",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: (reviewTextChecked && !isLoading)
+                                                  ? Colors.white
+                                                  : const Color(0xFF767676),
+                                              ),
                                             ),
-                                          ),
                                         ),
                                       ),
                                     ],
@@ -391,6 +360,59 @@ class _ShowReviewState extends State<ShowReview> {
         ],
       ),
     );
+  }
+
+  // 리뷰 등록 onPressed
+  Future<void> submitReview(int storeId) async {
+    if (!reviewTextChecked || isLoading || !mounted) {
+      return;
+    }
+    setState(() {
+      isLoading = true; // 버튼 비활성화
+    });
+
+    try {
+      ApiResponse apiResponse = await storeService.addReview(
+        id: storeId,
+        reviewText: _reviewController.text,
+        images: _pickedImgs,
+        rating: _rating,
+      );
+      logger.d("review post api statusCode : ${apiResponse.statusCode}");
+      if (apiResponse.statusCode == 200) {
+        Fluttertoast.showToast(
+          msg: "리뷰 등록 완료",
+          timeInSecForIosWeb: 2,
+        );
+        if (mounted) {
+          setState(() {
+            isLoading = false; // 로딩 상태를 false로 전환
+          });
+          Navigator.of(context).pop(); // Navigator 호출
+        }
+      }
+    } on TokenExpiredException {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(
+            content: Text(
+                "세션이 만료되었습니다. 다시 로그인해주세요.")));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                const LoginPage())
+        );
+      }
+    } on Exception catch (e) {
+      logger.e("Error! message: $e");
+      setState(() {
+        isLoading = false; // 오류 발생 시 로딩 상태 해제
+      });
+    }
   }
 
   Widget _addPhotoButton(setState) {
