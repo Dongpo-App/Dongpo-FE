@@ -96,6 +96,8 @@ class _MainTitleState extends State<MainTitle> {
   Future<void> _initializeAsyncData() async {
     setOpenPossbility = getOpenPossibility();
     betweenDistance = await manager.calcDistanceStore();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 }

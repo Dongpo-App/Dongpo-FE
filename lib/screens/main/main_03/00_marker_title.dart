@@ -80,7 +80,10 @@ class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
     );
 
     betweenDistance = checkMeter.floor();
-    setState(() {});
+
+    if (mounted) {
+      setState(() {});
+    }
 
     logger.d('00_marker 나와 점포 거리 차이는 = $checkMeter M');
     logger.d('00_marker betwwenDistance = $betweenDistance');

@@ -433,12 +433,12 @@ class _StoreInfoState extends State<StoreInfo> {
                 //리뷰 관련
                 ShowReview(idx: widget.idx),
                 const SizedBox(
-                  height: 80,
+                  height: 96,
                 ),
                 //가게정보
                 const GageJungbo(),
                 const SizedBox(
-                  height: 80,
+                  height: 96,
                 ),
                 //이 가게 단골 손님
                 DanGolGuest(),
