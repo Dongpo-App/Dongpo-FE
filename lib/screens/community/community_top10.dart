@@ -4,12 +4,12 @@ import '../../models/community_rack.dart';
 
 class CommunityTop10Page extends StatefulWidget {
   final Top10TitleData top10TitleData;
-  final List<CommunityRank> top10List;
+  final List<CommunityRank>? top10List;
 
   const CommunityTop10Page({
     super.key,
     required this.top10TitleData,
-    required this.top10List,
+    this.top10List,
   });
 
   @override
@@ -40,22 +40,33 @@ class CommunityTop10PageState extends State<CommunityTop10Page> {
               color: Color(0xFF767676),
             )),
       ),
-      body: ListView.builder(
-        itemCount: widget.top10List.length,
-        itemBuilder: (context, index) {
-          return Container(
-            margin: const EdgeInsets.only(left: 24, top: 12, bottom: 12, right: 24),
-            child: Top10CardWidget(
-              top10Data: Top10Data(
-                member: widget.top10List[index].nickname,
-                memberTitle: widget.top10List[index].title,
-                memberProfile: widget.top10List[index].pic,
+      body: widget.top10List != null && widget.top10List!.isNotEmpty
+        ? ListView.builder(
+            itemCount: widget.top10List!.length,
+            itemBuilder: (context, index) {
+              return Container(
+                margin: const EdgeInsets.only(left: 24, top: 12, bottom: 12, right: 24),
+                child: Top10CardWidget(
+                  top10Data: Top10Data(
+                    member: widget.top10List![index].nickname,
+                    memberTitle: widget.top10List![index].title,
+                    memberProfile: widget.top10List![index].pic,
+                  ),
+                  index: index,
+                ),
+              );
+            },
+          )
+        : const Center(
+            child: Text(
+              "아직 참여한 분이 없어요",
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Color(0xFF767676),
+                fontWeight: FontWeight.w400,
               ),
-              index: index,
             ),
-          );
-        },
-      ),
+          ),
     );
   }
 }

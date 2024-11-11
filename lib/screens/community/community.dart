@@ -1,4 +1,3 @@
-import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/community_rack.dart';
 import 'package:dongpo_test/models/recommend_store.dart';
 import 'package:dongpo_test/screens/community/community_view_model.dart';
@@ -30,30 +29,14 @@ class CommunityPageState extends State<CommunityPage> {
   bool isLoading = false;
 
   late List<CommunityRank> _storeTop10GetAPI = [
-    CommunityRank(
-      nickname: "",
-      title: "",
-      pic: "",
-      count: 0,
-    ),
+
   ];
   late List<CommunityRank> _visitTop10GetAPI = [
-    CommunityRank(
-      nickname: "",
-      title: "",
-      pic: "",
-      count: 0,
-    ),
+
   ];
   late List<CommunityRank> _reviewTop10GetAPI = [
-    CommunityRank(
-      nickname: "",
-      title: "",
-      pic: "",
-      count: 0,
-    ),
-  ];
 
+  ];
   @override
   void initState() {
     super.initState();
@@ -110,25 +93,25 @@ class CommunityPageState extends State<CommunityPage> {
                     const SizedBox(width: 24.0), // 왼쪽 24 margin
                     _buildCard(
                       top10Title: '방문 인증 횟수 top 10',
-                      member: _visitTop10GetAPI.first.nickname,
-                      memberTitle: _visitTop10GetAPI.first.title,
-                      memberProfile: _visitTop10GetAPI.first.pic,
+                      member: _visitTop10GetAPI.isNotEmpty ? _visitTop10GetAPI.first.nickname : null,
+                      memberTitle: _visitTop10GetAPI.isNotEmpty ? _visitTop10GetAPI.first.title : null,
+                      memberProfile: _visitTop10GetAPI.isNotEmpty ? _visitTop10GetAPI.first.pic : null,
                       top10List: _visitTop10GetAPI,
                     ),
                     const SizedBox(width: 24.0), // 카드 사이의 거리
                     _buildCard(
                       top10Title: '가게 등록 횟수 top 10',
-                      member: _storeTop10GetAPI.first.nickname,
-                      memberTitle: _storeTop10GetAPI.first.title,
-                      memberProfile: _storeTop10GetAPI.first.pic,
+                      member: _storeTop10GetAPI.isNotEmpty ? _storeTop10GetAPI.first.nickname : null,
+                      memberTitle: _storeTop10GetAPI.isNotEmpty ? _storeTop10GetAPI.first.title : null,
+                      memberProfile: _storeTop10GetAPI.isNotEmpty ? _storeTop10GetAPI.first.pic : null,
                       top10List: _storeTop10GetAPI,
                     ),
                     const SizedBox(width: 24.0),
                     _buildCard(
                       top10Title: '가게 리뷰 횟수 top 10',
-                      member: _reviewTop10GetAPI.first.nickname,
-                      memberTitle: _reviewTop10GetAPI.first.title,
-                      memberProfile: _reviewTop10GetAPI.first.pic,
+                      member: _reviewTop10GetAPI.isNotEmpty ? _reviewTop10GetAPI.first.nickname : null,
+                      memberTitle: _reviewTop10GetAPI.isNotEmpty ? _reviewTop10GetAPI.first.title : null,
+                      memberProfile: _reviewTop10GetAPI.isNotEmpty ? _reviewTop10GetAPI.first.pic : null,
                       top10List: _reviewTop10GetAPI,
                     ),
                   ],
@@ -354,10 +337,10 @@ class CommunityPageState extends State<CommunityPage> {
   // 조건 Top 10 카드 슬라이드 3개
   Widget _buildCard({
     required String top10Title,
-    required String member,
-    required String memberTitle,
-    required String? memberProfile,
-    required List<CommunityRank> top10List,
+    String? member,
+    String? memberTitle,
+    String? memberProfile,
+    List<CommunityRank>? top10List,
   }) {
     final top10TitleData = Top10TitleData(
       top10Title: top10Title,
@@ -393,36 +376,53 @@ class CommunityPageState extends State<CommunityPage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 29),
-                child: CircleAvatar(
-                  radius: 24,
-                  backgroundImage:
-                      (memberProfile != null && memberProfile.isNotEmpty)
-                          ? NetworkImage(memberProfile) as ImageProvider
-                          : const AssetImage('assets/images/profile.jpg'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 19),
-                child: Text(
-                  memberTitle,
-                  style: const TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w400,
+              top10List != null && top10List.isNotEmpty
+                ? Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 29),
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundImage:
+                          (memberProfile != null && memberProfile.isNotEmpty)
+                              ? NetworkImage(memberProfile) as ImageProvider
+                              : const AssetImage('assets/images/profile.jpg'),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 19),
+                        child: Text(
+                          memberTitle!,
+                          style: const TextStyle(
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          member!,
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : const Padding(
+                    padding: EdgeInsets.only(top: 50),
+                    child: Text(
+                      "아직 참여한 분이 없어요",
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Color(0xFF767676),
+                        fontWeight: FontWeight.w400,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  member,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
             ],
           ),
         ));

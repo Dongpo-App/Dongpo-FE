@@ -3,6 +3,7 @@ import 'package:dongpo_test/screens/login/terms_and_conditions.dart';
 import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'apple_user_info_page.dart';
 
 class LoginPage extends StatefulWidget {

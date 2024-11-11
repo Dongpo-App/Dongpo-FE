@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/request/apple_signup_request.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
-import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/service/base_api_service.dart';
@@ -214,25 +213,6 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
         loginPlatform: "kakao", accessToken: oauthToken.accessToken);
   }
 
-  @override
-  Future<ApiResponse> naverLogin() async {
-    NaverAccessToken token;
-    try {
-      NaverLoginResult result = await FlutterNaverLogin.logIn();
-      logger.d("naver login result: ${result.toString()}");
-      token = await FlutterNaverLogin.currentAccessToken;
-      logger.d("naver login accessToken: ${token.accessToken}");
-    } catch (e) {
-      logger.e("naver login error: $e");
-      return ApiResponse(
-        statusCode: 500,
-        message: "naver login error: $e",
-      );
-    }
-
-    return await _tokenSubmit(
-        loginPlatform: "naver", accessToken: token.accessToken);
-  }
 
   @override
   Future<ApiResponse> logout() async {
@@ -392,15 +372,6 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
           logger.e("$platform logout error: $e");
           return false;
         }
-      case "naver":
-        try {
-          await FlutterNaverLogin.logOut();
-          logger.d("$platform logout successfully!");
-          return true;
-        } catch (e) {
-          logger.e("$platform logout error: $e");
-          return false;
-        }
       case "apple":
         logger.d("$platform logout successfully!");
         return true;
@@ -415,15 +386,6 @@ class LoginApiService extends ApiService implements LoginServiceInterface {
       case "kakao":
         try {
           await UserApi.instance.unlink();
-          logger.d("$platform unlink successfully!");
-          return true;
-        } catch (e) {
-          logger.e("$platform unlink error: $e");
-          return false;
-        }
-      case "naver":
-        try {
-          await FlutterNaverLogin.logOut();
           logger.d("$platform unlink successfully!");
           return true;
         } catch (e) {

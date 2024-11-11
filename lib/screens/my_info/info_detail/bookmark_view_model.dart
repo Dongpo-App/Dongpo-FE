@@ -35,7 +35,7 @@ class BookmarkViewModel{
           throw UserBookmarkException("context.mounted is false");
         }
       } else if (response.statusCode == 404) {
-        await Future.delayed(const Duration(milliseconds: 1200));
+        await Future.delayed(const Duration(milliseconds: 100));
         Fluttertoast.showToast(
           msg: "점포 정보를 읽어오는 데 실패 했어요",
           timeInSecForIosWeb: 2,
@@ -47,7 +47,7 @@ class BookmarkViewModel{
             "Fail to load. status code: ${response.statusCode}");
       } else {
         // 실패
-        await Future.delayed(const Duration(milliseconds: 1200));
+        await Future.delayed(const Duration(milliseconds: 100));
         Fluttertoast.showToast(
           msg: "북마크 정보를 읽어오는 데 실패 했어요",
           timeInSecForIosWeb: 2,
