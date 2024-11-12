@@ -5,7 +5,6 @@ import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/main/main_03/00_marker_title.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
-import 'package:dongpo_test/screens/my_info/info_detail/add_store.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/store_service.dart';
 import 'package:dongpo_test/widgets/map_manager.dart';
@@ -19,8 +18,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'main_03/03_user_action.dart';
 
 /*
 메인페이지 맨처음 보여줄 때 
@@ -268,14 +265,15 @@ class _MainPageState extends State<MainPage>
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12)),
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 24.0),
                             child: Text(
                               bsAddress,
                               style: const TextStyle(
@@ -295,7 +293,9 @@ class _MainPageState extends State<MainPage>
                               itemBuilder: (BuildContext ctx, int idx) {
                                 return Row(
                                   children: [
-                                    SizedBox(width: 24,),
+                                    const SizedBox(
+                                      width: 24,
+                                    ),
                                     GestureDetector(
                                       onTap: () {
                                         Navigator.push(
@@ -422,10 +422,9 @@ class _MainPageState extends State<MainPage>
                           Text(
                             "해당 위치로 재검색",
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white
-                            ),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white),
                           ),
                           SizedBox(width: 8.0),
                           Icon(Icons.refresh, color: Colors.white, size: 16.0),
@@ -436,31 +435,31 @@ class _MainPageState extends State<MainPage>
                 ),
                 // 왼쪽 하단 내 위치 재검색 버튼
                 AnimatedBuilder(
-                  animation: _locationBtn,
-                  builder: (context, child) {
-                    return Positioned(
-                      bottom: _locationBtn.value,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 8,
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(4),
-                          foregroundColor: const Color(0xFF003ACE),
-                          backgroundColor: WidgetStateColor.resolveWith((states) => Colors.white)),
-                        onPressed: () async {
-                          NLatLng target = await manager.getCurrentNLatLng();
-                          _userMarker.setPosition(target);
-                          await manager.moveCamera(target);
-                          await _searchStoreCurrentLocation(target);
-                          setState(() {
-                            _showReSearchButton = false;
-                          });
-                        },
-                        child: const Icon(Icons.my_location),
-                      ),
-                    );
-                  }
-                ),
+                    animation: _locationBtn,
+                    builder: (context, child) {
+                      return Positioned(
+                        bottom: _locationBtn.value,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              elevation: 8,
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(4),
+                              foregroundColor: const Color(0xFF003ACE),
+                              backgroundColor: WidgetStateColor.resolveWith(
+                                  (states) => Colors.white)),
+                          onPressed: () async {
+                            NLatLng target = await manager.getCurrentNLatLng();
+                            _userMarker.setPosition(target);
+                            await manager.moveCamera(target);
+                            await _searchStoreCurrentLocation(target);
+                            setState(() {
+                              _showReSearchButton = false;
+                            });
+                          },
+                          child: const Icon(Icons.my_location),
+                        ),
+                      );
+                    }),
 
                 // 슬라이더와 함께 올라오는 버튼
                 AnimatedBuilder(
@@ -746,19 +745,23 @@ class _MainPageState extends State<MainPage>
             maxChildSize: 0.4, // 드래그할 최대 크기 설정
             shouldCloseOnMinExtent: false,
             snap: true,
-            snapSizes: [0.1, 0.4],
+            snapSizes: const [0.1, 0.4],
             snapAnimationDuration: const Duration(milliseconds: 300),
             builder: (context, scrollController) {
               return NotificationListener<ScrollNotification>(
                 onNotification: (scrollNotification) {
                   if (!isNavigating) {
-                    logger.d("extentBefore : ${scrollNotification.metrics.extentBefore}");
-                    logger.d("screenHeight :; ${screenHeight}");
+                    logger.d(
+                        "extentBefore : ${scrollNotification.metrics.extentBefore}");
+                    logger.d("screenHeight :; $screenHeight");
                     // 상단으로 드래그
-                    if (scrollNotification.metrics.extentBefore >= screenHeight * 0.02) {
+                    if (scrollNotification.metrics.extentBefore >=
+                        screenHeight * 0.02) {
                       isNavigating = true;
                       setState(() {
-                        _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage('assets/icons/default_marker.png'));
+                        _selectedMarker!.setIcon(
+                            const NOverlayImage.fromAssetImage(
+                                'assets/icons/default_marker.png'));
                         _selectedMarker = null;
                       });
                       if (mounted) {
@@ -774,9 +777,13 @@ class _MainPageState extends State<MainPage>
                       return true;
                     }
                     // 하단으로 드래그
-                    if (scrollNotification.metrics.extentInside <= screenHeight * 0.2) { // minScrollExtent * 1.3 으로 최소 영역 하한 조정
+                    if (scrollNotification.metrics.extentInside <=
+                        screenHeight * 0.2) {
+                      // minScrollExtent * 1.3 으로 최소 영역 하한 조정
                       setState(() {
-                        _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage('assets/icons/default_marker.png'));
+                        _selectedMarker!.setIcon(
+                            const NOverlayImage.fromAssetImage(
+                                'assets/icons/default_marker.png'));
                         _selectedMarker = null;
                       });
                       Navigator.pop(context); // 현재 bottom sheet 닫기

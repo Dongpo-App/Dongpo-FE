@@ -114,23 +114,19 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
                     width: 32,
                   ),
                 ),
-                SizedBox(
-                  height: screenHeight * 0.5,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 8,
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(4),
-                          foregroundColor: const Color(0xFF003ACE),
-                          backgroundColor: WidgetStateColor.resolveWith(
-                              (states) => Colors.white)),
-                        onPressed: _moveToCurrentLocation,
-                        child: const Icon(Icons.my_location),
-                      ),
-                    ],
+                Positioned(
+                  bottom: 250,
+                  left: 16,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        elevation: 8,
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(4),
+                        foregroundColor: const Color(0xFF003ACE),
+                        backgroundColor: WidgetStateColor.resolveWith(
+                            (states) => Colors.white)),
+                    onPressed: _moveToCurrentLocation,
+                    child: const Icon(Icons.my_location),
                   ),
                 ),
                 Column(

@@ -1,7 +1,5 @@
 //가게정보 자세히
 import 'dart:convert';
-
-import 'package:dongpo_test/models/store/store_detail.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/04_bangmoon.dart';
 import 'package:dongpo_test/screens/main/main_03/06_gagejungbo.dart';
@@ -37,6 +35,7 @@ class _StoreInfoState extends State<StoreInfo> {
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
   }
+
   // 가게 신고 텍스트 확인용
   bool reportTextChecked = false;
 
@@ -215,7 +214,8 @@ class _StoreInfoState extends State<StoreInfo> {
         actions: [
           IconButton(
             onPressed: () {
-              TextEditingController textController = TextEditingController(); // TextEditingController 정의
+              TextEditingController textController =
+                  TextEditingController(); // TextEditingController 정의
 
               showModalBottomSheet(
                 isScrollControlled: true,
@@ -247,9 +247,8 @@ class _StoreInfoState extends State<StoreInfo> {
                                         const Text(
                                           "가게에 문제가 있나요?",
                                           style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.w600
-                                          ),
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w600),
                                         ),
                                         const Spacer(),
                                         IconButton(
@@ -268,7 +267,8 @@ class _StoreInfoState extends State<StoreInfo> {
                                   ),
                                   const SizedBox(height: 8),
                                   const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 24.0),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 24.0),
                                     child: Text(
                                       "항목에 알맞게 선택해주세요.",
                                       style: TextStyle(
@@ -288,7 +288,8 @@ class _StoreInfoState extends State<StoreInfo> {
                                         const SizedBox(height: 16),
                                         _radioBtn('위치가 틀려요', 2, setState),
                                         const SizedBox(height: 16),
-                                        _radioBtn('부적절한 정보가 포함되어 있어요', 3, setState),
+                                        _radioBtn(
+                                            '부적절한 정보가 포함되어 있어요', 3, setState),
                                         const SizedBox(height: 16),
                                         _radioBtn('기타', 4, setState),
                                       ],
@@ -321,20 +322,19 @@ class _StoreInfoState extends State<StoreInfo> {
                                             color: Color(0xFF767676),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(Radius.circular(12)),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(12)),
                                               borderSide: BorderSide(
                                                 width: 1,
                                                 color: Color(0xFF767676),
-                                              )
-                                          ),
+                                              )),
                                           border: OutlineInputBorder(
-                                              borderRadius:
-                                              BorderRadius.all(Radius.circular(12)),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(12)),
                                               borderSide: BorderSide(
                                                 width: 1,
                                                 color: Color(0xFF767676),
-                                              )
-                                          ),
+                                              )),
                                         ),
                                       ),
                                     ),
@@ -348,12 +348,13 @@ class _StoreInfoState extends State<StoreInfo> {
                                       width: double.infinity,
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          if (value == 4 && !reportTextChecked) {
+                                          if (value == 4 &&
+                                              !reportTextChecked) {
                                             return;
                                           }
                                           if (value != 0) {
-                                            etcText =
-                                                textController.text; // 텍스트를 변수에 저장
+                                            etcText = textController
+                                                .text; // 텍스트를 변수에 저장
                                             logger.d("입력된 기타 내용: $etcText");
                                             storeReport(value);
                                           }
@@ -366,16 +367,21 @@ class _StoreInfoState extends State<StoreInfo> {
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(12)),
                                           ),
-                                          backgroundColor: ((value > 0 && value < 4) || (value == 4 && reportTextChecked))
-                                              ? const Color(0xffF15A2B)
-                                              : const Color(0xFFF4F4F4),
+                                          backgroundColor:
+                                              ((value > 0 && value < 4) ||
+                                                      (value == 4 &&
+                                                          reportTextChecked))
+                                                  ? const Color(0xffF15A2B)
+                                                  : const Color(0xFFF4F4F4),
                                         ),
                                         child: Text(
                                           "가게 신고",
                                           style: TextStyle(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 14,
-                                            color: ((value > 0 && value < 4) || (value == 4 && reportTextChecked))
+                                            color: ((value > 0 && value < 4) ||
+                                                    (value == 4 &&
+                                                        reportTextChecked))
                                                 ? Colors.white
                                                 : const Color(0xFF767676),
                                           ),

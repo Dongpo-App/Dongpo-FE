@@ -1,4 +1,3 @@
-import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/community_rack.dart';
 import 'package:dongpo_test/models/recommend_store.dart';
 import 'package:dongpo_test/screens/community/community_view_model.dart';

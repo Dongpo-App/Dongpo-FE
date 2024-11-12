@@ -1,9 +1,6 @@
-import 'package:dongpo_test/main.dart';
-import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 
 class MainTitle extends StatefulWidget {
   final int idx;
