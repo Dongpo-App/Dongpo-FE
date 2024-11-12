@@ -5,7 +5,6 @@ import 'package:dongpo_test/models/user_bookmark.dart';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/main/main_03/00_marker_title.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
-import 'package:dongpo_test/screens/my_info/info_detail/add_store.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/store_service.dart';
 import 'package:dongpo_test/widgets/map_manager.dart';
@@ -19,8 +18,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'main_03/03_user_action.dart';
 
 /*
 메인페이지 맨처음 보여줄 때 
@@ -52,10 +49,9 @@ class _MainPageState extends State<MainPage>
   StoreApiService storeService = StoreApiService.instance;
   MapManager manager = MapManager();
   //애니메이션 컨트롤러를 사용하는 위젯에 필요한 Ticker를 제공
-  //late NaverMapController _mapController;
   String _searchBarInnerText = "구, 동, 도로명, 장소명으로 검색";
   bool _showReSearchButton = false; // 재검색 버튼 표시 여부
-  NMarker? _selectedMarker;
+  //NMarker? _selectedMarker;
   late NMarker _userMarker;
   late AnimationController _controller; // 애니메이션 컨트롤러 선언
   late Animation<Offset> _offsetAnimation; // 슬라이더 애니메이션 선언
@@ -101,9 +97,6 @@ class _MainPageState extends State<MainPage>
       parent: _controller,
       curve: Curves.easeInOut,
     ));
-
-    // markers = [];
-    // logger.d("marker reset $markers");
   }
 
   @override
@@ -156,14 +149,14 @@ class _MainPageState extends State<MainPage>
                     });
                   },
                   onMapTapped: (point, latLng) {
-                    if (_selectedMarker != null) {
+                    logger.d("selected : ${manager.selectedMarker}");
+                    logger.d("controller : ${manager.mapController.hashCode}");
+                    if (manager.selectedMarker != null) {
                       setState(() {
-                        Navigator.pop(context);
-                        _selectedMarker!.setIcon(
-                            const NOverlayImage.fromAssetImage(
-                                'assets/icons/default_marker.png'));
-                        _selectedMarker = null;
-                        // 추가로 바텀 시트도 닫히게 해야함
+                        manager.deselectMarker();
+                        if (Navigator.canPop(context)) {
+                          Navigator.pop(context);
+                        }
                       });
                     }
                   },
@@ -268,14 +261,15 @@ class _MainPageState extends State<MainPage>
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12)),
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12)),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 24.0),
                             child: Text(
                               bsAddress,
                               style: const TextStyle(
@@ -295,7 +289,9 @@ class _MainPageState extends State<MainPage>
                               itemBuilder: (BuildContext ctx, int idx) {
                                 return Row(
                                   children: [
-                                    const SizedBox(width: 24,),
+                                    const SizedBox(
+                                      width: 24,
+                                    ),
                                     GestureDetector(
                                       onTap: () {
                                         Navigator.push(
@@ -315,12 +311,13 @@ class _MainPageState extends State<MainPage>
                                           borderRadius:
                                               BorderRadius.circular(12),
                                         ),
-                                        padding: const EdgeInsets.only(left: 16),
+                                        padding:
+                                            const EdgeInsets.only(left: 16),
                                         height: 100,
                                         width: 220,
                                         child: Row(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                              CrossAxisAlignment.center,
                                           children: [
                                             const SizedBox(
                                               height: 32,
@@ -335,19 +332,25 @@ class _MainPageState extends State<MainPage>
                                               width: 16,
                                             ),
                                             Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Container(
-                                                  constraints: const BoxConstraints(maxWidth: 100),
+                                                  constraints:
+                                                      const BoxConstraints(
+                                                          maxWidth: 100),
                                                   child: Text(
                                                     manager.storeList[idx].name,
                                                     style: const TextStyle(
-                                                      fontWeight: FontWeight.w600,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                       fontSize: 16,
                                                     ),
                                                     maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                                 const SizedBox(height: 4),
@@ -368,8 +371,7 @@ class _MainPageState extends State<MainPage>
                                                         fontWeight:
                                                             FontWeight.w400,
                                                         fontSize: 12,
-                                                        color:
-                                                            Colors.black,
+                                                        color: Colors.black,
                                                       ),
                                                     ),
                                                   ],
@@ -427,10 +429,9 @@ class _MainPageState extends State<MainPage>
                           Text(
                             "해당 위치로 재검색",
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white
-                            ),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white),
                           ),
                           SizedBox(width: 8.0),
                           Icon(Icons.refresh, color: Colors.white, size: 16.0),
@@ -441,31 +442,32 @@ class _MainPageState extends State<MainPage>
                 ),
                 // 왼쪽 하단 내 위치 재검색 버튼
                 AnimatedBuilder(
-                  animation: _locationBtn,
-                  builder: (context, child) {
-                    return Positioned(
-                      bottom: _locationBtn.value,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          elevation: 8,
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(4),
-                          foregroundColor: const Color(0xFF003ACE),
-                          backgroundColor: WidgetStateColor.resolveWith((states) => Colors.white)),
-                        onPressed: () async {
-                          NLatLng target = await manager.getCurrentNLatLng();
-                          _userMarker.setPosition(target);
-                          await manager.moveCamera(target);
-                          await _searchStoreCurrentLocation(target);
-                          setState(() {
-                            _showReSearchButton = false;
-                          });
-                        },
-                        child: const Icon(Icons.my_location),
-                      ),
-                    );
-                  }
-                ),
+                    animation: _locationBtn,
+                    builder: (context, child) {
+                      return Positioned(
+                        bottom: _locationBtn.value,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              elevation: 8,
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(4),
+                              foregroundColor: const Color(0xFF003ACE),
+                              backgroundColor: WidgetStateColor.resolveWith(
+                                  (states) => Colors.white)),
+                          onPressed: () async {
+                            NLatLng target =
+                                await MapManager.getCurrentNLatLng();
+                            _userMarker.setPosition(target);
+                            await manager.moveCamera(target);
+                            await _searchStoreCurrentLocation(target);
+                            setState(() {
+                              _showReSearchButton = false;
+                            });
+                          },
+                          child: const Icon(Icons.my_location),
+                        ),
+                      );
+                    }),
 
                 // 슬라이더와 함께 올라오는 버튼
                 AnimatedBuilder(
@@ -504,61 +506,15 @@ class _MainPageState extends State<MainPage>
     );
   }
 
-  // 함수 정의
-
-  // void _onMapReady(NaverMapController controller) {
-  //   _mapController = controller;
-  // }
-
-  //마커 관련
-  // 기존 마커 삭제 함수
-  // Future<void> _clearMarkers() async {
-  //   logger.d('마커가 정상적으로 들어왔음 ${markers.length}');
-  //   await _mapController.clearOverlays(); // 전체 삭제 -> 유저 마커 삭제
-
-  //   markers.clear(); // 리스트 초기화
-  //   logger.d('마커 전체 삭제 : $markers');
-  // }
-
-  // 해당 위치 재검색 클릭 시 마커 여러 개 보여주는 함수
-  // void _addMarkers(List<StoreMarker> dataList) async {
-  //   //여러개 마커 담는 리스트
-  //   try {
-  //     var defaultMarkerSize = const Size(32, 32);
-
-  //     for (var data in dataList) {
-  //       NMarker marker = NMarker(
-  //         id: data.id.toString(),
-  //         position: NLatLng(data.latitude, data.longitude),
-  //         icon: const NOverlayImage.fromAssetImage(
-  //             'assets/icons/default_marker.png'),
-  //       );
-
-  //       //마커 사이즈 조절
-  //       marker.setSize(defaultMarkerSize);
-
-  //       // 마커 클릭
-  //       marker.setOnTapListener((overlay) {
-  //         _onMarkerTapped(marker, data);
-  //       });
-  //       // 마커 리스트에 추가
-  //       await _mapController.addOverlay(marker);
-  //       markers.add(marker);
-  //     }
-  //   } catch (e) {
-  //     logger.w('에러발생 :$e');
-  //   }
-  // }
-
   // 마커 클릭 이벤트 함수
   void _onMarkerTapped(NMarker marker, StoreMarker data) {
     logger.d("onMakerTapped start");
     setState(() {
-      if (_selectedMarker != null) {
-        _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage(
+      if (manager.selectedMarker != null) {
+        manager.selectedMarker!.setIcon(const NOverlayImage.fromAssetImage(
             'assets/icons/default_marker.png'));
       }
-      _selectedMarker = marker;
+      manager.selectedMarker = marker;
     });
 
     try {
@@ -584,7 +540,7 @@ class _MainPageState extends State<MainPage>
 
   // 사용자 마커 초기화
   Future<void> _initUserMarker() async {
-    NLatLng position = await manager.getCurrentNLatLng();
+    NLatLng position = await MapManager.getCurrentNLatLng();
     // 사용자 위치 아이콘 에셋 지정
     const myLocationIcon =
         NOverlayImage.fromAssetImage('assets/icons/my_location.png');
@@ -751,20 +707,21 @@ class _MainPageState extends State<MainPage>
             maxChildSize: 0.4, // 드래그할 최대 크기 설정
             shouldCloseOnMinExtent: false,
             snap: true,
-            snapSizes: [0.1, 0.4],
+            snapSizes: const [0.1, 0.4],
             snapAnimationDuration: const Duration(milliseconds: 300),
             builder: (context, scrollController) {
               return NotificationListener<ScrollNotification>(
                 onNotification: (scrollNotification) {
                   if (!isNavigating) {
-                    logger.d("extentBefore : ${scrollNotification.metrics.extentBefore}");
-                    logger.d("screenHeight :; ${screenHeight}");
+                    logger.d(
+                        "extentBefore : ${scrollNotification.metrics.extentBefore}");
+                    logger.d("screenHeight :; $screenHeight");
                     // 상단으로 드래그
-                    if (scrollNotification.metrics.extentBefore >= screenHeight * 0.02) {
+                    if (scrollNotification.metrics.extentBefore >=
+                        screenHeight * 0.02) {
                       isNavigating = true;
                       setState(() {
-                        _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage('assets/icons/default_marker.png'));
-                        _selectedMarker = null;
+                        manager.deselectMarker();
                       });
                       if (mounted) {
                         // 페이지 전환
@@ -779,10 +736,11 @@ class _MainPageState extends State<MainPage>
                       return true;
                     }
                     // 하단으로 드래그
-                    if (scrollNotification.metrics.extentInside <= screenHeight * 0.2) { // minScrollExtent * 1.3 으로 최소 영역 하한 조정
+                    if (scrollNotification.metrics.extentInside <=
+                        screenHeight * 0.2) {
+                      // minScrollExtent * 1.3 으로 최소 영역 하한 조정
                       setState(() {
-                        _selectedMarker!.setIcon(const NOverlayImage.fromAssetImage('assets/icons/default_marker.png'));
-                        _selectedMarker = null;
+                        manager.deselectMarker();
                       });
                       Navigator.pop(context); // 현재 bottom sheet 닫기
                       logger.i("페이지 pop 성공");
@@ -798,14 +756,11 @@ class _MainPageState extends State<MainPage>
                     decoration: const BoxDecoration(),
                     child: Column(
                       children: [
-                        IconButton(
-                            onPressed: () {
-                              Navigator.pop(context); //뒤로가기
-                            },
-                            icon: const Icon(
-                                size: 36,
-                                Icons.remove,
-                                color: Color(0xff767676))),
+                        const Icon(
+                          size: 36,
+                          Icons.remove,
+                          color: Color(0xff767676),
+                        ),
                         StoreSummaryTitle(idx: index),
                         const SizedBox(height: 32),
                         const MainPhoto2(),

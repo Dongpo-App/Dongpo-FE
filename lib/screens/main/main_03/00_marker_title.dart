@@ -1,9 +1,7 @@
-import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
-import 'package:geolocator/geolocator.dart';
 
 class StoreSummaryTitle extends StatefulWidget {
   final int idx;
@@ -16,13 +14,12 @@ class StoreSummaryTitle extends StatefulWidget {
 class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
   MapManager manager = MapManager();
   bool setOpenPossbility = false;
-  int betweenDistance = 0;
+  String betweenDistance = "";
 
   @override
   void initState() {
     super.initState();
-    setOpenPossbility = getOpenPossibility();
-    _checkDistance();
+    _initializeAsyncData();
   }
 
   @override
@@ -43,7 +40,7 @@ class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
                     color: Color(0xffF15A2B)))
           ],
         ),
-        Text("$betweenDistance M"),
+        Text(betweenDistance),
         Row(
           children: [
             const Icon(
@@ -67,26 +64,10 @@ class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
     }
   }
 
-  //사용자와 점포간의 거리계산
-  void _checkDistance() async {
-    Position myPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    var checkMeter = Geolocator.distanceBetween(
-      myPosition.latitude,
-      myPosition.longitude,
-      manager.selectedMarker!.latitude,
-      manager.selectedMarker!.longitude,
-    );
-
-    betweenDistance = checkMeter.floor();
-
-    if (mounted) {
-      setState(() {});
-    }
-
-    logger.d('00_marker 나와 점포 거리 차이는 = $checkMeter M');
-    logger.d('00_marker betwwenDistance = $betweenDistance');
+  Future<void> _initializeAsyncData() async {
+    setOpenPossbility = getOpenPossibility();
+    betweenDistance = await manager.calcDistanceStore();
+    setState(() {});
   }
 }
 

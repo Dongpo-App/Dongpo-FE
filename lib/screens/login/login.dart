@@ -1,3 +1,4 @@
+import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/screens/login/terms_and_conditions.dart';
 import 'package:dongpo_test/service/login_service.dart';
@@ -15,8 +16,10 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   LoginApiService loginService = LoginApiService.instance;
-
-  // Future<void> loginsfa() async {}
+  Map<String, bool> appleTermsResult = {
+    'tosAgreeChecked': false,
+    'marketingAgreeChecked': false,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +49,13 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
+                  appleTermsResult =
+                      await showTermsAndConditionsBottomSheet(context);
+                  bool isAppleTermAgree =
+                      appleTermsResult['tosAgreeChecked'] ?? false;
+                  if (!isAppleTermAgree) return;
                   ApiResponse response = await loginService.appleLogin();
+
                   if (response.statusCode == 200) {
                     if (mounted) {
                       Navigator.pushReplacement(
@@ -124,12 +133,16 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             // 이용약관 확인용
-            SizedBox(height: 24,),
+            const SizedBox(
+              height: 24,
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  showEditProfileBottomSheet(context);
+                  appleTermsResult =
+                      await showTermsAndConditionsBottomSheet(context);
+                  logger.d("result : $appleTermsResult");
                 },
                 child: Container(
                   height: 44,
@@ -138,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                     color: const Color(0xFFFFFFFF),
                     borderRadius: BorderRadius.circular(12.0),
                   ),
-                  child: Text(
+                  child: const Text(
                     '이용약관 테스트',
                   ),
                 ),
