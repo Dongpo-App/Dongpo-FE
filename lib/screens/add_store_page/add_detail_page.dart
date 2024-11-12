@@ -658,7 +658,6 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
     bool formValid = _formKey.currentState?.validate() ?? false;
     bool toggleValid =
         _selectedDays.contains(true) && _selectedPaymentMethods.contains(true);
-    logger.d("form: $formValid, toggle: $toggleValid");
     setState(() {
       _isFormValid = formValid && toggleValid;
     });

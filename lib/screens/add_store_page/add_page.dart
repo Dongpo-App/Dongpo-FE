@@ -17,7 +17,7 @@ class AddPage extends StatefulWidget {
 }
 
 class _AddPageState extends State<AddPage> with DialogMethodMixin {
-  final MapManager manager = MapManager();
+  late NaverMapController mapController;
   late ValueNotifier<String> _addressNotifier;
   late NLatLng _position;
   bool _isCameraMoving = false; // 카메라 이동 상태를 추적하기 위한 변수
@@ -33,15 +33,12 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
 
   @override
   void dispose() {
-    manager.mapController.dispose();
+    mapController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // 전체 화면 높이
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -65,7 +62,7 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
         ),
       ),
       body: FutureBuilder<NLatLng>(
-        future: manager.getCurrentNLatLng(), // 현재 위치 정보를 가져오는 Future를 빌드
+        future: MapManager.getCurrentNLatLng(), // 현재 위치 정보를 가져오는 Future를 빌드
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // 로딩 중일 때 로딩 인디케이터 표시
@@ -82,8 +79,8 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
                     // 맵이 준비되었을 때 컨트롤러 초기화
                     logger.d(
                         "time: ${DateTime.now()} controller : ${controller.hashCode}");
-                    manager.initialize(controller);
-                    await manager.moveCamera(snapshot.data!);
+                    mapController = controller;
+                    await moveCamera(snapshot.data!);
                     _position = snapshot.data!;
                     startAddPage = true; // 화면 로딩 완료
                   },
@@ -233,9 +230,9 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
 
   Future<void> _updateAddress() async {
     logger.d(
-        "time : ${DateTime.now()} is map ready? $startAddPage\n_controller : ${manager.mapController.hashCode}");
+        "time : ${DateTime.now()} is map ready? $startAddPage\n_controller : ${mapController.hashCode}");
 
-    final position = await manager.mapController.getCameraPosition();
+    final position = await mapController.getCameraPosition();
     _position = position.target;
     final address = await _reverseGeocode(_position);
     _addressNotifier.value = address; // 주소 업데이트
@@ -268,7 +265,7 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
   Future<void> _moveToCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    manager.mapController.updateCamera(
+    mapController.updateCamera(
       NCameraUpdate.fromCameraPosition(
         NCameraPosition(
           target: NLatLng(position.latitude, position.longitude),
@@ -281,10 +278,25 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
   // 거리 체크
   // 500 미터 미만이면 참
   Future<bool> _checkDistance() async {
-    final userPosition = await manager.getCurrentNLatLng();
+    final userPosition = await MapManager.getCurrentNLatLng();
     final distance = Geolocator.distanceBetween(userPosition.latitude,
         userPosition.longitude, _position.latitude, _position.longitude);
     logger.d("distance : $distance");
     return distance < 500;
+  }
+
+  Future<void> moveCamera(NLatLng position) async {
+    try {
+      await mapController.updateCamera(
+        NCameraUpdate.fromCameraPosition(
+          NCameraPosition(
+            target: position,
+            zoom: 16,
+          ),
+        ),
+      );
+    } catch (e) {
+      logger.e(e);
+    }
   }
 }

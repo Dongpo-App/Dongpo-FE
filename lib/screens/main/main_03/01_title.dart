@@ -13,7 +13,7 @@ class MainTitle extends StatefulWidget {
 class _MainTitleState extends State<MainTitle> {
   MapManager manager = MapManager();
   bool setOpenPossbility = false;
-  int betweenDistance = 0;
+  String betweenDistance = "";
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _MainTitleState extends State<MainTitle> {
                           CupertinoIcons.arrow_up_right_diamond_fill,
                           color: Color(0xffF15A2B))),
                   Text(
-                    "$betweenDistance M",
+                    betweenDistance,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,

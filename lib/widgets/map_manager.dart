@@ -12,24 +12,33 @@ class MapManager {
   MapManager._privateConstructor();
   // 싱글톤 인스턴스
   static final MapManager _instance = MapManager._privateConstructor();
+  factory MapManager() => _instance;
   // 맵 컨트롤러
-  late NaverMapController mapController;
+  late final NaverMapController mapController;
   // 마커 리스트
   List<NMarker> markers = [];
   // 마커 리스트내 점포의 정보
   List<StoreMarker> storeList = [];
   // 현재 선택된 마커의 점포 정보
-  StoreDetail? selectedDetail;
-  MarkerInfo? selectedSummary;
-  StoreMarker? selectedMarker;
+  NMarker? selectedMarker; // 선택된 마커
+  StoreMarker? selectedMarkerInfo; // 선택된 마커의 정보
+  MarkerInfo? selectedSummary; // 선택된 점포 개요
+  StoreDetail? selectedDetail; // 선택된 점포 상세
 
-  factory MapManager() => _instance;
+  // 현재 위치를 NLatLng 으로 받기
+  static Future<NLatLng> getCurrentNLatLng() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    return NLatLng(position.latitude, position.longitude);
+  }
 
   // 초기화 메서드
   void initialize(NaverMapController controller) {
+    logger.d("controller is changed : ${controller.hashCode}");
     mapController = controller;
   }
 
+  // 카메라 이동
   Future<void> moveCamera(NLatLng position) async {
     try {
       await mapController.updateCamera(
@@ -45,13 +54,7 @@ class MapManager {
     }
   }
 
-  // 현재 위치를 NLatLng 으로 받기
-  Future<NLatLng> getCurrentNLatLng() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    return NLatLng(position.latitude, position.longitude);
-  }
-
+  // 마커 추가
   void addMarkers(List<StoreMarker> dataList,
       void Function(NMarker marker, StoreMarker store) listener) {
     storeList = dataList;
@@ -70,7 +73,7 @@ class MapManager {
 
         marker.setOnTapListener((overlay) {
           logger.d("marger ontap ${overlay.info.id}");
-          selectedMarker = data;
+          selectedMarkerInfo = data;
           listener(marker, data);
         });
         mapController.addOverlay(marker);
@@ -81,20 +84,45 @@ class MapManager {
     }
   }
 
+  // 선택 마커 초기화
+  void deselectMarker() {
+    selectedMarker!.setIcon(
+        const NOverlayImage.fromAssetImage('assets/icons/default_marker.png'));
+    selectedMarker = null;
+  }
+
+  //마커 삭제
   Future<void> clearMarkers() async {
     await mapController.clearOverlays();
     markers.clear();
   }
 
-  Future<int> calcDistanceStore() async {
-    if (selectedMarker == null) return 0;
+  // 사용자와 점포 거리 계산
+  Future<String> calcDistanceStore() async {
+    String result = "";
+    if (selectedMarkerInfo == null) return result;
     Position userLocation = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    return Geolocator.distanceBetween(
-            userLocation.latitude,
-            userLocation.longitude,
-            selectedMarker!.latitude,
-            selectedMarker!.longitude)
-        .floor();
+    double distanceMeter = Geolocator.distanceBetween(
+        userLocation.latitude,
+        userLocation.longitude,
+        selectedMarkerInfo!.latitude,
+        selectedMarkerInfo!.longitude);
+    // 단위 변환
+    if (distanceMeter > 1000) {
+      // km
+      distanceMeter /= 1000;
+      if (distanceMeter < 10) {
+        // 10km 미만이면 소수점 한 자리
+        result = "${distanceMeter.toStringAsFixed(1)}km";
+      } else {
+        // 10km 이상이면 소수점 제거
+        result = "${distanceMeter.toStringAsFixed(0)}km";
+      }
+    } else {
+      // m
+      result = "${distanceMeter.toStringAsFixed(0)}m";
+    }
+    return result;
   }
 }
