@@ -93,7 +93,6 @@ class Review {
   final List<String>? reviewPics;
   final DateTime registerDate;
   final String? memberMainTitle;
-  final String? reviewText;
 
   Review({
     required this.memberMainTitle,
@@ -106,12 +105,10 @@ class Review {
     required this.text,
     required this.reviewPics,
     required this.registerDate,
-    required this.reviewText,
   });
 
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
-      reviewText: json['reviewText'] as String?,
       memberMainTitle: json['memberMainTitle'] as String?,
       memberNickname: json['memberNickname'] as String?,
       id: json['id'] as int?,

@@ -147,7 +147,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
             height: 24,
           ),
           Text(
-            '${reviewList[index].reviewText}',
+            '${reviewList[index].text}',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
