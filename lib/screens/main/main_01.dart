@@ -742,7 +742,9 @@ class _MainPageState extends State<MainPage>
                       setState(() {
                         manager.deselectMarker();
                       });
-                      Navigator.pop(context); // 현재 bottom sheet 닫기
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context); // 현재 bottom sheet 닫기
+                      }
                       logger.i("페이지 pop 성공");
                       return true;
                     }

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/models/user_profile.dart';
 import 'package:dongpo_test/screens/my_info/info_detail/add_store.dart';
@@ -7,13 +6,13 @@ import 'package:dongpo_test/screens/my_info/my_page_view_model.dart';
 import 'package:dongpo_test/service/exception/exception.dart';
 import 'package:dongpo_test/service/login_service.dart';
 import 'package:dongpo_test/widgets/dialog_method_mixin.dart';
+import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/screens/login/apple_kakao_login.dart';
 import 'package:dongpo_test/screens/login/login.dart';
 import 'package:dongpo_test/screens/login/login_view_model.dart';
-import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
@@ -383,13 +382,13 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
                             try {
                               ApiResponse response =
                                   await loginService.logout();
-                              logger.d("네이버 맵 지도 초기화");
-                              await NaverMapSdk.instance.initialize(
-                                clientId: naverApiKey, // 클라이언트 ID 설정
-                                onAuthFailed: (e) =>
-                                    logger.e("네이버맵 인증오류 : $e onAuthFailed"),
-                              );
+                              // await NaverMapSdk.instance.initialize(
+                              //   clientId: naverApiKey, // 클라이언트 ID 설정
+                              //   onAuthFailed: (e) =>
+                              //       logger.e("네이버맵 인증오류 : $e onAuthFailed"),
+                              // );
                               if (response.statusCode == 200) {
+                                MapManager().reset();
                                 Fluttertoast.showToast(
                                     msg: "로그아웃 되었습니다.",
                                     toastLength: Toast.LENGTH_SHORT);
@@ -449,6 +448,7 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
                               ApiResponse response =
                                   await loginService.deleteAccount();
                               if (response.statusCode == 200) {
+                                MapManager().reset();
                                 Fluttertoast.showToast(msg: "회원 탈퇴가 완료되었습니다.");
                                 if (mounted) {
                                   Navigator.pushAndRemoveUntil(
@@ -635,7 +635,7 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
                             const SizedBox(
                               height: 16,
                             ),
-                            Container(
+                            SizedBox(
                               height: 64,
                               width: double.infinity,
                               child: TextField(
@@ -673,19 +673,19 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
                                     color: Color(0xFF767676),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: Color(0xFF767676),
-                                    )
-                                  ),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(12)),
+                                      borderSide: BorderSide(
+                                        width: 1,
+                                        color: Color(0xFF767676),
+                                      )),
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                                    borderSide: BorderSide(
-                                      width: 1,
-                                      color: Color(0xFF767676),
-                                    )
-                                  ),
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(12)),
+                                      borderSide: BorderSide(
+                                        width: 1,
+                                        color: Color(0xFF767676),
+                                      )),
                                 ),
                               ),
                             ),
@@ -742,18 +742,23 @@ class _MyPageState extends State<MyPage> with DialogMethodMixin {
                                     backgroundColor: (updateValue == 1)
                                         ? const Color(0xffF15A2B)
                                         : const Color(0xFFF4F4F4),
-                                    minimumSize: const Size(double.infinity, 44),
+                                    minimumSize:
+                                        const Size(double.infinity, 44),
                                     shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(12)))),
                                 onPressed: () async {
                                   if (updateValue == 0) return;
-              
+
                                   userProfileUpdate =
                                       await viewModel.userProfileUpdateAPI(
-                                          context, sendData, nickname, mainTitle);
-                                  logger.d("profile update : $userProfileUpdate");
-              
+                                          context,
+                                          sendData,
+                                          nickname,
+                                          mainTitle);
+                                  logger
+                                      .d("profile update : $userProfileUpdate");
+
                                   if (userProfileUpdate) {
                                     // 상태 업데이트를 제거하고 바로 네비게이션 수행
                                     Navigator.pushAndRemoveUntil(

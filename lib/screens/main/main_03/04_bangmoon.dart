@@ -156,6 +156,7 @@ class BangMoonPage extends StatefulWidget {
 
 class _BangMoonPageState extends State<BangMoonPage> {
   MapManager manager = MapManager();
+  late NaverMapController mapController;
   int okValue = 0;
   int noValue = 0;
 
@@ -170,7 +171,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
 
   @override
   void dispose() {
-    manager.mapController.dispose();
+    mapController.dispose();
     super.dispose();
   }
 
@@ -224,8 +225,8 @@ class _BangMoonPageState extends State<BangMoonPage> {
               children: [
                 NaverMap(
                   onMapReady: (controller) {
-                    manager.initialize(controller);
-                    manager.mapController.updateCamera(
+                    mapController = controller;
+                    mapController.updateCamera(
                       NCameraUpdate.fromCameraPosition(
                         NCameraPosition(
                           target: snapshot.data!, // 초기 카메라 위치 설정
@@ -390,12 +391,13 @@ class _BangMoonPageState extends State<BangMoonPage> {
                               height: 44,
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: isLoading ? null
-                                  : () {
-                                    (okValue == 1 || noValue == 1)
-                                        ? _checkDistance()
-                                        : null;
-                                    },
+                                onPressed: isLoading
+                                    ? null
+                                    : () {
+                                        (okValue == 1 || noValue == 1)
+                                            ? _checkDistance()
+                                            : null;
+                                      },
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
                                   splashFactory: (okValue == 0 && noValue == 0)
@@ -410,18 +412,23 @@ class _BangMoonPageState extends State<BangMoonPage> {
                                           : const Color(0xFFF4F4F4),
                                 ),
                                 child: isLoading
-                                  ? const CircularProgressIndicator(color: Colors.white)
-                                  : Text(
-                                    '방문 인증',
-                                    style: TextStyle(
-                                      color: ((okValue == 1 || noValue == 1) && !isLoading)
-                                          ? Colors.white
-                                          : const Color(0xFF767676),
-                                      fontWeight: ((okValue == 1 || noValue == 1) && !isLoading)
-                                          ? FontWeight.w600
-                                          : FontWeight.w400,
-                                    ),
-                                  ),
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white)
+                                    : Text(
+                                        '방문 인증',
+                                        style: TextStyle(
+                                          color:
+                                              ((okValue == 1 || noValue == 1) &&
+                                                      !isLoading)
+                                                  ? Colors.white
+                                                  : const Color(0xFF767676),
+                                          fontWeight:
+                                              ((okValue == 1 || noValue == 1) &&
+                                                      !isLoading)
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
+                                        ),
+                                      ),
                               ),
                             )
                           ]),
@@ -475,11 +482,11 @@ class _BangMoonPageState extends State<BangMoonPage> {
       );
 
       myLocationMarker.setSize(const Size(24, 24));
-      manager.mapController.addOverlay(myLocationMarker);
-      manager.mapController.addOverlay(circleOverlay);
+      mapController.addOverlay(myLocationMarker);
+      mapController.addOverlay(circleOverlay);
 
       storeLocationMarker.setSize(const Size(24, 24));
-      manager.mapController.addOverlay(storeLocationMarker);
+      mapController.addOverlay(storeLocationMarker);
     } catch (e) {
       // 에러 발생 시 로그 출력
       logger.d("Error in _moveToCurrentLocation: $e");

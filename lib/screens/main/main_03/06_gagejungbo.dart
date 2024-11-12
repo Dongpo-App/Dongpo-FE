@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../../../models/store/store_detail.dart';
 import '../../../widgets/map_manager.dart';
 
 class GageJungbo extends StatefulWidget {
@@ -32,7 +30,8 @@ class GageJungboState extends State<GageJungbo> {
   }
 
   void getStoreInformation() {
-    operatingDays = manager.selectedDetail?.operatingDays ?? []; // null일 경우 빈 리스트로 대체
+    operatingDays =
+        manager.selectedDetail?.operatingDays ?? []; // null일 경우 빈 리스트로 대체
     openTime = manager.selectedDetail?.openTime ?? "";
     closeTime = manager.selectedDetail?.closeTime ?? "";
     payMethods = manager.selectedDetail?.payMethods ?? [];
@@ -44,10 +43,13 @@ class GageJungboState extends State<GageJungbo> {
     try {
       DateTime dateTime = DateFormat("HH:mm:ss").parse(time);
       String formattedTime = DateFormat("a hh:mm").format(dateTime);
-      formattedTime = formattedTime.replaceFirst('AM', '오전').replaceFirst('PM', '오후');
+      formattedTime =
+          formattedTime.replaceFirst('AM', '오전').replaceFirst('PM', '오후');
       formattedTime = '${formattedTime.replaceAll(':', '시')}분';
       return formattedTime;
-    } catch (e) { return time; }
+    } catch (e) {
+      return time;
+    }
   }
 
   @override
@@ -109,13 +111,17 @@ class GageJungboState extends State<GageJungbo> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: operatingDays.contains(_getDayCode(i)) ? Colors.black : const Color(0xFF969696),
+                            color: operatingDays.contains(_getDayCode(i))
+                                ? Colors.black
+                                : const Color(0xFF969696),
                           ),
                         ),
                       ),
                   ],
                 ),
-                const SizedBox(height: 24,),
+                const SizedBox(
+                  height: 24,
+                ),
                 Row(
                   children: [
                     const Text(
@@ -135,7 +141,9 @@ class GageJungboState extends State<GageJungbo> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24,),
+                const SizedBox(
+                  height: 24,
+                ),
                 Row(
                   children: [
                     const Text(
@@ -154,13 +162,19 @@ class GageJungboState extends State<GageJungbo> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: payMethods.contains(_getPayMethodCode(method)) ? Colors.black : const Color(0xFF969696), // payMethods에 해당 결제 방식이 있으면 빨간색
+                            color: payMethods
+                                    .contains(_getPayMethodCode(method))
+                                ? Colors.black
+                                : const Color(
+                                    0xFF969696), // payMethods에 해당 결제 방식이 있으면 빨간색
                           ),
                         ),
                       ),
                   ],
                 ),
-                const SizedBox(height: 24,),
+                const SizedBox(
+                  height: 24,
+                ),
                 Row(
                   children: [
                     const Text(
@@ -176,16 +190,22 @@ class GageJungboState extends State<GageJungbo> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: isToiletValid ? Colors.black : const Color(0xFF969696),
+                        color: isToiletValid
+                            ? Colors.black
+                            : const Color(0xFF969696),
                       ),
                     ),
-                    const SizedBox(width: 16,),
+                    const SizedBox(
+                      width: 16,
+                    ),
                     Text(
                       '없음',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: isToiletValid ? const Color(0xFF969696) : Colors.black,
+                        color: isToiletValid
+                            ? const Color(0xFF969696)
+                            : Colors.black,
                       ),
                     ),
                   ],
