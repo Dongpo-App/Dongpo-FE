@@ -16,6 +16,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:intl/intl.dart';
 
+import '../../../widgets/dialog_method_mixin.dart';
+
 int value = 0;
 
 class ShowReview extends StatefulWidget {
@@ -27,7 +29,7 @@ class ShowReview extends StatefulWidget {
 }
 
 //사진 관련
-class _ShowReviewState extends State<ShowReview> {
+class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
   MapManager manager = MapManager();
   StoreApiService storeService = StoreApiService.instance;
   final ImagePicker _picker = ImagePicker();
@@ -41,6 +43,8 @@ class _ShowReviewState extends State<ShowReview> {
   bool reviewTextChecked = false;
   // 리뷰 등록 상태 관리 변수
   bool isLoading = false;
+  // 리뷰 작성 가능
+  bool isVisit = false;
 
   @override
   void initState() {
@@ -74,7 +78,10 @@ class _ShowReviewState extends State<ShowReview> {
               height: 44,
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  logger.d("isReviewable");
+                  await isReviewable(storeId);
+
                   showModalBottomSheet(
                     backgroundColor: Colors.white,
                     isScrollControlled: true,
@@ -360,6 +367,53 @@ class _ShowReviewState extends State<ShowReview> {
         ],
       ),
     );
+  }
+
+  // 리뷰 작성 가능 판단
+  Future<void> isReviewable(int storeId) async {
+    try {
+      logger.d("isReviewable");
+      ApiResponse apiResponse = await storeService.getIsReviewable(storeId);
+      logger.d("isReviewable get api statusCode : ${apiResponse.statusCode}");
+      if (apiResponse.statusCode == 200) {
+        // 리뷰 작성 가능함
+      } else if (apiResponse.statusCode == 404) {
+        // 리뷰 작성 불가능
+        if (mounted) {
+          showAlertDialog(
+            context,
+            title: "방문 인증 후에 사용 가능한 기능이에요",
+            message: apiResponse.message,
+          );
+        }
+      } else {
+        if (mounted) {
+          showAlertDialog(
+            context,
+            title: "에러",
+            message: "오류가 발생했습니다.",
+          );
+        }
+      }
+    } on TokenExpiredException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+          content: Text(
+            "세션이 만료되었습니다. 다시 로그인해주세요.")
+          )
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+            const LoginPage()
+          )
+        );
+      }
+    } on Exception catch (e) {
+      logger.e("Error! message: $e");
+    }
   }
 
   // 리뷰 등록 onPressed

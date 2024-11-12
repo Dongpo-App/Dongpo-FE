@@ -120,7 +120,7 @@ class BangMoon extends StatelessWidget {
           height: 44,
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -644,7 +644,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
         ),
       ),
       content: const Text(
-        "24시간 동안 리뷰 작성과 가게 신고가 가능해요",
+        "24시간 동안\n리뷰 작성과 가게 신고가 가능해요",
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w400,

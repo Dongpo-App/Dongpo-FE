@@ -654,6 +654,10 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
             );
           }
         }
+      } else {
+        setState(() {
+          isLoading = false; // 로딩 상태를 false로 전환
+        });
       }
     }
   }

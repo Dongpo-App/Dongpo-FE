@@ -21,6 +21,7 @@ class GageJungboState extends State<GageJungbo> {
   List<String> payMethods = [];
   bool isToiletValid = false;
   int memberId = 0;
+  String memberNickname = "";
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class GageJungboState extends State<GageJungbo> {
     payMethods = manager.selectedDetail?.payMethods ?? [];
     isToiletValid = manager.selectedDetail?.isToiletValid ?? false;
     memberId = manager.selectedDetail?.memberId ?? 0;
+    memberNickname = manager.selectedDetail?.memberNickname ?? "";
   }
 
   String formatTime(String time) {
@@ -56,23 +58,23 @@ class GageJungboState extends State<GageJungbo> {
       margin: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
-          const Row(
+          Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(
+              const Text(
                 '가게 정보',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 8,
               ),
               Text(
-                '도도한 고양이 님이 등록하셨어요.',
-                style: TextStyle(
+                "$memberNickname 님이 등록하셨어요.",
+                style: const TextStyle(
                   color: Color(0xFF767676),
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
@@ -108,7 +110,7 @@ class GageJungboState extends State<GageJungbo> {
                           _getDayText(i),
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: operatingDays.contains(_getDayCode(i)) ? FontWeight.w600 : FontWeight.w400,
                             color: operatingDays.contains(_getDayCode(i)) ? Colors.black : const Color(0xFF969696),
                           ),
                         ),
@@ -153,7 +155,7 @@ class GageJungboState extends State<GageJungbo> {
                           method, // 각 결제 방법 텍스트
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w400,
+                            fontWeight: payMethods.contains(_getPayMethodCode(method)) ? FontWeight.w600 : FontWeight.w400,
                             color: payMethods.contains(_getPayMethodCode(method)) ? Colors.black : const Color(0xFF969696), // payMethods에 해당 결제 방식이 있으면 빨간색
                           ),
                         ),
@@ -175,7 +177,7 @@ class GageJungboState extends State<GageJungbo> {
                       '있음',
                       style: TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                        fontWeight: isToiletValid ? FontWeight.w600 : FontWeight.w400,
                         color: isToiletValid ? Colors.black : const Color(0xFF969696),
                       ),
                     ),
@@ -184,7 +186,7 @@ class GageJungboState extends State<GageJungbo> {
                       '없음',
                       style: TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                        fontWeight:  isToiletValid ? FontWeight.w400 : FontWeight.w600,
                         color: isToiletValid ? const Color(0xFF969696) : Colors.black,
                       ),
                     ),

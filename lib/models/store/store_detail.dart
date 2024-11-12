@@ -7,6 +7,7 @@ class StoreDetail {
   final String openTime;
   final String closeTime;
   final int memberId;
+  final String memberNickname;
   final int reportCount;
   final bool isToiletValid;
   final String status;
@@ -30,6 +31,7 @@ class StoreDetail {
     required this.openTime,
     required this.closeTime,
     required this.memberId,
+    required this.memberNickname,
     required this.reportCount,
     required this.isToiletValid,
     required this.status,
@@ -54,6 +56,7 @@ class StoreDetail {
       openTime: json['openTime'] as String,
       closeTime: json['closeTime'] as String,
       memberId: json['memberId'] as int,
+      memberNickname: json['memberNickname'] as String,
       reportCount: json['reportCount'] as int,
       isToiletValid: json['isToiletValid'] as bool,
       status: json['status'] as String,

@@ -19,6 +19,60 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   static final StoreApiService instance = StoreApiService._privateConstructor();
 
   @override
+  Future<ApiResponse<bool>> getIsReviewable(int id) async {
+    await loadToken();
+    final url = Uri.parse('$serverUrl/api/$id');
+
+    Map<String, String> headers = this.headers(true);
+
+    try {
+      final response = await http.get(url, headers: headers);
+      Map<String, dynamic> decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
+
+      logger.d("isReviewable : $decodedResponse");
+      if (response.statusCode == 200) {
+        bool data = decodedResponse['data'] is bool ? decodedResponse['data'] : false;
+
+        return ApiResponse.fromJson(response.statusCode, decodedResponse, (data) => data);
+      } else if (response.statusCode == 401) {
+        logger.d("code: ${response.statusCode} body: $decodedResponse");
+        final reissued = await reissueToken();
+        if (reissued) {
+          await loadToken();
+          headers = this.headers(true);
+          final retryResponse = await http.get(url, headers: headers);
+          decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
+
+          if (retryResponse.statusCode == 200) {
+            // 요청 성공
+            logger.d("code : ${response.statusCode} body: $decodedResponse");
+            return ApiResponse.fromJson(retryResponse.statusCode, decodedResponse, (data) => data);
+          } else {
+            await resetToken();
+            throw TokenExpiredException();
+          }
+        } else {
+          await resetToken();
+          throw TokenExpiredException();
+        }
+      } else {
+        return ApiResponse(
+          statusCode: response.statusCode,
+          message: decodedResponse['message'],
+        );
+      }
+    } catch (e) {
+      if (e is! TokenExpiredException) {
+        logger.e("HTTP Error on get is reviewable: $e");
+        throw Exception("Error occurred: $e");
+      } else {
+        // TokenExpiredException일 경우 다시 throw
+        rethrow;
+      }
+    }
+  }
+
+  @override
   Future<ApiResponse> addReview({
     required int id,
     required String reviewText,
