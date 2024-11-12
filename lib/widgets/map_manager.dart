@@ -14,7 +14,7 @@ class MapManager {
   static final MapManager _instance = MapManager._privateConstructor();
   factory MapManager() => _instance;
   // 맵 컨트롤러
-  late final NaverMapController mapController;
+  late NaverMapController mapController;
   // 마커 리스트
   List<NMarker> markers = [];
   // 마커 리스트내 점포의 정보
@@ -25,6 +25,8 @@ class MapManager {
   MarkerInfo? selectedSummary; // 선택된 점포 개요
   StoreDetail? selectedDetail; // 선택된 점포 상세
 
+  bool _isControllerInit = false;
+
   // 현재 위치를 NLatLng 으로 받기
   static Future<NLatLng> getCurrentNLatLng() async {
     Position position = await Geolocator.getCurrentPosition(
@@ -34,8 +36,24 @@ class MapManager {
 
   // 초기화 메서드
   void initialize(NaverMapController controller) {
-    logger.d("controller is changed : ${controller.hashCode}");
-    mapController = controller;
+    if (!_isControllerInit) {
+      logger.d("controller is init : ${controller.hashCode}");
+      mapController = controller;
+      _isControllerInit = true;
+    }
+  }
+
+  // 리셋 메서드 (로그아웃 시)
+  void reset() {
+    logger.d("MapManager is reset");
+    _isControllerInit = false;
+    mapController.dispose();
+    markers.clear();
+    storeList.clear();
+    selectedMarker = null;
+    selectedMarkerInfo = null;
+    selectedSummary = null;
+    selectedDetail = null;
   }
 
   // 카메라 이동

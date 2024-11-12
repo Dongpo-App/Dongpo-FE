@@ -1,7 +1,6 @@
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/request/add_store_request.dart';
 import 'package:dongpo_test/service/store_service.dart';
-import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:dongpo_test/widgets/dialog_method_mixin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -194,7 +193,6 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                           child: TextFormField(
                             controller: _nameController,
                             maxLength: 14,
-
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
@@ -568,7 +566,9 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
               height: MediaQuery.of(context).size.height * 0.085,
               child: ElevatedButton(
                 onPressed: (_isFormValid && !isLoading)
-                    ? () async { await submitStoreAdd();}
+                    ? () async {
+                        await submitStoreAdd();
+                      }
                     : null,
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
@@ -581,14 +581,16 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                       : const Color(0xFFF4F4F4),
                 ),
                 child: isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : Text(
-                    "가게 등록",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: (_isFormValid && !isLoading) ? Colors.white : const Color(0xFF767676),
-                    ),
-                  ),
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                        "가게 등록",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: (_isFormValid && !isLoading)
+                              ? Colors.white
+                              : const Color(0xFF767676),
+                        ),
+                      ),
               ),
             ),
           ],
@@ -606,8 +608,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
 
     if (_formKey.currentState!.validate()) {
       // 폼이 성공적으로 채워졌을 때
-      final userLocation =
-      await Geolocator.getCurrentPosition(
+      final userLocation = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
 
       AddStoreRequest storeInfo = AddStoreRequest(
@@ -615,26 +616,23 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
         address: _addressController.text,
         latitude: widget.position.latitude,
         longitude: widget.position.longitude,
-        isToiletValid:
-        _isToilets[0],
+        isToiletValid: _isToilets[0],
         // 첫 번째 요소가 있음으로 true면 있는 것
         openTime: _formatValueTime(_openTime),
         closeTime: _formatValueTime(_closeTime),
-        operatingDays:
-        _getSelectedToValue(_selectedDays, _days),
-        payMethods: _getSelectedToValue(
-            _selectedPaymentMethods, _payments),
+        operatingDays: _getSelectedToValue(_selectedDays, _days),
+        payMethods: _getSelectedToValue(_selectedPaymentMethods, _payments),
         currentLatitude: userLocation.latitude,
         currentLongitude: userLocation.longitude,
       );
       logger.d("data ${storeInfo.toJson()}");
 
-      final dialogResult = await showChoiceDialog(context, title: "가게 정보 수정은 불가능해요!", message: "입력한 정보로 가게를 등록할까요?");
+      final dialogResult = await showChoiceDialog(context,
+          title: "가게 정보 수정은 불가능해요!", message: "입력한 정보로 가게를 등록할까요?");
       logger.d("dialog result : $dialogResult");
 
       if (dialogResult == true) {
-        final response =
-        await storeService.addStore(storeInfo);
+        final response = await storeService.addStore(storeInfo);
         if (response.statusCode == 200) {
           Fluttertoast.showToast(
             msg: "가게를 등록했어요",
@@ -646,12 +644,8 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
             setState(() {
               isLoading = false; // 로딩 상태를 false로 전환
             });
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const MyAppPage()),
-              ModalRoute.withName("/home"),
-            );
+            Navigator.of(context).popUntil(ModalRoute.withName("/add"));
+            Navigator.pop(context);
           }
         } else if (response.statusCode == 400) {
           if (mounted) {

@@ -1,10 +1,8 @@
-import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/response/api_response.dart';
 import 'package:dongpo_test/screens/login/terms_and_conditions.dart';
 import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'apple_user_info_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -59,19 +57,24 @@ class _LoginPageState extends State<LoginPage> {
                   if (response.statusCode == 200) {
                     if (mounted) {
                       Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MyAppPage()));
+                        context,
+                        MaterialPageRoute(
+                          settings: const RouteSettings(name: "/main"),
+                          builder: (context) => const MyAppPage(),
+                        ),
+                      );
                     }
                   } else if (response.statusCode == 401) {
                     // 추가 정보 입력
                     if (mounted) {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AppleUserInfoPage(
-                                    userData: response.data,
-                                  )));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AppleUserInfoPage(
+                            userData: response.data,
+                          ),
+                        ),
+                      );
                     }
                   } else if (response.statusCode == 409) {
                     httpStatusCode409();
@@ -106,9 +109,12 @@ class _LoginPageState extends State<LoginPage> {
                   if (response.statusCode == 200) {
                     if (mounted) {
                       Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MyAppPage()));
+                        context,
+                        MaterialPageRoute(
+                          settings: const RouteSettings(name: "/main"),
+                          builder: (context) => const MyAppPage(),
+                        ),
+                      );
                     }
                   } else if (response.statusCode == 409) {
                     httpStatusCode409();
@@ -140,9 +146,15 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  appleTermsResult =
-                      await showTermsAndConditionsBottomSheet(context);
-                  logger.d("result : $appleTermsResult");
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AppleUserInfoPage(
+                                userData: {
+                                  'socialId': "123",
+                                  'email': 'email@mail.ocm'
+                                },
+                              )));
                 },
                 child: Container(
                   height: 44,
@@ -152,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: const Text(
-                    '이용약관 테스트',
+                    '애플 로그인 테스트',
                   ),
                 ),
               ),

@@ -60,9 +60,6 @@ class MyApp extends StatelessWidget {
         highlightColor: Colors.transparent,
       ),
       home: const SplashPage(), // 로그인 페이지 이동
-      routes: {
-        '/home': (context) => const MyAppPage(),
-      },
       onGenerateRoute: (settings) {
         if (settings.name == '/storeInfo') {
           // 전달된 arguments를 int로 캐스팅

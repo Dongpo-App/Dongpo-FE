@@ -542,40 +542,16 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                         if (response.statusCode == 200) {
                           if (mounted) {
                             Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const MyAppPage()));
+                              context,
+                              MaterialPageRoute(
+                                settings: const RouteSettings(name: "/main"),
+                                builder: (context) => const MyAppPage(),
+                              ),
+                            );
                           } else if (response.statusCode == 409) {
                             httpStatusCode409();
                           }
                         }
-                        // signUp = await viewModel.appleSignUpPostAPI(
-                        //     context,
-                        //     nickName,
-                        //     _birthdayController.text,
-                        //     selectedGender!);
-                        // logger.d("apple sign up : $signUp");
-
-                        // if (signUp == "200") {
-                        //   // 서버에서 발급받은 토큰을 FlutterSecureStorage에 저장
-                        //   await storage.write(
-                        //       key: 'accessToken', value: viewModel.accessToken);
-                        //   await storage.write(
-                        //       key: 'refreshToken',
-                        //       value: viewModel.refreshToken);
-                        //   await storage.write(
-                        //       key: 'loginPlatform',
-                        //       value: viewModel.loginPlatform.name);
-                        //   Map<String, String> allData = await storage.readAll();
-                        //   logger.d("secure storage apple read : $allData");
-
-                        //   Navigator.pushAndRemoveUntil(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => const MyAppPage()),
-                        //     (route) => false,
-                        //   );
-                        // }
                       } else if (signUp == "409") {
                         httpStatusCode409();
                       }

@@ -38,7 +38,12 @@ class MyAppPageState extends State<MyAppPage> {
         Navigator.pop(context);
       }
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const AddPage()));
+        context,
+        MaterialPageRoute(
+          settings: const RouteSettings(name: "/add"),
+          builder: (context) => const AddPage(),
+        ),
+      );
     } else {
       // 콜백 함수
       setState(() {
