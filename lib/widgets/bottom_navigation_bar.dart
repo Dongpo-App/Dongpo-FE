@@ -1,3 +1,4 @@
+import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/add_store_page/add_page.dart';
@@ -13,6 +14,7 @@ class MyAppPage extends StatefulWidget {
 }
 
 class MyAppPageState extends State<MyAppPage> {
+  MapManager manager = MapManager();
   late int selectedIndex;
 
   final List<Widget> screens = [
@@ -29,6 +31,7 @@ class MyAppPageState extends State<MyAppPage> {
   }
 
   void onItemTapped(int index) {
+    manager.deselectMarker();
     // addPage는 새로운 창을 띄움
     if (index == 1) {
       if (Navigator.canPop(context)) {
