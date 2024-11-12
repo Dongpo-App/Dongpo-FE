@@ -25,11 +25,12 @@ class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
+        const SizedBox(height: 16,),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Flexible(
+            Expanded(
               child: Text(
                 manager.selectedSummary!.name,
                 style: const TextStyle(
@@ -40,17 +41,31 @@ class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                size: 24,
-                CupertinoIcons.arrow_up_right_diamond_fill,
-                color: Color(0xffF15A2B)
-              )
-            )
+            const SizedBox(width: 8),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () {},
+                  child: const Icon(
+                    CupertinoIcons.arrow_up_right_diamond_fill,
+                    size: 24,
+                    color: Color(0xffF15A2B),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  betweenDistance,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
-        Text(betweenDistance),
         Row(
           children: [
             Padding(
@@ -69,8 +84,8 @@ class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
                     setOpenPossbility ? "영업 가능성이 높아요!" : "영업 가능성이 있어요!",
                     style: const TextStyle(
                       color: Color(0xFF767676),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   )
                 ],
