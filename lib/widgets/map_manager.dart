@@ -86,6 +86,7 @@ class MapManager {
 
   // 선택 마커 초기화
   void deselectMarker() {
+    if (selectedMarker == null) return;
     selectedMarker!.setIcon(
         const NOverlayImage.fromAssetImage('assets/icons/default_marker.png'));
     selectedMarker = null;
