@@ -81,7 +81,6 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
               child: ElevatedButton(
                 onPressed: () async {
                   logger.d("isReviewable");
-                  await isReviewable(storeId);
 
                   showModalBottomSheet(
                     backgroundColor: Colors.white,
@@ -377,53 +376,6 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
         ],
       ),
     );
-  }
-
-  // 리뷰 작성 가능 판단
-  Future<void> isReviewable(int storeId) async {
-    try {
-      logger.d("isReviewable");
-      ApiResponse apiResponse = await storeService.getIsReviewable(storeId);
-      logger.d("isReviewable get api statusCode : ${apiResponse.statusCode}");
-      if (apiResponse.statusCode == 200) {
-        // 리뷰 작성 가능함
-      } else if (apiResponse.statusCode == 404) {
-        // 리뷰 작성 불가능
-        if (mounted) {
-          showAlertDialog(
-            context,
-            title: "방문 인증 후에 사용 가능한 기능이에요",
-            message: apiResponse.message,
-          );
-        }
-      } else {
-        if (mounted) {
-          showAlertDialog(
-            context,
-            title: "에러",
-            message: "오류가 발생했습니다.",
-          );
-        }
-      }
-    } on TokenExpiredException {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-          content: Text(
-            "세션이 만료되었습니다. 다시 로그인해주세요.")
-          )
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-            const LoginPage()
-          )
-        );
-      }
-    } on Exception catch (e) {
-      logger.e("Error! message: $e");
-    }
   }
 
   // 리뷰 등록 onPressed

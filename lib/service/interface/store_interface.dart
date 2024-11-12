@@ -26,6 +26,6 @@ abstract class StoreServiceInterface {
     required List<XFile> images,
     required int rating,
   });
-  // 리뷰 작성 가능 조회
-  Future<ApiResponse<bool>> getIsReviewable(int id);
+  // 방문 인증 24시간 확인 정보 조회
+  Future<ApiResponse<bool>> getIsVisitCertChecked(int id);
 }

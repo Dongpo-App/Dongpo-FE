@@ -17,9 +17,9 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   static final StoreApiService instance = StoreApiService._privateConstructor();
 
   @override
-  Future<ApiResponse<bool>> getIsReviewable(int id) async {
+  Future<ApiResponse<bool>> getIsVisitCertChecked(int id) async {
     await loadToken();
-    final url = Uri.parse('$serverUrl/api/$id');
+    final url = Uri.parse('$serverUrl/api/store/visit-cert/$id/check');
 
     Map<String, String> headers = this.headers(true);
 
@@ -27,9 +27,10 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
       final response = await http.get(url, headers: headers);
       Map<String, dynamic> decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
 
-      logger.d("isReviewable : $decodedResponse");
+      logger.d("getIsVisitCertChecked : $decodedResponse");
       if (response.statusCode == 200) {
         bool data = decodedResponse['data'] is bool ? decodedResponse['data'] : false;
+        logger.d("code: ${response.statusCode} body: $decodedResponse");
 
         return ApiResponse.fromJson(response.statusCode, decodedResponse, (data) => data);
       } else if (response.statusCode == 401) {

@@ -19,6 +19,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+
 //가게정보 상세 페이지
 
 class StoreInfo extends StatefulWidget {
@@ -32,12 +33,15 @@ class _StoreInfoState extends State<StoreInfo> {
   BookmarkViewModel viewModel = BookmarkViewModel();
   StoreApiService storeService = StoreApiService.instance;
   MapManager manager = MapManager();
+
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
   }
 
   // 가게 신고 텍스트 확인용
   bool reportTextChecked = false;
+  // 방문 인증 유효 시간 체크
+  late bool isVisitCertChecked;
 
   @override
   void initState() {
@@ -45,6 +49,32 @@ class _StoreInfoState extends State<StoreInfo> {
     getBookmark();
     // 페이지가 처음 생성될 때 비동기 메서드 호출
     _fetchStoreDetails(widget.idx);
+    // 24시간 확인 응답 - false : 방문 인증 가능 / true : 리뷰 작성 가능
+    _getIsVisitCertChecked(widget.idx);
+  }
+
+  // 리뷰 작성 가능 판단
+  Future<void> _getIsVisitCertChecked(int storeId) async {
+    try {
+      final response = await storeService.getIsVisitCertChecked(storeId);
+      if (response.statusCode == 200 && response.data != null) {
+        // 리뷰 작성 가능함
+        final data = response.data;
+        isVisitCertChecked = data!;
+      } else {
+        logger.e('HTTP ERROR !!! 상태코드 : ${response.statusCode}');
+      }
+    } catch (e) {
+      logger.e('방문 인증 유효 시간: $e'); // 에러 처리
+      await Future.delayed(const Duration(milliseconds: 1200));
+      Fluttertoast.showToast(
+        msg: "방문 인증 유효 시간 데이터를 가져오는 데 실패했어요.",
+        timeInSecForIosWeb: 2,
+      );
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    }
   }
 
   // 비동기 메서드로 가게 정보를 가져옴
@@ -53,8 +83,7 @@ class _StoreInfoState extends State<StoreInfo> {
       final response = await storeService.getStoreDetail(id);
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data;
-        logger.d(
-            'storeData Test : ${data!.visitSuccessfulCount} : ${data.visitFailCount}');
+        logger.d('storeData Test : ${data!.visitSuccessfulCount} : ${data.visitFailCount}');
         if (!mounted) return;
         setState(() {
           manager.selectedDetail = data; // 가져온 데이터를 myStoreList에 할당
