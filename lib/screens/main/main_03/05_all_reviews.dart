@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dongpo_test/models/store/store_detail.dart';
 import 'package:dongpo_test/widgets/map_manager.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/service/store_service.dart';
@@ -24,9 +25,10 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
   StoreApiService storeService = StoreApiService.instance;
   MapManager manager = MapManager();
   List<Review> reviewList = [];
+
   @override
   void initState() {
-    reviewList = manager.selectedDetail?.reviews ?? []; // null일 경우 빈 리스트로 대체
+    getAllReviews(widget.idx);
     super.initState();
   }
 
@@ -55,7 +57,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
         ),
         body: ListView.builder(
           shrinkWrap: true, // 높이를 자동으로 조정
-          physics: const NeverScrollableScrollPhysics(), // 스크롤 비활성화
+
           itemCount: reviewList.length,
           itemBuilder: (context, index) {
             logger.d('리뷰 리스트에 들어있는 값 체크 : $reviewList');
@@ -145,7 +147,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
             height: 24,
           ),
           Text(
-            '${reviewList[index].text}',
+            '${reviewList[index].reviewText}',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
@@ -406,6 +408,43 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
         ],
       ),
     );
+  }
+
+  //리뷰 전체 조회
+  // 비동기 메서드로 가게 정보를 가져옴
+  Future<void> getAllReviews(int id) async {
+    final url = Uri.parse('$serverUrl/api/store/review/$id');
+
+    final accessToken = await storage.read(key: 'accessToken');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+    };
+
+    final response = await http.get(
+      url,
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      // JSON 데이터 디코딩 및 UTF-8 디코딩
+      final Map<String, dynamic> data =
+          json.decode(utf8.decode(response.bodyBytes));
+
+      // 서버에서 받은 데이터 중 'data' 키의 값을 리스트로 가져옴
+      final List<dynamic> jsonData = data['data'];
+
+      // JSON 배열을 UserBookmark 리스트로 변환
+      setState(() {
+        reviewList =
+            jsonData.map((jsonItem) => Review.fromJson(jsonItem)).toList();
+      });
+    } else {
+      logger.e(
+          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
+      throw Exception('HTTP ERROR !!! ${response.body}');
+    }
   }
 
   // 리뷰 점포 신고
