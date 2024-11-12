@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:dongpo_test/main.dart';
 import 'package:dongpo_test/models/store/clicked_marker_info.dart';
 import 'package:dongpo_test/models/store/store_marker.dart';
@@ -434,7 +432,6 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
 
           if (retryResponse.statusCode == 200) {
             // 요청 성공
-            Map<String, dynamic> data = decodedResponse['data'];
             logger.d(
                 "code: ${response.statusCode} message: ${decodedResponse['message']}");
             return ApiResponse.fromJson(retryResponse.statusCode,

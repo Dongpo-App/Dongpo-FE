@@ -1,9 +1,6 @@
-import 'package:dongpo_test/main.dart';
-import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 
 class MainTitle extends StatefulWidget {
   final int idx;
@@ -16,7 +13,7 @@ class MainTitle extends StatefulWidget {
 class _MainTitleState extends State<MainTitle> {
   MapManager manager = MapManager();
   bool setOpenPossbility = false;
-  int betweenDistance = 0;
+  String betweenDistance = "";
 
   @override
   void initState() {
@@ -49,14 +46,13 @@ class _MainTitleState extends State<MainTitle> {
                 child: Column(
                   children: [
                     IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        size: 24,
-                        CupertinoIcons.arrow_up_right_diamond_fill,
-                        color: Color(0xffF15A2B))
-                    ),
+                        onPressed: () {},
+                        icon: const Icon(
+                            size: 24,
+                            CupertinoIcons.arrow_up_right_diamond_fill,
+                            color: Color(0xffF15A2B))),
                     Text(
-                      "$betweenDistance M",
+                      betweenDistance,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
@@ -64,7 +60,7 @@ class _MainTitleState extends State<MainTitle> {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
           Padding(

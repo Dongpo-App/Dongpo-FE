@@ -160,10 +160,10 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                   ),
                   border: OutlineInputBorder(
                       borderSide: const BorderSide(color: Color(0xFF767676)),
-                      borderRadius: BorderRadius.circular(12.0)
-                  ),
+                      borderRadius: BorderRadius.circular(12.0)),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFF767676)), // 비활성화 상태 테두리
+                    borderSide: const BorderSide(
+                        color: Color(0xFF767676)), // 비활성화 상태 테두리
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -171,7 +171,8 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   focusedErrorBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Color(0xFFF15A2B)), // 포커스 + 에러 상태 테두리
+                    borderSide: const BorderSide(
+                        color: Color(0xFFF15A2B)), // 포커스 + 에러 상태 테두리
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   suffixIcon: IconButton(
@@ -208,14 +209,23 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
                           padding: const EdgeInsets.only(bottom: 8.0),
                           child: Text(
                             item['place_name'],
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 16),
                           ),
                         ),
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(item['address_name'], style: const TextStyle(fontWeight: FontWeight.w400, fontSize: 16),),
-                            Text(alterDistance(item['distance']), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),),
+                            Text(
+                              item['address_name'],
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w400, fontSize: 16),
+                            ),
+                            Text(
+                              alterDistance(item['distance']),
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 14),
+                            ),
                           ],
                         ),
                         onTap: () {

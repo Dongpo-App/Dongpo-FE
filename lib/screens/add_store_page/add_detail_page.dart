@@ -139,10 +139,12 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                             },
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
-                                  borderSide: const BorderSide(color: Color(0xFFF4F4F4)),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xFFF4F4F4)),
                                   borderRadius: BorderRadius.circular(12.0)),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Color(0xFFF4F4F4)), // 비활성화 상태 테두리
+                                borderSide: const BorderSide(
+                                    color: Color(0xFFF4F4F4)), // 비활성화 상태 테두리
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
                               fillColor: const Color(0xFFF4F4F4),
@@ -170,7 +172,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                             Text(
                               '가게 이름',
                               style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 16),
+                                  fontWeight: FontWeight.w600, fontSize: 16),
                             ),
                             SizedBox(
                               width: 4,
@@ -207,19 +209,23 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                                 color: Color(0xFF767676),
                               ),
                               border: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Color(0xFFF4F4F4)),
-                                borderRadius: BorderRadius.circular(12.0)
-                              ),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xFFF4F4F4)),
+                                  borderRadius: BorderRadius.circular(12.0)),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Color(0xFFF4F4F4)), // 비활성화 상태 테두리
+                                borderSide: const BorderSide(
+                                    color: Color(0xFFF4F4F4)), // 비활성화 상태 테두리
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Color(0xFF767676)),
+                                borderSide:
+                                    const BorderSide(color: Color(0xFF767676)),
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Color(0xFFF15A2B)), // 포커스 + 에러 상태 테두리
+                                borderSide: const BorderSide(
+                                    color:
+                                        Color(0xFFF15A2B)), // 포커스 + 에러 상태 테두리
                                 borderRadius: BorderRadius.circular(12.0),
                               ),
                               fillColor: const Color(0xFFF4F4F4),
@@ -299,7 +305,7 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                             Text(
                               '영업 시간',
                               style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 16),
+                                  fontWeight: FontWeight.w600, fontSize: 16),
                             ),
                             SizedBox(
                               width: 4,
@@ -334,29 +340,35 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                                     color: Color(0xFF767676),
                                   ),
                                   border: OutlineInputBorder(
-                                      borderSide: const BorderSide(color: Color(0xFFF4F4F4)),
-                                      borderRadius: BorderRadius.circular(12.0)
-                                  ),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xFFF4F4F4)),
+                                      borderRadius:
+                                          BorderRadius.circular(12.0)),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Color(0xFFF4F4F4)), // 비활성화 상태 테두리
+                                    borderSide: const BorderSide(
+                                        color:
+                                            Color(0xFFF4F4F4)), // 비활성화 상태 테두리
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Color(0xFF767676)),
+                                    borderSide: const BorderSide(
+                                        color: Color(0xFF767676)),
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Color(0xFFF15A2B)), // 포커스 + 에러 상태 테두리
+                                    borderSide: const BorderSide(
+                                        color: Color(
+                                            0xFFF15A2B)), // 포커스 + 에러 상태 테두리
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
-                                  contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 12, horizontal: 12),
                                   fillColor: const Color(0xFFF4F4F4),
                                   filled: true,
                                   suffixIcon: const Icon(
-                                    size: 24,
-                                    color: Color(0xFF767676),
-                                    Icons.access_time
-                                  ),
+                                      size: 24,
+                                      color: Color(0xFF767676),
+                                      Icons.access_time),
                                   helperText: "",
                                 ),
                                 validator: (value) {
@@ -371,7 +383,9 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                               width: 8,
                             ),
                             const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 12,),
+                              padding: EdgeInsets.symmetric(
+                                vertical: 12,
+                              ),
                               child: Text(
                                 "~",
                                 style: TextStyle(
@@ -399,29 +413,35 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                                     color: Color(0xFF767676),
                                   ),
                                   border: OutlineInputBorder(
-                                      borderSide: const BorderSide(color: Color(0xFFF4F4F4)),
-                                      borderRadius: BorderRadius.circular(12.0)
-                                  ),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xFFF4F4F4)),
+                                      borderRadius:
+                                          BorderRadius.circular(12.0)),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Color(0xFFF4F4F4)), // 비활성화 상태 테두리
+                                    borderSide: const BorderSide(
+                                        color:
+                                            Color(0xFFF4F4F4)), // 비활성화 상태 테두리
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Color(0xFF767676)),
+                                    borderSide: const BorderSide(
+                                        color: Color(0xFF767676)),
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
                                   focusedErrorBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Color(0xFFF15A2B)), // 포커스 + 에러 상태 테두리
+                                    borderSide: const BorderSide(
+                                        color: Color(
+                                            0xFFF15A2B)), // 포커스 + 에러 상태 테두리
                                     borderRadius: BorderRadius.circular(12.0),
                                   ),
-                                  contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 12, horizontal: 12),
                                   fillColor: const Color(0xFFF4F4F4),
                                   filled: true,
                                   suffixIcon: const Icon(
-                                    size: 24,
-                                    color: Color(0xFF767676),
-                                    Icons.access_time
-                                  ),
+                                      size: 24,
+                                      color: Color(0xFF767676),
+                                      Icons.access_time),
                                   helperText: "",
                                 ),
                                 validator: (value) {
@@ -441,7 +461,8 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                           children: [
                             Text(
                               '결제 방식',
-                              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 16),
                             ),
                             SizedBox(
                               width: 8,
@@ -493,7 +514,8 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
                           children: [
                             Text(
                               '화장실',
-                              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 16),
                             ),
                           ],
                         ),
@@ -667,7 +689,6 @@ class _AddStorePageDetailState extends State<AddStorePageDetail>
     bool formValid = _formKey.currentState?.validate() ?? false;
     bool toggleValid =
         _selectedDays.contains(true) && _selectedPaymentMethods.contains(true);
-    logger.d("form: $formValid, toggle: $toggleValid");
     setState(() {
       _isFormValid = formValid && toggleValid;
     });
