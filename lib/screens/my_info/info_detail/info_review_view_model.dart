@@ -19,6 +19,7 @@ class InfoReviewViewModel{
     };
     try {
       final response = await http.get(url, headers: headers);
+      logger.d("user review response : ${json.decode(utf8.decode(response.bodyBytes))}");
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonData = json.decode(utf8.decode(response.bodyBytes));
         final List<dynamic> userReviewJson = jsonData['data'];

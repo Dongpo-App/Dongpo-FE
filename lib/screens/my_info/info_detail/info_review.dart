@@ -24,6 +24,8 @@ class InfoReviewPageState extends State<InfoReviewPage> {
   }
   void getUserReview() async {
     _userReview = await viewModel.userReviewGetAPI(context);
+    _userReview.sort((a, b) => b.id.compareTo(a.id));
+
     setState(() {});
   }
   void deleteUserReview(int reviewId) async {
@@ -198,7 +200,7 @@ class InfoReviewPageState extends State<InfoReviewPage> {
                                 height: 24,
                               ),
                               Text(
-                                review.text,
+                                review.reviewText,
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,

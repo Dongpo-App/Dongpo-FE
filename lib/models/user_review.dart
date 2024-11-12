@@ -3,7 +3,7 @@ class UserReview {
   late final int storeId;
   late final String storeName;
   late final double reviewStar;
-  late final String text;
+  late final String reviewText ;
   late final List<String> reviewPics;
   late final DateTime registerDate;
 
@@ -12,7 +12,7 @@ class UserReview {
     required this.storeId,
     required this.storeName,
     required this.reviewStar,
-    required this.text,
+    required this.reviewText ,
     required this.reviewPics,
     required this.registerDate,
   });
@@ -20,15 +20,15 @@ class UserReview {
   // JSON 데이터를 클래스 인스턴스로 변환하는 factory 생성자
   factory UserReview.fromJson(Map<String, dynamic> json) {
     return UserReview(
-      id: json['id'],
-      storeId: json['storeId'],
-      storeName: json['storeName'],
-      reviewStar: json['reviewStar'],
-      text: json['text'],
+      id: json['id'] ?? 0,
+      storeId: json['storeId'] ?? 0,
+      storeName: json['storeName'] ?? '',
+      reviewStar: json['reviewStar'] ?? 0,
+      reviewText : json['reviewText'] ?? '',
       // reviewPics 필드가 null일 수 있으므로 기본값을 빈 리스트로 설정
       reviewPics: List<String>.from(json['reviewPics'] ?? []),
       // String을 DateTime으로 변환
-      registerDate: DateTime.parse(json['registerDate']),
+      registerDate: DateTime.parse(json['registerDate'] ?? ''),
     );
   }
 
@@ -45,8 +45,8 @@ class UserReview {
   double getReviewStar(){
     return reviewStar;
   }
-  String getText(){
-    return text;
+  String getReviewText (){
+    return reviewText ;
   }
   List<String> getReviewPics(){
     return reviewPics;

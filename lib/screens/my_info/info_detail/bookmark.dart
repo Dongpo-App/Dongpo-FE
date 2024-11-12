@@ -13,8 +13,7 @@ class BookmarkPage extends StatefulWidget {
 class BookmarkPageState extends State<BookmarkPage> {
   BookmarkViewModel viewModel = BookmarkViewModel();
 
-  late List<UserBookmark> _userBookmark = [
-  ];
+  late List<UserBookmark> _userBookmark = [];
 
   @override
   void initState() {
@@ -23,6 +22,8 @@ class BookmarkPageState extends State<BookmarkPage> {
   }
   void getUserBookmark() async {
     _userBookmark = await viewModel.userBookmarkGetAPI(context);
+    _userBookmark.sort((a, b) => b.id.compareTo(a.id));
+
     setState(() {});
   }
   void deleteUserBookmark(int storeId) async {

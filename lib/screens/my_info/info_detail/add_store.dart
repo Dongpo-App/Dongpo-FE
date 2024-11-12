@@ -30,6 +30,7 @@ class AddStorePageState extends State<AddStorePage> {
       isLoading = true; // 초기화
     });
     _userAddStore = await viewModel.userAddStoreGetAPI(context);
+    _userAddStore.sort((a, b) => b.id.compareTo(a.id));
     setState(() {
       isLoading = false;
     });

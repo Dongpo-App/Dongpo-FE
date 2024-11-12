@@ -46,11 +46,13 @@ class _MainTitleState extends State<MainTitle> {
                 child: Column(
                   children: [
                     IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                            size: 24,
-                            CupertinoIcons.arrow_up_right_diamond_fill,
-                            color: Color(0xffF15A2B))),
+                      onPressed: () {},
+                      icon: const Icon(
+                        size: 24,
+                        CupertinoIcons.arrow_up_right_diamond_fill,
+                        color: Color(0xffF15A2B),
+                      )
+                    ),
                     Text(
                       betweenDistance,
                       style: const TextStyle(

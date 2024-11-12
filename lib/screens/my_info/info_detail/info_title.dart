@@ -21,6 +21,7 @@ class InfoTitlePageState extends State<InfoTitlePage> {
   }
   void getUserTitle() async {
     _userTitle = await viewModel.infoUserTitleGetAPI(context);
+    _userTitle.sort((a, b) => b.achieveDate.compareTo(a.achieveDate));
     setState(() {});
   }
 

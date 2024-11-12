@@ -29,26 +29,52 @@ class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
       children: [
         Row(
           children: [
-            Text(
-              manager.selectedSummary!.name,
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+            Flexible(
+              child: Text(
+                manager.selectedSummary!.name,
+                style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1, // 한 줄로 제한
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            const Spacer(),
             IconButton(
-                onPressed: () {},
-                icon: const Icon(CupertinoIcons.arrow_up_right_diamond_fill,
-                    color: Color(0xffF15A2B)))
+              onPressed: () {},
+              icon: const Icon(
+                size: 24,
+                CupertinoIcons.arrow_up_right_diamond_fill,
+                color: Color(0xffF15A2B)
+              )
+            )
           ],
         ),
         Text(betweenDistance),
         Row(
           children: [
-            const Icon(
-              Icons.location_on_outlined,
-              color: Color(0xffF15A2B),
-            ),
-            Text(
-              setOpenPossbility ? "영업 가능성이 높아요!" : "영업 가능성이 있어요!",
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.lightbulb_outline_rounded,
+                    size: 16,
+                    color: Color(0xffF15A2B),
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(
+                    setOpenPossbility ? "영업 가능성이 높아요!" : "영업 가능성이 있어요!",
+                    style: const TextStyle(
+                      color: Color(0xFF767676),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  )
+                ],
+              ),
             )
           ],
         )
@@ -67,7 +93,9 @@ class _StoreSummaryTitleState extends State<StoreSummaryTitle> {
   Future<void> _initializeAsyncData() async {
     setOpenPossbility = getOpenPossibility();
     betweenDistance = await manager.calcDistanceStore();
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 }
 
