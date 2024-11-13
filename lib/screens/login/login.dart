@@ -1,5 +1,4 @@
 import 'package:dongpo_test/models/response/api_response.dart';
-import 'package:dongpo_test/screens/login/terms_and_conditions.dart';
 import 'package:dongpo_test/service/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
@@ -14,10 +13,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   LoginApiService loginService = LoginApiService.instance;
-  Map<String, bool> appleTermsResult = {
-    'tosAgreeChecked': false,
-    'marketingAgreeChecked': false,
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +42,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () async {
-                  appleTermsResult =
-                      await showTermsAndConditionsBottomSheet(context);
-                  bool isAppleTermAgree =
-                      appleTermsResult['tosAgreeChecked'] ?? false;
-                  if (!isAppleTermAgree) return;
                   ApiResponse response = await loginService.appleLogin();
-
                   if (response.statusCode == 200) {
                     if (mounted) {
                       Navigator.pushReplacement(
