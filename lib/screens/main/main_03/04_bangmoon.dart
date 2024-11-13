@@ -13,7 +13,9 @@ import '../../../widgets/bottom_navigation_bar.dart';
 
 class BangMoon extends StatelessWidget {
   final MapManager manager = MapManager();
-  BangMoon({super.key});
+  final bool isVisitCertChecked;
+
+  BangMoon({super.key, required this.isVisitCertChecked});
 
   @override
   Widget build(BuildContext context) {

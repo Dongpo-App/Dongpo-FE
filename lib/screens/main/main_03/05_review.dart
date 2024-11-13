@@ -23,7 +23,8 @@ int value = 0;
 
 class ShowReview extends StatefulWidget {
   final int idx;
-  const ShowReview({super.key, required this.idx});
+  final bool isVisitCertChecked;
+  const ShowReview({super.key, required this.idx, required this.isVisitCertChecked});
 
   @override
   State<ShowReview> createState() => _ShowReviewState();
@@ -57,6 +58,8 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
   @override
   Widget build(BuildContext context) {
     int storeId = widget.idx;
+    bool isVisitCertChecked = widget.isVisitCertChecked;
+    String reviewButtonText = isVisitCertChecked ? '리뷰 작성' : '리뷰 작성은 방문 인증 후에 가능해요';
 
     return SingleChildScrollView(
       child: Column(
@@ -80,243 +83,248 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  logger.d("isReviewable");
-
-                  showModalBottomSheet(
-                    backgroundColor: Colors.white,
-                    isScrollControlled: true,
-                    context: context,
-                    builder: (context) {
-                      return StatefulBuilder(builder:
-                          (BuildContext context, StateSetter setState) {
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom,
-                          ),
-                          child: GestureDetector(
-                            onTap: () {
-                              FocusScope.of(context).unfocus();
-                            },
-                            child: SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.8,
-                              child: SingleChildScrollView(
-                                child: Container(
-                                  padding: const EdgeInsets.all(24),
-                                  child: Column(
-                                    children: [
-                                      //상단 1
-                                      Row(
+                  isVisitCertChecked
+                    ? showModalBottomSheet(
+                        backgroundColor: Colors.white,
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (context) {
+                          return StatefulBuilder(builder:
+                              (BuildContext context, StateSetter setState) {
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                bottom: MediaQuery.of(context).viewInsets.bottom,
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  FocusScope.of(context).unfocus();
+                                },
+                                child: SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.8,
+                                  child: SingleChildScrollView(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(24),
+                                      child: Column(
                                         children: [
-                                          const Text(
-                                            "방문 후기를 알려주세요",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 24),
-                                          ),
-                                          const Spacer(),
-                                          IconButton(
-                                            onPressed: () {
-                                              _showConfirmationDialog(context);
-                                            },
-                                            icon: const Icon(
-                                                CupertinoIcons.xmark,
-                                                color: Color(0xFF767676),
-                                                size: 24),
-                                          )
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 24,
-                                      ),
-                                      //별점 RatingBar //상단 2
-                                      Row(
-                                        children: [
-                                          RatingBar.builder(
-                                            minRating: 0.5,
-                                            direction: Axis.horizontal,
-                                            allowHalfRating: true,
-                                            glowRadius: 1,
-                                            glow: false,
-                                            itemPadding: EdgeInsets.zero,
-                                            itemSize: 56,
-                                            itemBuilder: (context, _) =>
-                                                const Icon(
-                                              Icons.star,
-                                              color: Color(0xffF15A2B),
-                                            ),
-                                            onRatingUpdate: (rating) {
-                                              setState(() {
-                                                _rating = rating.floor();
-                                                logger.d(rating);
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 24,
-                                      ),
-                                      //사진 첨부 텍스트 //상단 3
-                                      const Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            "사진 첨부",
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600),
-                                          ),
-                                          SizedBox(
-                                            width: 8,
-                                          ),
-                                          Text(
-                                            " 최대 3개까지 선택 가능해요",
-                                            style: TextStyle(
-                                              color: Color(0xFF767676),
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 8),
-                                      // 사진 첨부 버튼과 이미지 미리보기 //상단 4
-                                      Row(
-                                        children: List.generate(
-                                          3,
-                                          (index) => Container(
-                                            margin: const EdgeInsets.all(4),
-                                            width: 80,
-                                            height: 80,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              border: Border.all(
-                                                  color:
-                                                      index < _pickedImgs.length
-                                                          ? Colors.transparent
-                                                          : Colors.white70,
-                                                  width: 1),
-                                              image: index < _pickedImgs.length
-                                                  ? DecorationImage(
-                                                      fit: BoxFit.cover,
-                                                      image: FileImage(
-                                                        File(_pickedImgs[index]
-                                                            .path),
-                                                      ),
-                                                    )
-                                                  : null,
-                                            ),
-                                            child: index == _pickedImgs.length
-                                                ? _addPhotoButton(setState)
-                                                : null,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                      //텍스트 필드 (200글자 이내로 작성해주세요!) //상단 5
-                                      SizedBox(
-                                        height: 200,
-                                        child: TextField(
-                                          controller: _reviewController,
-                                          onChanged: (text) {
-                                            if (text.isNotEmpty) {
-                                              reviewTextChecked = true;
-                                            } else {
-                                              reviewTextChecked = false;
-                                            }
-                                          },
-                                          maxLength: 200,
-                                          maxLines: 4,
-                                          decoration: const InputDecoration(
-                                            focusedBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(12)),
-                                                borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Color(0xFF767676),
-                                                )),
-                                            border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(12)),
-                                                borderSide: BorderSide(
-                                                  width: 1,
-                                                  color: Color(0xFF767676),
-                                                )),
-                                            hintText: '200 글자 이내로 적어주세요!',
-                                            hintStyle: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                              color: Color(0xFF767676),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      //바닥에 리뷰 등록 버튼 (form전송)
-                                      SizedBox(
-                                        height: 44,
-                                        child: ElevatedButton(
-                                          onPressed: isLoading
-                                              ? null
-                                              : () async {
-                                                  await submitReview(storeId);
-                                                },
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 0,
-                                            minimumSize:
-                                                const Size(double.infinity, 50),
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(12))),
-                                            backgroundColor:
-                                                (reviewTextChecked &&
-                                                        !isLoading)
-                                                    ? const Color(0xffF15A2B)
-                                                    : const Color(0xFFF4F4F4),
-                                          ),
-                                          child: isLoading
-                                              ? const CircularProgressIndicator(
-                                                  color: Colors.white)
-                                              : Text(
-                                                  "리뷰 등록",
-                                                  style: TextStyle(
+                                          //상단 1
+                                          Row(
+                                            children: [
+                                              const Text(
+                                                "방문 후기를 알려주세요",
+                                                style: TextStyle(
                                                     fontWeight: FontWeight.w600,
-                                                    color: (reviewTextChecked &&
-                                                            !isLoading)
-                                                        ? Colors.white
-                                                        : const Color(
-                                                            0xFF767676),
-                                                  ),
+                                                    fontSize: 24),
+                                              ),
+                                              const Spacer(),
+                                              IconButton(
+                                                onPressed: () {
+                                                  _showConfirmationDialog(context);
+                                                },
+                                                icon: const Icon(
+                                                    CupertinoIcons.xmark,
+                                                    color: Color(0xFF767676),
+                                                    size: 24),
+                                              )
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 24,
+                                          ),
+                                          //별점 RatingBar //상단 2
+                                          Row(
+                                            children: [
+                                              RatingBar.builder(
+                                                minRating: 0.5,
+                                                direction: Axis.horizontal,
+                                                allowHalfRating: true,
+                                                glowRadius: 1,
+                                                glow: false,
+                                                itemPadding: EdgeInsets.zero,
+                                                itemSize: 56,
+                                                itemBuilder: (context, _) =>
+                                                    const Icon(
+                                                  Icons.star,
+                                                  color: Color(0xffF15A2B),
                                                 ),
-                                        ),
+                                                onRatingUpdate: (rating) {
+                                                  setState(() {
+                                                    _rating = rating.floor();
+                                                    logger.d(rating);
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 24,
+                                          ),
+                                          //사진 첨부 텍스트 //상단 3
+                                          const Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                "사진 첨부",
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.w600),
+                                              ),
+                                              SizedBox(
+                                                width: 8,
+                                              ),
+                                              Text(
+                                                " 최대 3개까지 선택 가능해요",
+                                                style: TextStyle(
+                                                  color: Color(0xFF767676),
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          // 사진 첨부 버튼과 이미지 미리보기 //상단 4
+                                          Row(
+                                            children: List.generate(
+                                              3,
+                                              (index) => Container(
+                                                margin: const EdgeInsets.all(4),
+                                                width: 80,
+                                                height: 80,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                  border: Border.all(
+                                                      color:
+                                                          index < _pickedImgs.length
+                                                              ? Colors.transparent
+                                                              : Colors.white70,
+                                                      width: 1),
+                                                  image: index < _pickedImgs.length
+                                                      ? DecorationImage(
+                                                          fit: BoxFit.cover,
+                                                          image: FileImage(
+                                                            File(_pickedImgs[index]
+                                                                .path),
+                                                          ),
+                                                        )
+                                                      : null,
+                                                ),
+                                                child: index == _pickedImgs.length
+                                                    ? _addPhotoButton(setState)
+                                                    : null,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 16,
+                                          ),
+                                          //텍스트 필드 (200글자 이내로 작성해주세요!) //상단 5
+                                          SizedBox(
+                                            height: 200,
+                                            child: TextField(
+                                              controller: _reviewController,
+                                              onChanged: (text) {
+                                                if (text.isNotEmpty) {
+                                                  reviewTextChecked = true;
+                                                } else {
+                                                  reviewTextChecked = false;
+                                                }
+                                              },
+                                              maxLength: 200,
+                                              maxLines: 4,
+                                              decoration: const InputDecoration(
+                                                focusedBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.all(
+                                                        Radius.circular(12)),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Color(0xFF767676),
+                                                    )),
+                                                border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.all(
+                                                        Radius.circular(12)),
+                                                    borderSide: BorderSide(
+                                                      width: 1,
+                                                      color: Color(0xFF767676),
+                                                    )),
+                                                hintText: '200 글자 이내로 적어주세요!',
+                                                hintStyle: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Color(0xFF767676),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          //바닥에 리뷰 등록 버튼 (form전송)
+                                          SizedBox(
+                                            height: 44,
+                                            child: ElevatedButton(
+                                              onPressed: isLoading
+                                                  ? null
+                                                  : () async {
+                                                      await submitReview(storeId);
+                                                    },
+                                              style: ElevatedButton.styleFrom(
+                                                elevation: 0,
+                                                minimumSize:
+                                                    const Size(double.infinity, 50),
+                                                shape: const RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.all(
+                                                        Radius.circular(12))),
+                                                backgroundColor:
+                                                    (reviewTextChecked &&
+                                                            !isLoading)
+                                                        ? const Color(0xffF15A2B)
+                                                        : const Color(0xFFF4F4F4),
+                                              ),
+                                              child: isLoading
+                                                  ? const CircularProgressIndicator(
+                                                      color: Colors.white)
+                                                  : Text(
+                                                      "리뷰 등록",
+                                                      style: TextStyle(
+                                                        fontWeight: FontWeight.w600,
+                                                        color: (reviewTextChecked &&
+                                                                !isLoading)
+                                                            ? Colors.white
+                                                            : const Color(
+                                                                0xFF767676),
+                                                      ),
+                                                    ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                        );
-                      });
-                    },
-                  );
+                            );
+                          });
+                        },
+                      )
+                    : null;
                 },
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12))),
-                  backgroundColor: const Color(0xffF15A2B),
+                  backgroundColor: isVisitCertChecked
+                    ? const Color(0xffF15A2B)
+                    : const Color(0xFFF4F4F4),
                 ),
-                child: const Text(
-                  '리뷰 등록',
+                child: Text(
+                  reviewButtonText,
                   style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600),
+                      color: isVisitCertChecked
+                        ? Colors.white
+                        : const Color(0xFF767676),
+                      fontWeight: FontWeight.w600
+                  ),
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 //가게정보 자세히
 import 'dart:convert';
+import 'dart:math';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/04_bangmoon.dart';
 import 'package:dongpo_test/screens/main/main_03/06_gagejungbo.dart';
@@ -41,7 +42,7 @@ class _StoreInfoState extends State<StoreInfo> {
   // 가게 신고 텍스트 확인용
   bool reportTextChecked = false;
   // 방문 인증 유효 시간 체크
-  late bool isVisitCertChecked;
+  bool isVisitCertChecked= false;
 
   @override
   void initState() {
@@ -49,18 +50,23 @@ class _StoreInfoState extends State<StoreInfo> {
     getBookmark();
     // 페이지가 처음 생성될 때 비동기 메서드 호출
     _fetchStoreDetails(widget.idx);
-    // 24시간 확인 응답 - false : 방문 인증 가능 / true : 리뷰 작성 가능
+    // 방문 인증 유효 시간 확인 응답 - false : 방문 인증 가능 / true : 리뷰 작성 가능
     _getIsVisitCertChecked(widget.idx);
   }
 
-  // 리뷰 작성 가능 판단
+  // 방문 인증 유효 시간 확인
   Future<void> _getIsVisitCertChecked(int storeId) async {
     try {
       final response = await storeService.getIsVisitCertChecked(storeId);
       if (response.statusCode == 200 && response.data != null) {
         // 리뷰 작성 가능함
         final data = response.data;
-        isVisitCertChecked = data!;
+        if (mounted) {
+          setState(() {
+            isVisitCertChecked = data!;
+          });
+          logger.d("isVisitCertChecked : $isVisitCertChecked");
+        }
       } else {
         logger.e('HTTP ERROR !!! 상태코드 : ${response.statusCode}');
       }
@@ -461,12 +467,12 @@ class _StoreInfoState extends State<StoreInfo> {
                   height: 96,
                 ),
                 //방문인증
-                BangMoon(),
+                BangMoon(isVisitCertChecked: isVisitCertChecked,),
                 const SizedBox(
                   height: 96,
                 ),
                 //리뷰 관련
-                ShowReview(idx: widget.idx),
+                ShowReview(idx: widget.idx, isVisitCertChecked: isVisitCertChecked),
                 const SizedBox(
                   height: 96,
                 ),
