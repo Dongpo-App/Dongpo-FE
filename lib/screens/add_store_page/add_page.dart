@@ -282,7 +282,7 @@ class _AddPageState extends State<AddPage> with DialogMethodMixin {
     final distance = Geolocator.distanceBetween(userPosition.latitude,
         userPosition.longitude, _position.latitude, _position.longitude);
     logger.d("distance : $distance");
-    return distance < 500;
+    return distance < 100;
   }
 
   Future<void> moveCamera(NLatLng position) async {
