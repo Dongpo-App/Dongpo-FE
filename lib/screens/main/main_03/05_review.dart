@@ -18,6 +18,7 @@ import 'package:intl/intl.dart';
 import 'package:dongpo_test/screens/main/main_03/05_all_reviews.dart';
 
 import '../../../widgets/dialog_method_mixin.dart';
+import 'main_03.dart';
 
 int value = 0;
 
@@ -401,17 +402,23 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
         images: _pickedImgs,
         rating: _rating,
       );
-      logger.d("review post api statusCode : ${apiResponse.statusCode}");
+      logger.d("review post data : ${apiResponse.statusCode}");
       if (apiResponse.statusCode == 200) {
         Fluttertoast.showToast(
-          msg: "리뷰 등록 완료",
+          msg: "리뷰 작성 완료",
           timeInSecForIosWeb: 2,
         );
         if (mounted) {
           setState(() {
             isLoading = false; // 로딩 상태를 false로 전환
           });
-          Navigator.of(context).pop(); // Navigator 호출
+          // 페이지 전환
+          // 페이지 전환
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => StoreInfo(idx: widget.idx)),
+          );
+
         }
       }
     } on TokenExpiredException {
@@ -768,7 +775,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
             height: 24,
           ),
           Text(
-            '${reviewList[index].text}',
+            '${reviewList[index].reviewText}',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,

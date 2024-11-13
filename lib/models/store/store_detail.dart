@@ -92,7 +92,7 @@ class Review {
   final double? reviewStar;
   final String? memberNickname;
   final String? memberProfilePic;
-  final String? text;
+  final String? reviewText;
   final List<String>? reviewPics;
   final DateTime registerDate;
   final String? memberMainTitle;
@@ -105,7 +105,7 @@ class Review {
     required this.memberId,
     required this.reviewStar,
     required this.memberProfilePic,
-    required this.text,
+    required this.reviewText,
     required this.reviewPics,
     required this.registerDate,
   });
@@ -118,7 +118,7 @@ class Review {
       storeId: json['storeId'] as int?,
       memberId: json['memberId'] as int?,
       reviewStar: json['reviewStar'] as double?,
-      text: json['text'] as String?,
+      reviewText: json['reviewText'] as String?,
       memberProfilePic: json['memberProfilePic'],
       reviewPics: json['reviewPics'] != null
           ? List<String>.from(json['reviewPics'])

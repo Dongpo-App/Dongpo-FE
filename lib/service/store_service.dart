@@ -90,10 +90,10 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
     Map<String, String> headers = this.headers(true);
     final requestbody = jsonEncode(AddReviewRequest(
       reviewStar: rating,
-      text: reviewText,
+      reviewText: reviewText,
       reviewPics: imageUrls,
     ).toJson());
-
+    logger.d("review post data : $requestbody");
     final response = await http.post(url, headers: headers, body: requestbody);
     Map<String, dynamic> decodedResponse =
         jsonDecode(utf8.decode(response.bodyBytes));
@@ -362,7 +362,7 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
 
       if (response.statusCode == 200) {
         // 요청 성공
-        logger.d("code : ${response.statusCode} body: $decodedResponse");
+        logger.d("code - reviewCheck : ${response.statusCode} body: $decodedResponse");
         return ApiResponse.fromJson(response.statusCode, decodedResponse,
             (data) => StoreDetail.fromJson(data));
       } else if (response.statusCode == 401) {

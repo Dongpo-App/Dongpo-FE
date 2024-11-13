@@ -1,6 +1,5 @@
 //가게정보 자세히
 import 'dart:convert';
-import 'dart:math';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/04_bangmoon.dart';
 import 'package:dongpo_test/screens/main/main_03/06_gagejungbo.dart';
@@ -35,6 +34,9 @@ class _StoreInfoState extends State<StoreInfo> {
   StoreApiService storeService = StoreApiService.instance;
   MapManager manager = MapManager();
 
+  // 로딩
+  bool isLoading = false;
+
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
   }
@@ -47,11 +49,19 @@ class _StoreInfoState extends State<StoreInfo> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      isLoading = true; // 초기화
+    });
+
     getBookmark();
     // 페이지가 처음 생성될 때 비동기 메서드 호출
     _fetchStoreDetails(widget.idx);
     // 방문 인증 유효 시간 확인 응답 - false : 방문 인증 가능 / true : 리뷰 작성 가능
     _getIsVisitCertChecked(widget.idx);
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   // 방문 인증 유효 시간 확인
@@ -447,8 +457,7 @@ class _StoreInfoState extends State<StoreInfo> {
           )
         ],
       ),
-      body: manager.selectedDetail ==
-              null // manager.selectedDetail가 null인 경우 로딩 표시
+      body: (manager.selectedDetail == null) || isLoading // manager.selectedDetail가 null인 경우 로딩 표시
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               children: [
