@@ -59,7 +59,6 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
   Widget build(BuildContext context) {
     int storeId = widget.idx;
     bool isVisitCertChecked = widget.isVisitCertChecked;
-    String reviewButtonText = isVisitCertChecked ? '리뷰 작성' : '리뷰 작성은 방문 인증 후에 가능해요';
 
     return SingleChildScrollView(
       child: Column(
@@ -284,7 +283,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
                                                   ? const CircularProgressIndicator(
                                                       color: Colors.white)
                                                   : Text(
-                                                      "리뷰 등록",
+                                                      "리뷰 작성",
                                                       style: TextStyle(
                                                         fontWeight: FontWeight.w600,
                                                         color: (reviewTextChecked &&
@@ -317,7 +316,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
                     : const Color(0xFFF4F4F4),
                 ),
                 child: Text(
-                  reviewButtonText,
+                  isVisitCertChecked ? '리뷰 작성' : '리뷰 작성은 방문 인증 후에 가능해요',
                   style: TextStyle(
                       fontSize: 14,
                       color: isVisitCertChecked

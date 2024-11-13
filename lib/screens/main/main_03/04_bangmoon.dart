@@ -123,22 +123,29 @@ class BangMoon extends StatelessWidget {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () async {
-              Navigator.push(
+              isVisitCertChecked
+                ? null
+                : Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (BuildContext context) => const BangMoonPage()));
+
             },
             style: ElevatedButton.styleFrom(
               elevation: 0,
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(12))),
-              backgroundColor: const Color(0xffF15A2B),
+              backgroundColor: isVisitCertChecked
+                  ? const Color(0xFFF4F4F4)
+                  : const Color(0xffF15A2B),
             ),
-            child: const Text(
-              '방문 인증 하러가기',
+            child: Text(
+              isVisitCertChecked ? '24시간 동안 리뷰 작성과 가게 신고가 가능해요' : '방문 인증 하기',
               style: TextStyle(
                   fontSize: 14,
-                  color: Colors.white,
+                  color: isVisitCertChecked
+                      ? const Color(0xFF767676)
+                      : Colors.white,
                   fontWeight: FontWeight.w600),
             ),
           ),
