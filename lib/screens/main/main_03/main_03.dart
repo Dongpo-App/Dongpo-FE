@@ -319,14 +319,18 @@ class _StoreInfoState extends State<StoreInfo> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
-                                        _radioBtn('없어진 가게에요', 1, setState),
-                                        const SizedBox(height: 16),
-                                        _radioBtn('위치가 틀려요', 2, setState),
-                                        const SizedBox(height: 16),
+                                        if (isVisitCertChecked) ...[
+                                          _radioBtn('없어진 가게에요', 1, setState),
+                                          const SizedBox(height: 16),
+                                          _radioBtn('위치가 틀려요', 2, setState),
+                                          const SizedBox(height: 16),
+                                        ],
                                         _radioBtn(
                                             '부적절한 정보가 포함되어 있어요', 3, setState),
                                         const SizedBox(height: 16),
-                                        _radioBtn('기타', 4, setState),
+                                        if (isVisitCertChecked) ...[
+                                          _radioBtn('기타', 4, setState),
+                                        ],
                                       ],
                                     ),
                                   ),
