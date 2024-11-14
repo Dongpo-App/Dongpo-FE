@@ -13,7 +13,13 @@ import 'package:intl/intl.dart';
 
 class ShowAllReviews extends StatefulWidget {
   final int idx;
-  const ShowAllReviews({super.key, required this.idx});
+  final List<Review> reviewList;
+
+  const ShowAllReviews({
+    super.key,
+    required this.idx,
+    required this.reviewList,
+  });
 
   @override
   State<ShowAllReviews> createState() => _ShowAllReviewsState();
@@ -24,16 +30,15 @@ int value = 0;
 class _ShowAllReviewsState extends State<ShowAllReviews> {
   StoreApiService storeService = StoreApiService.instance;
   MapManager manager = MapManager();
-  List<Review> reviewList = [];
 
   @override
   void initState() {
-    getAllReviews(widget.idx);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Review> reviewList = widget.reviewList ?? [];
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -62,13 +67,13 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
           itemBuilder: (context, index) {
             logger.d('리뷰 리스트에 들어있는 값 체크 : $reviewList');
 
-            return _showReview(context, index); // 각 리뷰 위젯 생성
+            return _showReview(context, index, reviewList); // 각 리뷰 위젯 생성
           },
         ));
   }
 
 // 개별 리뷰를 표시하는 함수
-  Widget _showReview(BuildContext context, int index) {
+  Widget _showReview(BuildContext context, int index, List<Review> reviewList) {
     String reviewDate =
         DateFormat('yyyy-MM-dd').format(reviewList[index].registerDate);
     bool reportTextChecked = false;
@@ -147,7 +152,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
             height: 24,
           ),
           Text(
-            '${reviewList[index].text}',
+            '${reviewList[index].reviewText}',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
@@ -340,8 +345,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
                                               etcText2 = (value == 5)
                                                   ? textController.text
                                                   : "";
-                                              reviewStoreReport2(
-                                                  index, etcText2);
+                                              reviewStoreReport2(index, etcText2, reviewList);
                                             }
                                           },
                                           style: ElevatedButton.styleFrom(
@@ -412,43 +416,10 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
 
   //리뷰 전체 조회
   // 비동기 메서드로 가게 정보를 가져옴
-  Future<void> getAllReviews(int id) async {
-    final url = Uri.parse('$serverUrl/api/store/review/$id');
 
-    final accessToken = await storage.read(key: 'accessToken');
-
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $accessToken',
-    };
-
-    final response = await http.get(
-      url,
-      headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      // JSON 데이터 디코딩 및 UTF-8 디코딩
-      final Map<String, dynamic> data =
-          json.decode(utf8.decode(response.bodyBytes));
-
-      // 서버에서 받은 데이터 중 'data' 키의 값을 리스트로 가져옴
-      final List<dynamic> jsonData = data['data'];
-
-      // JSON 배열을 UserBookmark 리스트로 변환
-      setState(() {
-        reviewList =
-            jsonData.map((jsonItem) => Review.fromJson(jsonItem)).toList();
-      });
-    } else {
-      logger.e(
-          'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : ${response.body}');
-      throw Exception('HTTP ERROR !!! ${response.body}');
-    }
-  }
 
   // 리뷰 점포 신고
-  void reviewStoreReport2(int idx, String etcText) async {
+  void reviewStoreReport2(int idx, String etcText, List<Review> reviewList) async {
     String sendData = setReportData(value);
     logger.d("sendData : $sendData");
     final url = Uri.parse('$serverUrl/api/report/review/${reviewList[idx].id}');

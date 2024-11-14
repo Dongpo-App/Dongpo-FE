@@ -1,6 +1,5 @@
 //가게정보 자세히
 import 'dart:convert';
-import 'dart:math';
 import 'package:dongpo_test/screens/main/main_01.dart';
 import 'package:dongpo_test/screens/main/main_03/04_bangmoon.dart';
 import 'package:dongpo_test/screens/main/main_03/06_gagejungbo.dart';
@@ -20,6 +19,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../../../models/store/store_detail.dart';
+
 
 //가게정보 상세 페이지
 
@@ -35,6 +36,11 @@ class _StoreInfoState extends State<StoreInfo> {
   StoreApiService storeService = StoreApiService.instance;
   MapManager manager = MapManager();
 
+  List<Review> reviewList = [];
+
+  // 로딩
+  bool isLoading = false;
+
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
   }
@@ -47,11 +53,45 @@ class _StoreInfoState extends State<StoreInfo> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      isLoading = true; // 초기화
+    });
+
     getBookmark();
     // 페이지가 처음 생성될 때 비동기 메서드 호출
     _fetchStoreDetails(widget.idx);
+    // 가게 전체 리뷰 조회
+    _getStoreAllReview(widget.idx);
     // 방문 인증 유효 시간 확인 응답 - false : 방문 인증 가능 / true : 리뷰 작성 가능
     _getIsVisitCertChecked(widget.idx);
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  // 비동기 메서드로 가게 정보를 가져옴
+  Future<void> _getStoreAllReview(int id) async {
+    try {
+      final response = await storeService.getStoreAllReview(id);
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data;
+        if (!mounted) return;
+        setState(() {
+          reviewList = data!; // 리뷰 데이터
+        });
+      }
+    } catch (e) {
+      logger.e('가게 정보 불러오는데 뭔가 잘못됨 에러 사유: $e'); // 에러 처리
+      await Future.delayed(const Duration(milliseconds: 1200));
+      Fluttertoast.showToast(
+        msg: "점포 상세 정보를 가져오는 데 실패하였습니다.",
+        timeInSecForIosWeb: 2,
+      );
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    }
   }
 
   // 방문 인증 유효 시간 확인
@@ -93,6 +133,7 @@ class _StoreInfoState extends State<StoreInfo> {
         if (!mounted) return;
         setState(() {
           manager.selectedDetail = data; // 가져온 데이터를 myStoreList에 할당
+          // reviewList = manager.selectedDetail?.reviews ?? []; // 리뷰 데이터
         });
       }
     } catch (e) {
@@ -447,8 +488,7 @@ class _StoreInfoState extends State<StoreInfo> {
           )
         ],
       ),
-      body: manager.selectedDetail ==
-              null // manager.selectedDetail가 null인 경우 로딩 표시
+      body: (manager.selectedDetail == null) || isLoading // manager.selectedDetail가 null인 경우 로딩 표시
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               children: [
@@ -476,7 +516,7 @@ class _StoreInfoState extends State<StoreInfo> {
                   height: 96,
                 ),
                 //리뷰 관련
-                ShowReview(idx: widget.idx, isVisitCertChecked: isVisitCertChecked),
+                ShowReview(idx: widget.idx, isVisitCertChecked: isVisitCertChecked, reviewList: reviewList),
                 const SizedBox(
                   height: 96,
                 ),

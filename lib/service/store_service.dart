@@ -17,6 +17,74 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
   static final StoreApiService instance = StoreApiService._privateConstructor();
 
   @override
+  Future<ApiResponse<List<Review>>> getStoreAllReview(int id) async {
+    await loadToken();
+    final url = Uri.parse('$serverUrl/api/store/review/$id');
+
+    Map<String, String> headers = this.headers(true);
+
+    try {
+      final response = await http.get(url, headers: headers);
+      Map<String, dynamic> decodedResponse = jsonDecode(utf8.decode(response.bodyBytes));
+
+      logger.d("getStoreAllReview : $decodedResponse");
+      if (response.statusCode == 200) {
+        logger.d("code: ${response.statusCode} body: $decodedResponse");
+
+        return ApiResponse<List<Review>>.fromJson(
+          response.statusCode,
+          decodedResponse,
+              (data) {
+            return (data as List<dynamic>)
+                .map((item) => Review.fromJson(item))
+                .toList();
+          },
+        );
+      } else if (response.statusCode == 401) {
+        logger.d("code: ${response.statusCode} body: $decodedResponse");
+        final reissued = await reissueToken();
+        if (reissued) {
+          await loadToken();
+          headers = this.headers(true);
+          final retryResponse = await http.get(url, headers: headers);
+          decodedResponse = jsonDecode(utf8.decode(retryResponse.bodyBytes));
+
+          if (retryResponse.statusCode == 200) {
+            // 요청 성공
+            logger.d("code : ${response.statusCode} body: $decodedResponse");
+            return ApiResponse.fromJson(
+                retryResponse.statusCode,
+                decodedResponse,
+                    (data) => (data as List)
+                    .map((item) => Review.fromJson(item))
+                    .toList());
+          } else {
+            await resetToken();
+            throw TokenExpiredException();
+          }
+        } else {
+          await resetToken();
+          throw TokenExpiredException();
+        }
+      } else {
+        logger.e("code : ${response.statusCode} body: $decodedResponse");
+        // 유저에게 에러 메시지 줘야함
+        // 임시
+        throw Exception(
+            "code : ${response.statusCode} message : HTTP ERROR! body : ${response.body}");
+      }
+    } catch (e) {
+      if (e is! TokenExpiredException) {
+        logger.e("HTTP Error on get is reviewable: $e");
+        throw Exception("Error occurred: $e");
+      } else {
+        // TokenExpiredException일 경우 다시 throw
+        rethrow;
+      }
+    }
+  }
+
+  @override
   Future<ApiResponse<bool>> getIsVisitCertChecked(int id) async {
     await loadToken();
     final url = Uri.parse('$serverUrl/api/store/visit-cert/$id/check');
@@ -90,10 +158,10 @@ class StoreApiService extends ApiService implements StoreServiceInterface {
     Map<String, String> headers = this.headers(true);
     final requestbody = jsonEncode(AddReviewRequest(
       reviewStar: rating,
-      text: reviewText,
+      reviewText: reviewText,
       reviewPics: imageUrls,
     ).toJson());
-
+    logger.d("review post data : $requestbody");
     final response = await http.post(url, headers: headers, body: requestbody);
     Map<String, dynamic> decodedResponse =
         jsonDecode(utf8.decode(response.bodyBytes));

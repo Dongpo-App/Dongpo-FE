@@ -18,13 +18,21 @@ import 'package:intl/intl.dart';
 import 'package:dongpo_test/screens/main/main_03/05_all_reviews.dart';
 
 import '../../../widgets/dialog_method_mixin.dart';
+import 'main_03.dart';
 
 int value = 0;
 
 class ShowReview extends StatefulWidget {
   final int idx;
   final bool isVisitCertChecked;
-  const ShowReview({super.key, required this.idx, required this.isVisitCertChecked});
+  final List<Review> reviewList;
+
+  const ShowReview({
+    super.key,
+    required this.idx,
+    required this.isVisitCertChecked,
+    required this.reviewList
+  });
 
   @override
   State<ShowReview> createState() => _ShowReviewState();
@@ -38,7 +46,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
   List<XFile> _pickedImgs = [];
   int _rating = 0;
   final TextEditingController _reviewController = TextEditingController();
-  List<Review> reviewList = [];
+  // List<Review> reviewList = [];
   String etcText = ''; //리뷰 신고
 
   // 리뷰 텍스트 확인용
@@ -50,7 +58,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
 
   @override
   void initState() {
-    reviewList = manager.selectedDetail?.reviews ?? []; // null일 경우 빈 리스트로 대체
+    // reviewList = manager.selectedDetail?.reviews ?? []; // null일 경우 빈 리스트로 대체
     super.initState();
   }
 
@@ -59,6 +67,10 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
   Widget build(BuildContext context) {
     int storeId = widget.idx;
     bool isVisitCertChecked = widget.isVisitCertChecked;
+    List<Review> reviewList = widget.reviewList ?? [];
+    List<Review> simpleReviewList = reviewList.take(3).toList() ?? [];
+
+    logger.d("reviewList length : ${reviewList.length}");
 
     return SingleChildScrollView(
       child: Column(
@@ -331,17 +343,17 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
           const SizedBox(height: 96),
           //showReview 넣을 곳
 
-          reviewList.isNotEmpty
+          simpleReviewList.isNotEmpty
               ? ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   shrinkWrap: true, // 높이를 자동으로 조정
                   physics: const NeverScrollableScrollPhysics(), // 스크롤 비활성화
-                  itemCount: reviewList.length,
+                  itemCount: simpleReviewList.length,
                   itemBuilder: (context, index) {
                     final review =
-                        reviewList[index].reviewStar; // 항상 비어있지 않으므로 직접 접근
+                        simpleReviewList[index].reviewStar; // 항상 비어있지 않으므로 직접 접근
                     logger.d('리뷰 리스트에 들어있는 값 체크 : $review');
-                    return _showReview(context, index); // 각 리뷰 위젯 생성
+                    return _showReview(context, index, simpleReviewList); // 각 리뷰 위젯 생성
                   },
                 )
               : const Center(
@@ -363,7 +375,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ShowAllReviews(idx: storeId),
+                      builder: (context) => ShowAllReviews(idx: storeId, reviewList: reviewList,),
                     ));
               },
               style: ElevatedButton.styleFrom(
@@ -401,17 +413,23 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
         images: _pickedImgs,
         rating: _rating,
       );
-      logger.d("review post api statusCode : ${apiResponse.statusCode}");
+      logger.d("review post data : ${apiResponse.statusCode}");
       if (apiResponse.statusCode == 200) {
         Fluttertoast.showToast(
-          msg: "리뷰 등록 완료",
+          msg: "리뷰 작성 완료",
           timeInSecForIosWeb: 2,
         );
         if (mounted) {
           setState(() {
             isLoading = false; // 로딩 상태를 false로 전환
           });
-          Navigator.of(context).pop(); // Navigator 호출
+          // 페이지 전환
+          // 페이지 전환
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => StoreInfo(idx: widget.idx)),
+          );
+
         }
       }
     } on TokenExpiredException {
@@ -689,7 +707,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
   }
 
 // 개별 리뷰를 표시하는 함수
-  Widget _showReview(BuildContext context, int index) {
+  Widget _showReview(BuildContext context, int index, List<Review> reviewList) {
     String reviewDate =
         DateFormat('yyyy-MM-dd').format(reviewList[index].registerDate);
     bool reportTextChecked = false;
@@ -768,7 +786,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
             height: 24,
           ),
           Text(
-            '${reviewList[index].text}',
+            '${reviewList[index].reviewText}',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
@@ -959,7 +977,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
                                               etcText = (value == 5)
                                                   ? textController2.text
                                                   : "";
-                                              reviewStoreReport(index, etcText);
+                                              reviewStoreReport(index, etcText, reviewList);
                                             }
                                           },
                                           style: ElevatedButton.styleFrom(
@@ -1029,7 +1047,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
   }
 
   // 리뷰 점포 신고
-  void reviewStoreReport(int idx, String etcText) async {
+  void reviewStoreReport(int idx, String etcText, List<Review> reviewList) async {
     String sendData = setReportData(value);
     logger.d("sendData : $sendData");
     final url = Uri.parse('$serverUrl/api/report/review/${reviewList[idx].id}');
