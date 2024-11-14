@@ -1,7 +1,6 @@
 import 'package:dongpo_test/api_key.dart';
 import 'package:dongpo_test/screens/login/splash_page.dart';
 import 'package:dongpo_test/screens/main/main_03/main_03.dart';
-import 'package:dongpo_test/widgets/bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';

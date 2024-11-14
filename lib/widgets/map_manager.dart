@@ -35,11 +35,12 @@ class MapManager {
   }
 
   // 초기화 메서드
-  void initialize(NaverMapController controller) {
+  void initialize(NaverMapController controller) async {
     if (!_isControllerInit) {
       logger.d("controller is init : ${controller.hashCode}");
       mapController = controller;
       _isControllerInit = true;
+      await Future.delayed(const Duration(milliseconds: 100));
     }
   }
 

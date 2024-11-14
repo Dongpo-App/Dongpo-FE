@@ -29,13 +29,13 @@ class _LoginPageState extends State<LoginPage> {
               '동포 시작하기',
               style: TextStyle(
                 fontFamily: 'Chosun',
-                fontSize: 40,
+                fontSize: 48,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.1,
+              height: MediaQuery.of(context).size.height * 0.2,
             ),
             // 소셜 로그인 - 애플
             Padding(
@@ -128,36 +128,36 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             // 이용약관 확인용
-            const SizedBox(
-              height: 24,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: InkWell(
-                onTap: () async {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AppleUserInfoPage(
-                                userData: {
-                                  'socialId': "123",
-                                  'email': 'email@mail.ocm'
-                                },
-                              )));
-                },
-                child: Container(
-                  height: 44,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFFFFF),
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: const Text(
-                    '애플 로그인 테스트',
-                  ),
-                ),
-              ),
-            ),
+            // const SizedBox(
+            //   height: 24,
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 24),
+            //   child: InkWell(
+            //     onTap: () async {
+            //       Navigator.push(
+            //           context,
+            //           MaterialPageRoute(
+            //               builder: (context) => const AppleUserInfoPage(
+            //                     userData: {
+            //                       'socialId': "123",
+            //                       'email': 'email@mail.ocm'
+            //                     },
+            //                   )));
+            //     },
+            //     child: Container(
+            //       height: 44,
+            //       width: double.infinity,
+            //       decoration: BoxDecoration(
+            //         color: const Color(0xFFFFFFFF),
+            //         borderRadius: BorderRadius.circular(12.0),
+            //       ),
+            //       child: const Text(
+            //         '애플 로그인 테스트',
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
