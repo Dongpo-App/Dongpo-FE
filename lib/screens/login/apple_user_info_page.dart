@@ -605,6 +605,10 @@ class AppleUserInfoPageState extends State<AppleUserInfoPage> {
                       gender: selectedGender!,
                       socialId: socialId!,
                       email: email!,
+                      isServiceTermsAgreed:
+                          appleTermsResult['tosAgreeChecked']!,
+                      isMarketingTermsAgreed:
+                          appleTermsResult['marketingAgreeChecked']!,
                     );
                     logger.d("data: ${request.toString()}");
                     ApiResponse response =

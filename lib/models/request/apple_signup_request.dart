@@ -4,6 +4,8 @@ class AppleSignupRequest {
   final String gender;
   final String socialId;
   final String email;
+  final bool isServiceTermsAgreed;
+  final bool isMarketingTermsAgreed;
 
   AppleSignupRequest({
     required this.nickname,
@@ -11,6 +13,8 @@ class AppleSignupRequest {
     required this.gender,
     required this.socialId,
     required this.email,
+    required this.isServiceTermsAgreed,
+    required this.isMarketingTermsAgreed,
   });
 
   Map<String, dynamic> toJson() {
@@ -19,7 +23,9 @@ class AppleSignupRequest {
       "birthday": birthday,
       "gender": gender,
       "socialId": socialId,
-      "email": email
+      "email": email,
+      "isServiceTermsAgreed": isServiceTermsAgreed,
+      "isMarketingTermsAgreed": isMarketingTermsAgreed,
     };
   }
 }

@@ -1,15 +1,11 @@
 import 'dart:convert';
-
 import 'package:dongpo_test/screens/login/login_view_model.dart';
-import 'package:dongpo_test/screens/main/main_03/main_03.dart';
 import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:dongpo_test/main.dart';
 import 'package:http/http.dart' as http;
-
-import '../../../widgets/bottom_navigation_bar.dart';
 
 class BangMoon extends StatelessWidget {
   final MapManager manager = MapManager();
@@ -124,12 +120,12 @@ class BangMoon extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () async {
               isVisitCertChecked
-                ? null
-                : Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => const BangMoonPage()));
-
+                  ? null
+                  : Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const BangMoonPage()));
             },
             style: ElevatedButton.styleFrom(
               elevation: 0,
@@ -245,7 +241,13 @@ class _BangMoonPageState extends State<BangMoonPage> {
                     );
                     _setMyMarkerAndStoreMarker();
                   },
-                  options: const NaverMapViewOptions(
+                  options: NaverMapViewOptions(
+                    initialCameraPosition: NCameraPosition(
+                        target: NLatLng(
+                          manager.selectedMarkerInfo!.latitude,
+                          manager.selectedMarkerInfo!.longitude,
+                        ),
+                        zoom: 17),
                     zoomGesturesEnable: false,
                     minZoom: 16,
                     scrollGesturesEnable: false,
