@@ -37,7 +37,7 @@ class _TermsAndConditionsAgreementState
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    final bottomSheetHeight = screenHeight * 0.4;
+    final bottomSheetHeight = screenHeight * 0.5;
     return Container(
       height: bottomSheetHeight,
       width: double.infinity,
