@@ -637,20 +637,13 @@ class _BangMoonPageState extends State<BangMoonPage> {
             fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
       ),
       onPressed: () {
-        Navigator.pushAndRemoveUntil(
+        Navigator.pop(context);
+        Navigator.pop(context);
+        // 페이지 전환
+        Navigator.popAndPushNamed(
           context,
-          MaterialPageRoute(
-              builder: (context) => const MyAppPage()), // 1페이지로 이동
-          (Route<dynamic> route) => false, // 모든 이전 스택을 삭제
-        );
-
-        // 1페이지로 이동 후 바로 2페이지로 이동
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => StoreInfo(
-                    idx: manager.selectedDetail!.id,
-                  )), // 2페이지로 이동
+          '/storeInfo',
+          arguments: manager.selectedDetail!.id, // index 값을 전달
         );
       },
     );
