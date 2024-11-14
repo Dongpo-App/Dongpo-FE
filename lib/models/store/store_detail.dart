@@ -13,7 +13,6 @@ class StoreDetail {
   final String status;
   final List<String> operatingDays;
   final List<String> payMethods;
-  final List<Review> reviews;
   final List<MostVisitMembers>? mostVisitMembers;
   final String openPossibility;
   final bool isBookmarked;
@@ -37,7 +36,6 @@ class StoreDetail {
     required this.status,
     required this.operatingDays,
     required this.payMethods,
-    required this.reviews,
     this.mostVisitMembers,
     required this.openPossibility,
     required this.isBookmarked,
@@ -65,11 +63,6 @@ class StoreDetail {
           : [],
       payMethods: json['payMethods'] != null
           ? List<String>.from(json['payMethods'])
-          : [],
-      reviews: json['reviews'] != null
-          ? (json['reviews'] as List)
-              .map((reviewJson) => Review.fromJson(reviewJson))
-              .toList()
           : [],
       mostVisitMembers: json['mostVisitMembers'] != null
           ? (json['mostVisitMembers'] as List)

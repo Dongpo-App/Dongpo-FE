@@ -18,7 +18,12 @@ import '../../login/login_view_model.dart';
 //내려갔다 올라가면 북마크 다시 초기화되어있는 오류있음
 class UserAction extends StatefulWidget {
   final int idx;
-  const UserAction({super.key, required this.idx});
+  final int reviewCount;
+  const UserAction({
+    super.key,
+    required this.idx,
+    required this.reviewCount,
+  });
 
   @override
   State<UserAction> createState() => _UserActionState();
@@ -55,7 +60,7 @@ class _UserActionState extends State<UserAction> {
             ),
           ),
           Text(
-            "${manager.selectedDetail?.reviews.length}",
+            "${widget.reviewCount}",
             style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,

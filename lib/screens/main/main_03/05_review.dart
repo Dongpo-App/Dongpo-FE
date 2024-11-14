@@ -344,26 +344,28 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
           //showReview 넣을 곳
 
           simpleReviewList.isNotEmpty
-              ? ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  shrinkWrap: true, // 높이를 자동으로 조정
-                  physics: const NeverScrollableScrollPhysics(), // 스크롤 비활성화
-                  itemCount: simpleReviewList.length,
-                  itemBuilder: (context, index) {
-                    final review =
-                        simpleReviewList[index].reviewStar; // 항상 비어있지 않으므로 직접 접근
-                    logger.d('리뷰 리스트에 들어있는 값 체크 : $review');
-                    return _showReview(context, index, simpleReviewList); // 각 리뷰 위젯 생성
-                  },
-                )
-              : const Center(
-                  child: Text(
-                  '리뷰가 아직 없는 가게예요',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF767676)),
-                )), // 리뷰가 없을 경우 빈 컨테이너 또는 메시지를 반환
+            ? ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                shrinkWrap: true, // 높이를 자동으로 조정
+                physics: const NeverScrollableScrollPhysics(), // 스크롤 비활성화
+                itemCount: simpleReviewList.length,
+                itemBuilder: (context, index) {
+                  final review =
+                      simpleReviewList[index].reviewStar; // 항상 비어있지 않으므로 직접 접근
+                  logger.d('리뷰 리스트에 들어있는 값 체크 : $review');
+                  return _showReview(context, index, simpleReviewList); // 각 리뷰 위젯 생성
+                },
+              )
+            : const Center(
+                child: Text(
+                '리뷰가 아직 없는 가게예요',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF767676)
+                ),
+              )
+            ), // 리뷰가 없을 경우 빈 컨테이너 또는 메시지를 반환
 
           const SizedBox(
             height: 24,
@@ -376,7 +378,8 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ShowAllReviews(idx: storeId, reviewList: reviewList,),
-                    ));
+                    )
+                );
               },
               style: ElevatedButton.styleFrom(
                 elevation: 0,

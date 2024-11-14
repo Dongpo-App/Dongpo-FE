@@ -83,9 +83,11 @@ class _AddressSearchPageState extends State<AddressSearchPage> {
       if (response.statusCode == 200) {
         logger.d(response.body);
         final data = json.decode(response.body);
-        setState(() {
-          _results = data['documents'] ?? [];
-        });
+        if (mounted){
+          setState(() {
+            _results = data['documents'] ?? [];
+          });
+        }
       } else {
         throw Exception(
             'Failed to load recommand keywords ${response.statusCode}');

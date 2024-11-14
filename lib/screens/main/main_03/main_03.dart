@@ -40,6 +40,8 @@ class _StoreInfoState extends State<StoreInfo> {
 
   // 로딩
   bool isLoading = false;
+  // 신고 버튼 관리
+  bool isReportLoading = false;
 
   void getBookmark() async {
     userBookmark = await viewModel.userBookmarkGetAPI(context);
@@ -155,6 +157,11 @@ class _StoreInfoState extends State<StoreInfo> {
   static const storage = FlutterSecureStorage();
   // 점포 신고
   void storeReport(int storeId) async {
+    if (isReportLoading) return;
+    setState(() {
+      isReportLoading = true;
+    });
+
     String sendData = setReportData(value);
     final url = Uri.parse('$serverUrl/api/report/store/$storeId');
 
@@ -196,8 +203,14 @@ class _StoreInfoState extends State<StoreInfo> {
 
       if (response.statusCode == 200) {
         logger.d('신고 완료!! 신고 내용 : $sendData & ETC : $etcText');
+        setState(() {
+          isReportLoading = false;
+        });
         showSuccessDialog();
       } else {
+        setState(() {
+          isReportLoading = false;
+        });
         logger.e(
             'HTTP ERROR !!! 상태코드 : ${response.statusCode}, 응답 본문 : $responsebody');
       }
@@ -428,13 +441,11 @@ class _StoreInfoState extends State<StoreInfo> {
                                       width: double.infinity,
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          if (value == 4 &&
-                                              !reportTextChecked) {
+                                          if (value == 4 && !reportTextChecked) {
                                             return;
                                           }
-                                          if (value != 0) {
-                                            etcText = textController
-                                                .text; // 텍스트를 변수에 저장
+                                          if (value != 0 && !isReportLoading) {
+                                            etcText = textController.text; // 텍스트를 변수에 저장
                                             logger.d("입력된 기타 내용: $etcText");
                                             storeReport(value);
                                           }
@@ -496,17 +507,17 @@ class _StoreInfoState extends State<StoreInfo> {
                   height: 24,
                 ),
                 //제목, 영업가능성, 거리
-                MainTitle(idx: widget.idx),
+                MainTitle(idx: widget.idx,),
                 //사진
                 const SizedBox(
                   height: 24,
                 ),
-                const MainPhoto(),
+                MainPhoto(reviewList: reviewList),
                 const SizedBox(
                   height: 32,
                 ),
                 //리뷰 갯수, 버튼
-                UserAction(idx: widget.idx),
+                UserAction(idx: widget.idx, reviewCount: reviewList.length,),
                 const SizedBox(
                   height: 96,
                 ),

@@ -529,6 +529,9 @@ class _BangMoonPageState extends State<BangMoonPage> {
     }
     //아니라면 100미터 이내에 와야된다 하고 경고 후 내위치 보여주기
     else {
+      setState(() {
+        isLoading = false;
+      });
       showFailDialog();
     }
   }

@@ -2,25 +2,33 @@ import 'package:dongpo_test/widgets/map_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:dongpo_test/main.dart';
 
+import '../../../models/store/store_detail.dart';
+
 class MainPhoto extends StatefulWidget {
-  const MainPhoto({super.key});
+  final List<Review> reviewList;
+
+  const MainPhoto({
+    super.key,
+    required this.reviewList
+  });
 
   @override
-  _MainPhotoState createState() => _MainPhotoState();
+  MainPhotoState createState() => MainPhotoState();
 }
 
-class _MainPhotoState extends State<MainPhoto> {
+class MainPhotoState extends State<MainPhoto> {
   MapManager manager = MapManager();
   final List<Image> imageList = [];
 
   @override
   void initState() {
     super.initState();
-    loadPhoto(); // 페이지가 로드될 때 사진을 로드하는 메서드를 호출
+    loadPhoto(widget.reviewList); // 페이지가 로드될 때 사진을 로드하는 메서드를 호출
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       height: 120,
@@ -48,25 +56,25 @@ class _MainPhotoState extends State<MainPhoto> {
     );
   }
 
-  void loadPhoto() {
+  void loadPhoto(List<Review> reviewList) {
     // storeData가 null이 아니고 reviews가 있는지 확인
     try {
-      if (manager.selectedDetail != null) {
-        for (int i = 0; i < manager.selectedDetail!.reviews.length; i++) {
+      if (reviewList != null) {
+        for (int i = 0; i < reviewList.length; i++) {
           // logger.d(
           //     '첫번째 for문 들어옴 리뷰 사진 갯수 : ${manager.selectedDetail!.reviews![i].reviewPics!.length}');
           for (int ii = 0;
-              ii < manager.selectedDetail!.reviews[i].reviewPics!.length;
+              ii < reviewList[i].reviewPics!.length;
               ii++) {
             //   logger.d("두 번째 for문 들어옴 ");
             setState(() {
               imageList.add(Image.network(
-                  '${manager.selectedDetail?.reviews[i].reviewPics?[ii]}'));
+                  '${reviewList[i].reviewPics?[ii]}'));
             });
           }
         }
       } else {
-        logger.e("storeData 혹은 review 데이터가 없습니다.");
+        logger.e("review 데이터가 없습니다.");
       }
     } on Exception catch (e) {
       logger.e("Error! 내용 = $e");
