@@ -517,7 +517,7 @@ class _StoreInfoState extends State<StoreInfo> {
                   height: 32,
                 ),
                 //리뷰 갯수, 버튼
-                UserAction(idx: widget.idx, reviewCount: reviewList.length,),
+                UserAction(idx: widget.idx, reviewList: reviewList,),
                 const SizedBox(
                   height: 96,
                 ),

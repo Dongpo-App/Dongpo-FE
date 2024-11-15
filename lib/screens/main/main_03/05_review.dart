@@ -375,10 +375,10 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ShowAllReviews(idx: storeId, reviewList: reviewList,),
-                    )
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ShowAllReviews(idx: storeId, reviewList: reviewList,),
+                  )
                 );
               },
               style: ElevatedButton.styleFrom(

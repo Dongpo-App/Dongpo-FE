@@ -7,7 +7,9 @@ import 'package:dongpo_test/main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../../../models/store/store_detail.dart';
 import '../../login/login_view_model.dart';
+import '05_all_reviews.dart';
 
 //북마크, 리뷰 댓글
 //만약 내가 북마크를 해놓은 상태라면
@@ -18,11 +20,12 @@ import '../../login/login_view_model.dart';
 //내려갔다 올라가면 북마크 다시 초기화되어있는 오류있음
 class UserAction extends StatefulWidget {
   final int idx;
-  final int reviewCount;
+  final List<Review> reviewList;
+
   const UserAction({
     super.key,
     required this.idx,
-    required this.reviewCount,
+    required this.reviewList,
   });
 
   @override
@@ -52,7 +55,14 @@ class _UserActionState extends State<UserAction> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ShowAllReviews(idx: widget.idx, reviewList: widget.reviewList,),
+                  )
+              );
+            },
             icon: const Icon(
               Icons.chat,
               color: Color(0xFF767676),
@@ -60,7 +70,7 @@ class _UserActionState extends State<UserAction> {
             ),
           ),
           Text(
-            "${widget.reviewCount}",
+            "${widget.reviewList.length}",
             style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
