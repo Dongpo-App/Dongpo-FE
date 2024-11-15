@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:dongpo_test/models/store/store_detail.dart';
 import 'package:dongpo_test/widgets/map_manager.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:dongpo_test/screens/login/login_view_model.dart';
 import 'package:dongpo_test/service/store_service.dart';
@@ -38,7 +37,7 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
 
   @override
   Widget build(BuildContext context) {
-    List<Review> reviewList = widget.reviewList ?? [];
+    List<Review> reviewList = widget.reviewList;
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -345,7 +344,8 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
                                               etcText2 = (value == 5)
                                                   ? textController.text
                                                   : "";
-                                              reviewStoreReport2(index, etcText2, reviewList);
+                                              reviewStoreReport2(
+                                                  index, etcText2, reviewList);
                                             }
                                           },
                                           style: ElevatedButton.styleFrom(
@@ -417,9 +417,9 @@ class _ShowAllReviewsState extends State<ShowAllReviews> {
   //리뷰 전체 조회
   // 비동기 메서드로 가게 정보를 가져옴
 
-
   // 리뷰 점포 신고
-  void reviewStoreReport2(int idx, String etcText, List<Review> reviewList) async {
+  void reviewStoreReport2(
+      int idx, String etcText, List<Review> reviewList) async {
     String sendData = setReportData(value);
     logger.d("sendData : $sendData");
     final url = Uri.parse('$serverUrl/api/report/review/${reviewList[idx].id}');
