@@ -34,6 +34,16 @@ class MapManager {
     return NLatLng(position.latitude, position.longitude);
   }
 
+  // 지도의 아래가 가려지는 화면에서 보정하여 표시
+  Future<NLatLng> getCorrectionPosition() async {
+    const double correction = 0.00045;
+    final position = await getCurrentNLatLng();
+    double latitude = position.latitude - correction;
+    logger.d(
+        "사용자 위치 lat : ${position.latitude} lng : ${position.longitude} 보정된 점포 위치 lat : $latitude lng : ${selectedMarkerInfo!.longitude}");
+    return NLatLng(latitude, position.longitude);
+  }
+
   // 초기화 메서드
   void initialize(NaverMapController controller) async {
     if (!_isControllerInit) {
