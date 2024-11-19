@@ -216,7 +216,7 @@ class _BangMoonPageState extends State<BangMoonPage> {
         ),
       ),
       body: FutureBuilder<NLatLng>(
-        future: MapManager.getCurrentNLatLng(), // 현재 위치 정보를 가져오는 Future를 빌드
+        future: manager.getCorrectionPosition(), // 현재 위치 정보를 가져오는 Future를 빌드
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // 로딩 중일 때 로딩 인디케이터 표시
