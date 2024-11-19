@@ -51,10 +51,10 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
 
   // 리뷰 텍스트 확인용
   bool reviewTextChecked = false;
+  // 리뷰 별점 확인용
+  bool reviewStar = false;
   // 리뷰 등록 상태 관리 변수
   bool isLoading = false;
-  // 리뷰 작성 가능
-  bool isVisit = false;
 
   @override
   void initState() {
@@ -159,6 +159,11 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
                                                 ),
                                                 onRatingUpdate: (rating) {
                                                   setState(() {
+                                                    if (rating == 0.0) {
+                                                      reviewStar = false;
+                                                    } else {
+                                                      reviewStar = true;
+                                                    }
                                                     _rating = rating.floor();
                                                     logger.d(rating);
                                                   });
@@ -284,12 +289,10 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
                                                     const Size(double.infinity, 50),
                                                 shape: const RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.all(
-                                                        Radius.circular(12))),
-                                                backgroundColor:
-                                                    (reviewTextChecked &&
-                                                            !isLoading)
-                                                        ? const Color(0xffF15A2B)
-                                                        : const Color(0xFFF4F4F4),
+                                                      Radius.circular(12))),
+                                                backgroundColor: (reviewTextChecked && reviewStar && !isLoading)
+                                                    ? const Color(0xffF15A2B)
+                                                    : const Color(0xFFF4F4F4),
                                               ),
                                               child: isLoading
                                                   ? const CircularProgressIndicator(
@@ -298,8 +301,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
                                                       "리뷰 작성",
                                                       style: TextStyle(
                                                         fontWeight: FontWeight.w600,
-                                                        color: (reviewTextChecked &&
-                                                                !isLoading)
+                                                        color: (reviewTextChecked && reviewStar && !isLoading)
                                                             ? Colors.white
                                                             : const Color(
                                                                 0xFF767676),
@@ -402,7 +404,7 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
 
   // 리뷰 등록 onPressed
   Future<void> submitReview(int storeId) async {
-    if (!reviewTextChecked || isLoading || !mounted) {
+    if (!reviewTextChecked || !reviewStar || isLoading || !mounted) {
       return;
     }
     setState(() {
@@ -479,6 +481,9 @@ class _ShowReviewState extends State<ShowReview> with DialogMethodMixin {
       _pickedImgs = [];
       _rating = 0;
       _reviewController.clear();
+      isLoading = false;
+      reviewStar = false;
+      reviewTextChecked = false;
     });
   }
 
